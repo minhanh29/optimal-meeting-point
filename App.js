@@ -1,20 +1,57 @@
+import React, { useState } from "react";
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import MapView, { Marker } from 'react-native-maps';
+import { StyleSheet, View, Dimensions } from 'react-native';
+import {
+	AppBar, HStack, IconButton, Stack, Text,
+} from "@react-native-material/core";
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
+import mapStyleJson from "./mapStyle.json"
+
+const mapStyle = mapStyleJson["mapStyle"]
+
+const initRegion = {
+	latitude: 10.729567,
+	longitude: 106.6930756,
+	latitudeDelta: 0.2,
+	longitudeDelta: 0.2,
+}
+
+const myhome = {
+  latitude: 10.729567,
+  longitude: 106.6930756
+}
+
+const App = () => {
+	return (
+		<View>
+			<StatusBar style="dark" backgroundColor="white"/>
+			<MapView
+				style={styles.map}
+				initialRegion={initRegion}
+				customMapStyle={mapStyle}
+			>
+				<Marker
+					coordinate={myhome}
+					title="RMIT"
+					description="RMIT University"
+				/>
+			</MapView>
+		</View>
+	);
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+	container: {
+		flex: 1,
+		backgroundColor: "#fff",
+		alignItems: "center",
+		justifyContent: "center",
+	},
+	map: {
+		width: Dimensions.get("window").width,
+		height: Dimensions.get("window").height,
+	},
 });
+
+export default App;
