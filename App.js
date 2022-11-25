@@ -34,7 +34,7 @@ const App = () => {
 				<Marker
 					coordinate={myhome}
 					title="RMIT"
-					description="RMIT University"
+					description="RMIT Uni"
 				/>
 			</MapView>
 		</View>
