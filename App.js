@@ -3,10 +3,11 @@ import { StatusBar } from 'expo-status-bar';
 import MapView, { Marker } from 'react-native-maps';
 import { StyleSheet, View, Dimensions } from 'react-native';
 import {
-	AppBar, HStack, IconButton, Stack, Text,
+	AppBar, HStack, IconButton, Stack, Text, Image
 } from "@react-native-material/core";
 
 import mapStyleJson from "./mapStyle.json"
+import ava from "./images/naruto_ava.jpg"
 
 const mapStyle = mapStyleJson["mapStyle"]
 
@@ -34,7 +35,8 @@ const App = () => {
 				<Marker
 					coordinate={myhome}
 					title="RMIT"
-					description="RMIT Uni"
+					description="RMIT University"
+					image={ava}
 				/>
 			</MapView>
 		</View>
