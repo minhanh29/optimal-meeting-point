@@ -1,59 +1,62 @@
 import React, { useState } from "react";
 import { StatusBar } from 'expo-status-bar';
 import MapView, { Marker } from 'react-native-maps';
-import { StyleSheet, View, Dimensions } from 'react-native';
+import { StyleSheet, View, Dimensions} from 'react-native';
 import {
 	AppBar, HStack, IconButton, Stack, Text, Image
 } from "@react-native-material/core";
+import Dashboard from "./components/dashboard/Dashboard";
+import Settings from "./components/setttings/Settings";
+import Groups from "./components/groups/Groups"
+import Notifications from "./components/notifications/Notifications";
+import 'react-native-gesture-handler';
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import Friends from "./components/friends/Friends";
+import SetAddress from "./components/address/SetAddress";
 
-import mapStyleJson from "./mapStyle.json"
-import ava from "./images/naruto_ava.jpg"
 
-const mapStyle = mapStyleJson["mapStyle"]
-
-const initRegion = {
-	latitude: 10.729567,
-	longitude: 106.6930756,
-	latitudeDelta: 0.2,
-	longitudeDelta: 0.2,
-}
-
-const myhome = {
-  latitude: 10.729567,
-  longitude: 106.6930756
-}
+const StackNavigator = createStackNavigator()
 
 const App = () => {
 	return (
-		<View>
-			<StatusBar style="dark" backgroundColor="white"/>
-			<MapView
-				style={styles.map}
-				initialRegion={initRegion}
-				customMapStyle={mapStyle}
-			>
-				<Marker
-					coordinate={myhome}
-					title="RMIT"
-					description="RMIT University"
-					image={ava}
+		// <Dashboard />
+		<NavigationContainer>
+			<StackNavigator.Navigator>
+				<StackNavigator.Screen 
+					name="Dashboard"
+					component={Dashboard}
+					options={{
+						headerShown: false,
+					}}
 				/>
-			</MapView>
-		</View>
+				<StackNavigator.Screen 
+					name="Settings"
+					component={Settings}
+				/>
+				<StackNavigator.Screen 
+					name="Groups"
+					component={Groups}
+				/>
+				<StackNavigator.Screen 
+					name="Notifications"
+					component={Notifications}
+				/>
+				<StackNavigator.Screen 
+					name="Friends"
+					component={Friends}
+				/>
+				<StackNavigator.Screen 
+					name="Address"
+					component={SetAddress}
+				/>
+			</StackNavigator.Navigator>
+		</NavigationContainer>
 	);
 }
 
 const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		backgroundColor: "#fff",
-		alignItems: "center",
-		justifyContent: "center",
-	},
-	map: {
-		width: Dimensions.get("window").width,
-		height: Dimensions.get("window").height,
-	},
+	
 });
 
 export default App;
