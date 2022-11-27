@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { StatusBar } from 'expo-status-bar';
 import MapView, { Marker } from 'react-native-maps';
-import { StyleSheet, View, Dimensions } from 'react-native';
+import { StyleSheet, View, Dimensions, Image } from 'react-native';
 import {
-	AppBar, HStack, IconButton, Stack, Text, Image
+	AppBar, HStack, IconButton, Stack, Text
 } from "@react-native-material/core";
 
 import mapStyleJson from "./mapStyle.json"
@@ -34,6 +34,7 @@ const App = () => {
 			>
 				<Marker
 					coordinate={myhome}
+					style={styles.image}
 					title="RMIT"
 					description="RMIT University"
 					image={ava}
@@ -53,6 +54,10 @@ const styles = StyleSheet.create({
 	map: {
 		width: Dimensions.get("window").width,
 		height: Dimensions.get("window").height,
+	},
+	image: {
+		width: "10%",
+		height: "10%",
 	},
 });
 
