@@ -6,9 +6,11 @@ import {
 	AppBar, HStack, IconButton, Stack, Text
 } from "@react-native-material/core";
 import Dashboard from "./components/dashboard/Dashboard";
-import Settings from "./components/setttings/Settings";
+import Settings from "./components/settings/Settings";
 import Groups from "./components/groups/Groups"
 import Notifications from "./components/notifications/Notifications";
+import { useFonts } from 'expo-font';
+
 import 'react-native-gesture-handler';
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -21,46 +23,44 @@ const StackNavigator = createStackNavigator()
 
 const theme = {
 	colors: {
+		mainColor1: "#9CC7CA",
+		mainColor2: "#EE6548",
 		background: "#EDF4F7",
 		backButton: "#B4D8D7",
 	},
 };
 
-const BackButton = () => {
-	console.log(props)
-	return <IconButton
-		backgroundColor="white"
-		borderRadius={15}
-		icon={props =>
-			<Ionicons
-				name="chevron-back-outline"
-				color={theme.colors.backButton}
-			/>
-		}
-	/>
-}
 
 const App = () => {
-	return (
-		<NavigationContainer theme={theme}>
-			<StackNavigator.Navigator
-				navigationOptions={{
+	const [fontsLoaded] = useFonts({
+		'Montserrat': require('./assets/fonts/Montserrat-Regular.ttf'),
+		'Montserrat-Italic': require('./assets/fonts/Montserrat-Italic-VariableFont_wght.ttf'),
+		'Montserrat-Bold': require('./assets/fonts/Montserrat-Bold.ttf'),
+	});
 
-				}}
-				screenOptions={{
+	if (!fontsLoaded)
+		return null
+
+	return (
+		<NavigationContainer theme={theme} >
+			<StackNavigator.Navigator
+				screenOptions={({navigation}) => ({
 					headerTitle: (props) => <Text
 						{...props}
 						variant="h5"
 						style={styles.header}
 					/>,
 					headerTitleAlign: 'center',
-					headerLeft: (props) => <IconButton
+					headerLeft: () => <IconButton
+						onPress={() => navigation.goBack()}
 						backgroundColor="white"
 						borderRadius={15}
 						icon={props => <Ionicons
+								{...props}
 								name="chevron-back-outline"
 								color={theme.colors.backButton}
 							/>}
+					/>,
 					headerTitleContainerStyle: {
 						top: 30,
 						height: 50,
@@ -74,7 +74,7 @@ const App = () => {
 						elevation: 0, // remove shadow on Android
 						shadowOpacity: 0,  // remove shadow on iOS
 					}
-				}}
+				})}
 			>
 				<StackNavigator.Screen
 					name="Dashboard"
@@ -88,26 +88,6 @@ const App = () => {
 					component={Settings}
 					options={{
 						title: "Account",
-						headerTitle: (props) => <Text
-							{...props}
-							variant="h5"
-							style={styles.header}
-						/>,
-						headerTitleAlign: 'center',
-						headerLeft: () => <BackButton {...props} />,
-						headerTitleContainerStyle: {
-							top: 30,
-							height: 50,
-						},
-						headerLeftContainerStyle: {
-							left: 30,
-							top: 30,
-						},
-						headerStyle: {
-							backgroundColor: theme.colors.background,
-							elevation: 0, // remove shadow on Android
-							shadowOpacity: 0,  // remove shadow on iOS
-						}
 					}}
 				/>
 				<StackNavigator.Screen
@@ -148,6 +128,7 @@ const styles = StyleSheet.create({
 	},
 	header: {
 		fontWeight: "bold",
+		fontFamily: "Montserrat-Bold"
 	},
 	backButton: {
 		borderRadius: 0,
