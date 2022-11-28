@@ -14,15 +14,68 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import Friends from "./components/friends/Friends";
 import SetAddress from "./components/address/SetAddress";
+import { Ionicons } from '@expo/vector-icons';
 
 
 const StackNavigator = createStackNavigator()
 
+const theme = {
+	colors: {
+		background: "#EDF4F7",
+		backButton: "#B4D8D7",
+	},
+};
+
+const BackButton = () => {
+	console.log(props)
+	return <IconButton
+		backgroundColor="white"
+		borderRadius={15}
+		icon={props =>
+			<Ionicons
+				name="chevron-back-outline"
+				color={theme.colors.backButton}
+			/>
+		}
+	/>
+}
+
 const App = () => {
 	return (
-		// <Dashboard />
-		<NavigationContainer>
-			<StackNavigator.Navigator>
+		<NavigationContainer theme={theme}>
+			<StackNavigator.Navigator
+				navigationOptions={{
+
+				}}
+				screenOptions={{
+					headerTitle: (props) => <Text
+						{...props}
+						variant="h5"
+						style={styles.header}
+					/>,
+					headerTitleAlign: 'center',
+					headerLeft: (props) => <IconButton
+						backgroundColor="white"
+						borderRadius={15}
+						icon={props => <Ionicons
+								name="chevron-back-outline"
+								color={theme.colors.backButton}
+							/>}
+					headerTitleContainerStyle: {
+						top: 30,
+						height: 50,
+					},
+					headerLeftContainerStyle: {
+						left: 30,
+						top: 30,
+					},
+					headerStyle: {
+						backgroundColor: theme.colors.background,
+						elevation: 0, // remove shadow on Android
+						shadowOpacity: 0,  // remove shadow on iOS
+					}
+				}}
+			>
 				<StackNavigator.Screen
 					name="Dashboard"
 					component={Dashboard}
@@ -33,6 +86,29 @@ const App = () => {
 				<StackNavigator.Screen
 					name="Settings"
 					component={Settings}
+					options={{
+						title: "Account",
+						headerTitle: (props) => <Text
+							{...props}
+							variant="h5"
+							style={styles.header}
+						/>,
+						headerTitleAlign: 'center',
+						headerLeft: () => <BackButton {...props} />,
+						headerTitleContainerStyle: {
+							top: 30,
+							height: 50,
+						},
+						headerLeftContainerStyle: {
+							left: 30,
+							top: 30,
+						},
+						headerStyle: {
+							backgroundColor: theme.colors.background,
+							elevation: 0, // remove shadow on Android
+							shadowOpacity: 0,  // remove shadow on iOS
+						}
+					}}
 				/>
 				<StackNavigator.Screen
 					name="Groups"
@@ -70,6 +146,12 @@ const styles = StyleSheet.create({
 		width: "10%",
 		height: "10%",
 	},
+	header: {
+		fontWeight: "bold",
+	},
+	backButton: {
+		borderRadius: 0,
+	}
 });
 
 export default App;
