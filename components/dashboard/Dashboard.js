@@ -68,19 +68,19 @@ const Dashboard = ({navigation}) => {
 					<IconButton
 						icon={props => <FIcon name="bell" {...props} />}
 						color="#9CC7CA"
-						style={{ alignSelf: "center", padding: 25, backgroundColor: 'white', borderRadius: 10, marginBottom: 16,...styles.shadowBtn}}
+						style={{ alignSelf: "center", padding: 25, backgroundColor: 'white', borderRadius: 10, margin: 12,...styles.shadowBtn}}
 						onPress={() => navigation.navigate("Notifications")}
 					/>
 					<IconButton
 						icon={props => <AIcon name="setting" {...props} />}
 						color="#9CC7CA"
-						style={{ alignSelf: "center", padding: 25, backgroundColor: 'white', borderRadius: 10, margin: 16, ...styles.shadowBtn}}
+						style={{ alignSelf: "center", padding: 25, backgroundColor: 'white', borderRadius: 10, margin: 12, ...styles.shadowBtn}}
 						onPress={() => navigation.navigate("Settings")}
 					/>
 					<IconButton
 						icon={props => <AIcon name="contacts" {...props} />}
 						color="#9CC7CA"
-						style={{ alignSelf: "center", padding: 25, backgroundColor: 'white', borderRadius: 10, margin: 16, ...styles.shadowBtn}}
+						style={{ alignSelf: "center", padding: 25, backgroundColor: 'white', borderRadius: 10, margin: 12, ...styles.shadowBtn}}
 						onPress={() => navigation.navigate("Friends")}
 					/>
 			</View>
@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
 	bottomContainer:{
 		width: '100%',
 		position: 'absolute',
-		bottom: '10%',
+		bottom: '5%',
 		backgroundColor: 'transparent',
 	},
 	bottomNav:{
