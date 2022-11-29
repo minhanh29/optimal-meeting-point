@@ -7,6 +7,8 @@ import {
 } from "@react-native-material/core";
 import Dashboard from "./components/dashboard/Dashboard";
 import Settings from "./components/settings/Settings";
+import ChangePassword from "./components/settings/ChangePassword";
+import UpdateProfile from "./components/settings/UpdateProfile";
 import Groups from "./components/groups/Groups"
 import Notifications from "./components/notifications/Notifications";
 import { useFonts } from 'expo-font';
@@ -21,7 +23,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 const StackNavigator = createStackNavigator()
 
-const theme = {
+export const theme = {
 	colors: {
 		mainColor1: "#9CC7CA",
 		mainColor2: "#EE6548",
@@ -47,7 +49,7 @@ const App = () => {
 				screenOptions={({navigation}) => ({
 					headerTitle: (props) => <Text
 						{...props}
-						variant="h5"
+						variant="h6"
 						style={styles.header}
 					/>,
 					headerTitleAlign: 'center',
@@ -91,6 +93,20 @@ const App = () => {
 					}}
 				/>
 				<StackNavigator.Screen
+					name="ChangePassword"
+					component={ChangePassword}
+					options={{
+						title: "Change password",
+					}}
+				/>
+				<StackNavigator.Screen
+					name="UpdateProfile"
+					component={UpdateProfile}
+					options={{
+						title: "Update Profile",
+					}}
+				/>
+				<StackNavigator.Screen
 					name="Groups"
 					component={Groups}
 				/>
@@ -127,7 +143,6 @@ const styles = StyleSheet.create({
 		height: "10%",
 	},
 	header: {
-		fontWeight: "bold",
 		fontFamily: "Montserrat-Bold"
 	},
 	backButton: {

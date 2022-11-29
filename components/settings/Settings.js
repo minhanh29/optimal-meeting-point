@@ -1,14 +1,64 @@
-import React, { useState } from 'react'
-import { TouchableOpacity } from 'react-native'
-import { Avatar, Box, Button, Stack, Text, Switch, Flex } from "@react-native-material/core";
+import React, { useState, useEffect } from 'react'
+import { TouchableOpacity, Platform, Alert } from 'react-native'
+import { Avatar, Box, Button, Stack, Text, Switch, Flex, Spacer } from "@react-native-material/core";
 import { useTheme } from '@react-navigation/native';
+import * as Location from 'expo-location';
+import { db } from "../../firebaseConfig"
+import { collection, getDocs } from "firebase/firestore";
 
 import styles from "./styles"
 import ava from "../../images/naruto_ava.jpg"
+import { getAddressFromGeopoint } from "../common/Utils"
 
-const Settings = () => {
+const myhome = {
+  latitude: 10.729567,
+  longitude: 106.6930756
+}
+
+const Settings = ({ navigation }) => {
 	const { colors } = useTheme();
-	const [checkedLocation, setCheckedLocation] = useState(true);
+	const [checkedLocation, setCheckedLocation] = useState(false);
+	const [address, setAddress] = useState('Loading...');
+	const [name, setName] = useState("Minh Anh");
+	const [username, setUsername] = useState("minhanh");
+
+	useEffect(() => {
+		checkIfLocationEnabled();
+		fetchUserInfo();
+	}, []);
+
+	const fetchUserInfo = async () => {
+		try {
+			const querySnapshot = await getDocs(collection(db, "user"));
+			const doc = querySnapshot.docs[0]
+			const data = doc.data()
+			setName(data.name)
+			setUsername(data.username)
+			let address = await getAddressFromGeopoint(data.address)
+			setAddress(address)
+		} catch(e) {
+			console.log(e)
+		}
+	}
+
+	const checkIfLocationEnabled = async () => {
+		try {
+			let enabled = await Location.hasServicesEnabledAsync();
+
+			if (!enabled) {
+				Alert.alert(
+					"Location Service not enabled",
+					"Please enable your location services to continue",
+					[{ text: "OK" }],
+					{ cancelable: false }
+				);
+			} else {
+				setCheckedLocation(enabled);
+			}
+		} catch(e) {
+			console.log(e)
+		}
+	};
 
 	return (
 		<Stack
@@ -35,24 +85,23 @@ const Settings = () => {
 						image={ava}
 						imageStyle={{ borderRadius: 10 }}
 					/>
+
 					<Stack
 						style={{marginLeft: 17}}
 						spacing={5}
+						w="100%"
 					>
-						<Text
-							style={{ fontFamily: "Montserrat-Bold", fontSize: 15}}
-						>
-							Minh Anh
+						<Text style={styles.cardHeader} >
+							{name}
+						</Text>
+						<Text style={styles.infoContent} >
+							@{username}
 						</Text>
 						<Text
-							style={{ fontFamily: "Montserrat", fontSize: 10 }}
+							style={styles.infoContent}
+							numberOfLines={1}
 						>
-							@minhanh
-						</Text>
-						<Text
-							style={{ fontFamily: "Montserrat", fontSize: 10 }}
-						>
-							34, 5C Trung Son, Binh Chanh
+							{address}
 						</Text>
 					</Stack>
 				</Flex>
@@ -60,63 +109,67 @@ const Settings = () => {
 
 			<TouchableOpacity
 				style={styles.cardContainer}
+				onPress={() => navigation.navigate("UpdateProfile")}
 			>
-				<Text
-					style={styles.cardHeader}
-				>
-					Update Profile
+				<Text style={styles.cardHeader} >
+					Update profile
 				</Text>
 			</TouchableOpacity>
 
 			<TouchableOpacity
 				style={styles.cardContainer}
+				onPress={() => navigation.navigate("ChangePassword")}
 			>
-				<Text
-					style={styles.cardHeader}
-				>
+				<Text style={styles.cardHeader} >
 					Change password
 				</Text>
 			</TouchableOpacity>
 
-			<Box
-				elevation={4}
-				backgroundColor="white"
-				style={styles.cardContainer}
+			<Flex
+				justify="between"
+				items="center"
+				direction="row"
+				style={{
+					...styles.cardContainer,
+					paddingVertical: 4
+				}}
 			>
-				<Flex
-					w="100%"
-					justify="between"
-					items="center"
-					direction="row"
-				>
-					<Text
-						style={styles.cardHeader}
-					>
-						Your location
-					</Text>
-					<Switch
-						style={{
-							transform: [{ scaleX: .8 }, { scaleY: .8 }],
-						}}
-						trackColor={{
-							true: colors.mainColor2
-						}}
-						value={checkedLocation}
-						onChange={() => setCheckedLocation(!checkedLocation)}
-					/>
-				</Flex>
-			</Box>
+				<Text style={styles.cardHeader}>
+					Your location
+				</Text>
+				<Switch
+					style={Platform.OS == "ios" ? {
+						transform: [{ scaleX: .8 }, { scaleY: .8 }],
+					} : null}
+					trackColor={{
+						true: colors.mainColor2
+					}}
+					thumbColor="white"
+					value={checkedLocation}
+					onChange={() => setCheckedLocation(!checkedLocation)}
+				/>
+			</Flex>
 
-			<TouchableOpacity
-				style={styles.cardContainer}
-			>
-				<Text
-					style={styles.cardHeader}
-				>
+			<TouchableOpacity style={styles.cardContainer} >
+				<Text style={styles.cardHeader} >
 					Edit your default location
 				</Text>
 			</TouchableOpacity>
 
+			<Spacer />
+			<TouchableOpacity
+				style={{
+					...styles.buttonContainer,
+					backgroundColor: colors.mainColor2
+				}}
+			>
+				<Text
+					style={styles.buttonTitle}
+					color="white"
+				>
+					Log Out
+				</Text>
+			</TouchableOpacity>
 		</Stack>
 	)
 }

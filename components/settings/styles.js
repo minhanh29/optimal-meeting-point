@@ -1,6 +1,8 @@
 import { StyleSheet, Dimensions } from 'react-native'
+import globalStyles from "../../styles"
 
 const styles = StyleSheet.create({
+	...globalStyles,
 	cardContainer: {
 		width: "80%",
 		borderRadius: 15,
@@ -17,7 +19,30 @@ const styles = StyleSheet.create({
 	cardHeader: {
 		fontFamily: "Montserrat-Bold",
 		fontSize: 15,
-	}
+	},
+	infoContent: {
+		fontFamily: "Montserrat",
+		fontSize: 10,
+		width: "70%"
+	},
+	buttonContainer: {
+		width: "80%",
+		borderRadius: 15,
+		shadowOffset: {
+			width: 0,
+			height: 4,
+		},
+		shadowOpacity: 0.25,
+		shadowColor: "black",
+		padding: 17,
+		elevation: 4,
+		marginBottom: "15%"
+	},
+	buttonTitle: {
+		fontFamily: "Montserrat-Bold",
+		fontSize: 15,
+		textAlign: 'center',
+	},
 })
 
 export default styles;

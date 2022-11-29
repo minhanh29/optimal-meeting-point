@@ -1,5 +1,5 @@
+import React, { useState, useEffect } from 'react'
 import { View, Dimensions } from 'react-native'
-import React from 'react'
 import { StatusBar } from 'expo-status-bar';
 import MapView, { Marker } from 'react-native-maps';
 import {
@@ -28,6 +28,7 @@ const myhome = {
   longitude: 106.6930756
 }
 
+
 const Dashboard = ({navigation}) => {
   return (
     <View style={styles.container}>
@@ -42,8 +43,8 @@ const Dashboard = ({navigation}) => {
 					title="RMIT"
 					description="RMIT University"
 				/>
-
 			</MapView>
+
 			<View style={styles.bottomContainer}>
 				<View style={styles.bottomNav}>
 					<IconButton
