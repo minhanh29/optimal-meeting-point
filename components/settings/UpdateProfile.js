@@ -1,21 +1,19 @@
 import React, { useState, useEffect } from 'react'
-import { TouchableOpacity, Platform } from 'react-native'
-import { Avatar, Box, Button, Stack, Text, Switch, Flex, Spacer } from "@react-native-material/core";
+import { TouchableOpacity } from 'react-native'
+import { Avatar, Stack, Text, Flex, Spacer } from "@react-native-material/core";
 import { useTheme } from '@react-navigation/native';
 import TextInput from "../common/TextInput"
 import { MaterialIcons } from '@expo/vector-icons'
 import * as ImagePicker from 'expo-image-picker';
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../firebaseConfig"
-import { getAddressFromGeopoint } from "../common/Utils"
 
 import styles from "./styles"
-import ava from "../../images/naruto_ava.jpg"
 
 const UpdateProfile = () => {
 	const { colors } = useTheme();
 
-	const [image, setImage] = useState(null);
+	const [avatar, setAvatar] = useState(null);
 	const [name, setName] = useState("Minh Anh");
 	const [username, setUsername] = useState("minhanh");
 
@@ -30,6 +28,7 @@ const UpdateProfile = () => {
 			const data = doc.data()
 			setName(data.name)
 			setUsername(data.username)
+			setAvatar(data.ava_url)
 		} catch(e) {
 			console.log(e)
 		}
@@ -45,7 +44,7 @@ const UpdateProfile = () => {
 		});
 
 		if (!result.canceled) {
-			setImage(result.assets[0].uri);
+			setAvatar(result.assets[0].uri);
 		}
 	};
 
@@ -72,7 +71,7 @@ const UpdateProfile = () => {
 					<Avatar
 						label="Minh Anh"
 						icon={props => <Icon name="account" {...props} />}
-						image={image ? { uri: image } : null}
+						image={avatar ? { uri: avatar } : null}
 						imageStyle={{ borderRadius: 10 }}
 					/>
 

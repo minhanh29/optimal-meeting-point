@@ -12,7 +12,26 @@ export const getAddressFromGeopoint = async (geopoint) => {
 		});
 
 		for (let item of response) {
-			let address = `${item.name}, ${item.street}, ${item.subregion}, ${item.region}, ${item.country}`;
+			let address = ""
+			if (item.streetNumber) {
+				address += item.streetNumber + ", "
+			}
+
+			if (item.street) {
+				address += item.street + ", "
+			}
+
+			if (item.subregion) {
+				address += item.subregion + ", "
+			}
+
+			if (item.region) {
+				address += item.region + ", "
+			}
+
+			if (item.country) {
+				address += item.country
+			}
 
 			return address
 		}

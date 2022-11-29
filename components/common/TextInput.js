@@ -1,9 +1,10 @@
 import React from 'react'
-import { TextInput, StyleSheet, SafeAreaView } from 'react-native'
+import { TextInput, StyleSheet } from 'react-native'
+import { Box } from "@react-native-material/core";
 
 const MyTextInput = (props) => {
 	return (
-		<SafeAreaView style={{
+		<Box style={{
 			...styles.inputContainer,
 			...props.style
 			}} >
@@ -14,7 +15,7 @@ const MyTextInput = (props) => {
 					...props.textStyle
 				}}
 			/>
-		</SafeAreaView>
+		</Box>
 	)
 }
 

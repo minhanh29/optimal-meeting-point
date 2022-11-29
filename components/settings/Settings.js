@@ -1,19 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import { TouchableOpacity, Platform, Alert } from 'react-native'
-import { Avatar, Box, Button, Stack, Text, Switch, Flex, Spacer } from "@react-native-material/core";
+import { Avatar, Box, Stack, Text, Switch, Flex, Spacer } from "@react-native-material/core";
 import { useTheme } from '@react-navigation/native';
 import * as Location from 'expo-location';
 import { db } from "../../firebaseConfig"
 import { collection, getDocs } from "firebase/firestore";
 
 import styles from "./styles"
-import ava from "../../images/naruto_ava.jpg"
 import { getAddressFromGeopoint } from "../common/Utils"
-
-const myhome = {
-  latitude: 10.729567,
-  longitude: 106.6930756
-}
 
 const Settings = ({ navigation }) => {
 	const { colors } = useTheme();
@@ -21,9 +15,9 @@ const Settings = ({ navigation }) => {
 	const [address, setAddress] = useState('Loading...');
 	const [name, setName] = useState("Minh Anh");
 	const [username, setUsername] = useState("minhanh");
+	const [avatar, setAvatar] = useState(null);
 
 	useEffect(() => {
-		checkIfLocationEnabled();
 		fetchUserInfo();
 	}, []);
 
@@ -34,8 +28,13 @@ const Settings = ({ navigation }) => {
 			const data = doc.data()
 			setName(data.name)
 			setUsername(data.username)
+			setAvatar(data.ava_url)
+
 			let address = await getAddressFromGeopoint(data.address)
 			setAddress(address)
+			setCheckedLocation(data.gps_enabled)
+			if (data.gps_enabled)
+				checkIfLocationEnabled();
 		} catch(e) {
 			console.log(e)
 		}
@@ -52,8 +51,6 @@ const Settings = ({ navigation }) => {
 					[{ text: "OK" }],
 					{ cancelable: false }
 				);
-			} else {
-				setCheckedLocation(enabled);
 			}
 		} catch(e) {
 			console.log(e)
@@ -82,7 +79,7 @@ const Settings = ({ navigation }) => {
 					<Avatar
 						label="Minh Anh"
 						icon={props => <Icon name="account" {...props} />}
-						image={ava}
+						image={avatar ? { uri: avatar } : null}
 						imageStyle={{ borderRadius: 10 }}
 					/>
 
@@ -131,7 +128,7 @@ const Settings = ({ navigation }) => {
 				direction="row"
 				style={{
 					...styles.cardContainer,
-					paddingVertical: 4
+					paddingVertical: Platform.OS == "ios" ? 12 : 4,
 				}}
 			>
 				<Text style={styles.cardHeader}>
