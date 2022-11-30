@@ -34,11 +34,12 @@ const Settings = ({ navigation }) => {
 			  console.log('Location permission not granted!');
 			  return;
 			}
-			let address = await getAddressFromGeopoint(data.address)
-			setAddress(address)
+			
 			setCheckedLocation(data.gps_enabled)
 			if (data.gps_enabled)
 				checkIfLocationEnabled();
+			let address = await getAddressFromGeopoint(data.address)
+			setAddress(address)
 		} catch(e) {
 			console.log(e)
 		}
