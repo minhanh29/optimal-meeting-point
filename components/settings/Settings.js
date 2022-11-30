@@ -30,11 +30,15 @@ const Settings = ({ navigation }) => {
 			setUsername(data.username)
 			setAvatar(data.ava_url)
 
-			let address = await getAddressFromGeopoint(data.address)
-			setAddress(address)
+			let { status } = await Location.requestPermissionsAsync();
+			if (status !== 'granted') {
+				return;
+			}
 			setCheckedLocation(data.gps_enabled)
 			if (data.gps_enabled)
 				checkIfLocationEnabled();
+			let address = await getAddressFromGeopoint(data.address)
+			setAddress(address)
 		} catch(e) {
 			console.log(e)
 		}
