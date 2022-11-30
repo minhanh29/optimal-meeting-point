@@ -11,132 +11,126 @@ import {
   Text,
   Image as ImageMaterial,
 } from "@react-native-material/core";
+import Dashboard from "./components/dashboard/Dashboard";
+import Settings from "./components/settings/Settings";
+import ChangePassword from "./components/settings/ChangePassword";
+import UpdateProfile from "./components/settings/UpdateProfile";
+import Groups from "./components/groups/Groups"
+import Notifications from "./components/notifications/Notifications";
+import { useFonts } from 'expo-font';
+import 'react-native-gesture-handler';
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import Friends from "./components/friends/Friends";
+import SetAddress from "./components/address/SetAddress";
+import { Ionicons } from '@expo/vector-icons';
 
-import mapStyleJson from "./mapStyle.json";
-import ava from "./images/naruto_ava.jpg";
 
-const mapStyle = mapStyleJson["mapStyle"];
+const StackNavigator = createStackNavigator()
 
-const initRegion = {
-  latitude: 10.729567,
-  longitude: 106.6930756,
-  latitudeDelta: 0.2,
-  longitudeDelta: 0.2,
+export const theme = {
+  colors: {
+    mainColor1: "#9CC7CA",
+    mainColor2: "#EE6548",
+    background: "#EDF4F7",
+    backButton: "#B4D8D7",
+  },
 };
 
-const rmit = {
-  latitude: 10.729567,
-  longitude: 106.6930756,
-};
-
-const myLocation = {
-  latitude: 10.795132588703474,
-  longitude: 106.72191374093879,
-};
 
 const App = () => {
+  const [fontsLoaded] = useFonts({
+    'Montserrat': require('./assets/fonts/Montserrat-Regular.ttf'),
+    'Montserrat-Italic': require('./assets/fonts/Montserrat-Italic-VariableFont_wght.ttf'),
+    'Montserrat-Bold': require('./assets/fonts/Montserrat-Bold.ttf'),
+  });
+
+  if (!fontsLoaded)
+    return null
+
   return (
-    <View>
-      <StatusBar style="dark" backgroundColor="white" />
-      <MapView
-        style={styles.map}
-        initialRegion={initRegion}
-        customMapStyle={mapStyle}
+    <NavigationContainer theme={theme} >
+      <StackNavigator.Navigator
+        screenOptions={({ navigation }) => ({
+          headerTitle: (props) => <Text
+            {...props}
+            variant="h6"
+            style={styles.header}
+          />,
+          headerTitleAlign: 'center',
+          headerLeft: () => <IconButton
+            onPress={() => navigation.goBack()}
+            backgroundColor="white"
+            borderRadius={15}
+            icon={props => <Ionicons
+              {...props}
+              name="chevron-back-outline"
+              color={theme.colors.backButton}
+            />}
+          />,
+          headerTitleContainerStyle: {
+            top: 30,
+            height: 50,
+          },
+          headerLeftContainerStyle: {
+            left: 30,
+            top: 30,
+          },
+          headerStyle: {
+            backgroundColor: theme.colors.background,
+            elevation: 0, // remove shadow on Android
+            shadowOpacity: 0,  // remove shadow on iOS
+          }
+        })}
       >
-        <Marker
-          coordinate={rmit}
-          title={"RMIT"}
-          description={"RMIT University"}
-          // image={require("./assets/location-dot.png") }
-        >
-          <Image
-            style={styles.marker_icon}
-            source={require("./assets/location-dot.png")}
-          ></Image>
-          <Callout tooltip>
-            <View>
-              <View style={styles.bubble}>
-                <Text style={styles.locationName}>Location's name</Text>
-                <Text>Description</Text>
-                <Image
-                  style={styles.image}
-                  source={require("./images/bingsu.webp")}
-                />
-              </View>
-              {/* <View style={styles.arrowBorder}></View>
-              <View style={styles.arrow}></View> */}
-            </View>
-          </Callout>
-        </Marker>
-        <Marker
-          coordinate={myLocation}
-          title={"user"}
-          description={"user info"}
-        >
-          <View
-            style={{
-              flexDirection: "row",
-              backgroundColor: "#00bfff",
-              borderTopLeftRadius: 60,
-              borderTopRightRadius: 60,
-              borderBottomRightRadius: 0,
-              borderBottomLeftRadius: 60,
-              transform: [{ rotate: "45deg" }],
-              alignSelf: "flex-start",
-              height: 45,
-              width: 45,
-            }}
-          >
-            <Svg width={40} height={30}>
-              <Image
-                source={require("./images/avatar.jpeg")}
-                width={40}
-                height={30}
-                style={{
-                  height: 40,
-                  width: 40,
-                  transform: [{ rotate: "-45deg" }],
-                  borderRadius: 90,
-                  position: "absolute",
-                  left: 1.5, // 1.5
-                  bottom: -42, // -32
-                }}
-              />
-            </Svg>
-          </View>
-          <Callout>
-            <View
-              style={{
-                flexDirection: "column",
-                width: 100,
-                height: 50,
-              }}
-            >
-              <Text
-                style={{
-                  marginLeft: 2,
-                  marginBottom: 1,
-                  color: "black",
-                  fontWeight: "bold",
-                }}
-              >
-                User name
-              </Text>
-              <Text
-                style={{
-                  marginLeft: 2,
-                  color: "black",
-                }}
-              >
-                Description
-              </Text>
-            </View>
-          </Callout>
-        </Marker>
-      </MapView>
-    </View>
+        <StackNavigator.Screen
+          name="Dashboard"
+          component={Dashboard}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <StackNavigator.Screen
+          name="Settings"
+          component={Settings}
+          options={{
+            title: "Account",
+          }}
+        />
+        <StackNavigator.Screen
+          name="ChangePassword"
+          component={ChangePassword}
+          options={{
+            title: "Change password",
+          }}
+        />
+        <StackNavigator.Screen
+          name="UpdateProfile"
+          component={UpdateProfile}
+          options={{
+            title: "Update Profile",
+          }}
+        />
+        <StackNavigator.Screen
+          name="Groups"
+          component={Groups}
+        />
+        <StackNavigator.Screen
+          name="Notifications"
+          component={Notifications}
+        />
+        <StackNavigator.Screen
+          name="Friends"
+          component={Friends}
+        />
+        <StackNavigator.Screen
+          name="Address"
+          component={SetAddress}
+        />
+      </StackNavigator.Navigator>
+    </NavigationContainer>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -149,50 +143,16 @@ const styles = StyleSheet.create({
     width: Dimensions.get("window").width,
     height: Dimensions.get("window").height,
   },
-  marker_icon: {
-    height: 35,
-    width: 35,
-  },
-  bubble: {
-    flexDirection: "column",
-    alignSelf: "flex-start",
-    backgroundColor: "#fff",
-    borderRadius: 6,
-    borderColor: "#ccc",
-    borderWidth: 0.5,
-    padding: 15,
-    width: 200,
-  },
-  userCallout: {
-    width: 100,
-    height: 100,
-  },
-  locationName: {
-    fontSize: 16,
-    marginBottom: 5,
-    fontWeight: "bold",
-    marginBottom: 1,
-  },
-  arrow: {
-    backgroundColor: "transparent",
-    borderColor: "transparent",
-    borderTopColor: "#fff",
-    borderWidth: 16,
-    alignSelf: "center",
-    marginTop: -32,
-  },
-  arrowBorder: {
-    backgroundColor: "transparent",
-    borderColor: "transparent",
-    borderTopColor: "#fff",
-    borderWidth: 16,
-    alignSelf: "center",
-    marginTop: -0.5,
-  },
   image: {
-    width: 120,
-    height: 80,
+    width: "10%",
+    height: "10%",
   },
+  header: {
+    fontFamily: "Montserrat-Bold"
+  },
+  backButton: {
+    borderRadius: 0,
+  }
 });
 
 export default App;
