@@ -47,44 +47,56 @@ const Dashboard = ({navigation}) => {
 
 			<View style={styles.bottomContainer}>
 				<View style={styles.bottomNav}>
-					<IconButton
-					icon={props => <Icon name="map-pin" {...props} />}
-					color="#EE6548"
-					style={{ alignSelf: "center", overflow: "button", padding: 25, backgroundColor: 'white', borderRadius: 10, margin: 16,...styles.shadowBtn, shadowOpacity: Platform.OS == "ios" ? 0.23 : 0.53}}
-					onPress={() => navigation.navigate("Address")}
-				/>
-					<IconButton
-					icon={props => <MIcon name="account-group" {...props} />}
-					color="#9CC7CA"
-					style={{ alignSelf: "center", overflow: "button", padding: 25, backgroundColor: 'white', borderRadius: 10, margin: 16,...styles.shadowBtn, shadowOpacity: Platform.OS == "ios" ? 0.23 : 0.53}}
-					onPress={() => navigation.navigate("Groups")}
-				/>
-					<IconButton
-					icon={props => <AIcon name="search1" {...props} />}
-					color="#C2C2C2"
-					style={{ alignSelf: "center", overflow: "button", padding: 25, backgroundColor: 'white', borderRadius: 10, margin: 16, ...styles.shadowBtn, shadowOpacity: Platform.OS == "ios" ? 0.23 : 0.53}}
-				/>
+					<View style={{...styles.shadowBtn, shadowOpacity: Platform.OS == "ios" ? 0.25 : 0.5}}>
+						<IconButton
+						icon={props => <Icon name="map-pin" {...props} />}
+						color="#EE6548"
+						style={{ alignSelf: "center",overflow:'hidden',padding: 25, backgroundColor: 'white', borderRadius: 10, margin: 16,...styles.shadowBtn}}
+						onPress={() => navigation.navigate("Address")}
+					/>
+					</View>
+					<View style={{...styles.shadowBtn, shadowOpacity: Platform.OS == "ios" ? 0.23 : 0.5}}>
+						<IconButton
+						icon={props => <MIcon name="account-group" {...props} />}
+						color="#9CC7CA"
+						style={{ alignSelf: "center", padding: 25, backgroundColor: 'white', borderRadius: 10, margin: 16,...styles.shadowBtn }}
+						onPress={() => navigation.navigate("Groups")}
+					/>
+					</View>
+					<View style={{...styles.shadowBtn, shadowOpacity: Platform.OS == "ios" ? 0.23 : 0.5}}>
+						<IconButton
+						icon={props => <AIcon name="search1" {...props} />}
+						color="#C2C2C2"
+						style={{ alignSelf: "center", padding: 25, backgroundColor: 'white', borderRadius: 10, margin: 16, ...styles.shadowBtn}}
+					/>
+					</View>
 				</View>
 			</View>
 			<View style={styles.sideContainer}>
-					<IconButton
-						icon={props => <FIcon name="bell" {...props} />}
-						color="#9CC7CA"
-						style={{ alignSelf: "center", overflow: "button", padding: 25, backgroundColor: 'white', borderRadius: 10, margin: 12,...styles.shadowBtn, shadowOpacity: Platform.OS == "ios" ? 0.23 : 0.53}}
-						onPress={() => navigation.navigate("Notifications")}
-					/>
-					<IconButton
-						icon={props => <AIcon name="setting" {...props} />}
-						color="#9CC7CA"
-						style={{ alignSelf: "center", overflow: "button", padding: 25, backgroundColor: 'white', borderRadius: 10, margin: 12, ...styles.shadowBtn, shadowOpacity: Platform.OS == "ios" ? 0.23 : 0.53}}
-						onPress={() => navigation.navigate("Settings")}
-					/>
-					<IconButton
-						icon={props => <AIcon name="contacts" {...props} />}
-						color="#9CC7CA"
-						style={{ alignSelf: "center", overflow: "button", padding: 25, backgroundColor: 'white', borderRadius: 10, margin: 12, ...styles.shadowBtn, shadowOpacity: Platform.OS == "ios" ? 0.23 : 0.53}}
-						onPress={() => navigation.navigate("Friends")}
-					/>
+					<View style={{...styles.shadowBtn, shadowOpacity: Platform.OS == "ios" ? 0.23 : 0.5}}>
+						<IconButton
+							icon={props => <FIcon name="bell" {...props} />}
+							color="#9CC7CA"
+							style={{ alignSelf: "center", padding: 25, backgroundColor: 'white', borderRadius: 10, margin: 12,...styles.shadowBtn,}}
+							onPress={() => navigation.navigate("Notifications")}
+						/>
+					</View>
+					<View style={{...styles.shadowBtn, shadowOpacity: Platform.OS == "ios" ? 0.23 : 0.5}}>
+						<IconButton
+							icon={props => <AIcon name="setting" {...props} />}
+							color="#9CC7CA"
+							style={{ alignSelf: "center", padding: 25, backgroundColor: 'white', borderRadius: 10, margin: 12, ...styles.shadowBtn,}}
+							onPress={() => navigation.navigate("Settings")}
+						/>
+					</View>
+					<View style={{...styles.shadowBtn, shadowOpacity: Platform.OS == "ios" ? 0.23 : 0.5}}>
+						<IconButton
+							icon={props => <AIcon name="contacts" {...props} />}
+							color="#9CC7CA"
+							style={{ alignSelf: "center",  padding: 25, backgroundColor: 'white', borderRadius: 10, margin: 12, ...styles.shadowBtn,}}
+							onPress={() => navigation.navigate("Friends")}
+						/>
+					</View>
 			</View>
 
 		</View>
