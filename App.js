@@ -1,45 +1,129 @@
 import React, { useState } from "react";
 import { StatusBar } from 'expo-status-bar';
 import MapView, { Marker } from 'react-native-maps';
-import { StyleSheet, View, Dimensions } from 'react-native';
+import { StyleSheet, View, Dimensions, Image } from 'react-native';
 import {
-	AppBar, HStack, IconButton, Stack, Text, Image
+	AppBar, HStack, IconButton, Stack, Text
 } from "@react-native-material/core";
+import Dashboard from "./components/dashboard/Dashboard";
+import Settings from "./components/settings/Settings";
+import ChangePassword from "./components/settings/ChangePassword";
+import UpdateProfile from "./components/settings/UpdateProfile";
+import Groups from "./components/groups/Groups"
+import Notifications from "./components/notifications/Notifications";
+import { useFonts } from 'expo-font';
 
-import mapStyleJson from "./mapStyle.json"
-import ava from "./images/naruto_ava.jpg"
+import 'react-native-gesture-handler';
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import Friends from "./components/friends/Friends";
+import SetAddress from "./components/address/SetAddress";
+import { Ionicons } from '@expo/vector-icons';
 
-const mapStyle = mapStyleJson["mapStyle"]
 
-const initRegion = {
-	latitude: 10.729567,
-	longitude: 106.6930756,
-	latitudeDelta: 0.2,
-	longitudeDelta: 0.2,
-}
+const StackNavigator = createStackNavigator()
 
-const myhome = {
-  latitude: 10.729567,
-  longitude: 106.6930756
-}
+export const theme = {
+	colors: {
+		mainColor1: "#9CC7CA",
+		mainColor2: "#EE6548",
+		background: "#EDF4F7",
+		backButton: "#B4D8D7",
+	},
+};
+
 
 const App = () => {
+	const [fontsLoaded] = useFonts({
+		'Montserrat': require('./assets/fonts/Montserrat-Regular.ttf'),
+		'Montserrat-Italic': require('./assets/fonts/Montserrat-Italic-VariableFont_wght.ttf'),
+		'Montserrat-Bold': require('./assets/fonts/Montserrat-Bold.ttf'),
+	});
+
+	if (!fontsLoaded)
+		return null
+
 	return (
-		<View>
-			<StatusBar style="dark" backgroundColor="white"/>
-			<MapView
-				style={styles.map}
-				initialRegion={initRegion}
-				customMapStyle={mapStyle}
+		<NavigationContainer theme={theme} >
+			<StackNavigator.Navigator
+				screenOptions={({navigation}) => ({
+					headerTitle: (props) => <Text
+						{...props}
+						variant="h6"
+						style={styles.header}
+					/>,
+					headerTitleAlign: 'center',
+					headerLeft: () => <IconButton
+						onPress={() => navigation.goBack()}
+						backgroundColor="white"
+						borderRadius={15}
+						icon={props => <Ionicons
+								{...props}
+								name="chevron-back-outline"
+								color={theme.colors.backButton}
+							/>}
+					/>,
+					headerTitleContainerStyle: {
+						top: 30,
+						height: 50,
+					},
+					headerLeftContainerStyle: {
+						left: 30,
+						top: 30,
+					},
+					headerStyle: {
+						backgroundColor: theme.colors.background,
+						elevation: 0, // remove shadow on Android
+						shadowOpacity: 0,  // remove shadow on iOS
+					}
+				})}
 			>
-				<Marker
-					coordinate={myhome}
-					title="RMIT"
-					description="RMIT University"
-					image={ava}
+				<StackNavigator.Screen
+					name="Dashboard"
+					component={Dashboard}
+					options={{
+						headerShown: false,
+					}}
 				/>
-			</MapView>
-		</View>
+				<StackNavigator.Screen
+					name="Settings"
+					component={Settings}
+					options={{
+						title: "Account",
+					}}
+				/>
+				<StackNavigator.Screen
+					name="ChangePassword"
+					component={ChangePassword}
+					options={{
+						title: "Change password",
+					}}
+				/>
+				<StackNavigator.Screen
+					name="UpdateProfile"
+					component={UpdateProfile}
+					options={{
+						title: "Update Profile",
+					}}
+				/>
+				<StackNavigator.Screen
+					name="Groups"
+					component={Groups}
+				/>
+				<StackNavigator.Screen
+					name="Notifications"
+					component={Notifications}
+				/>
+				<StackNavigator.Screen
+					name="Friends"
+					component={Friends}
+				/>
+				<StackNavigator.Screen
+					name="Address"
+					component={SetAddress}
+				/>
+			</StackNavigator.Navigator>
+		</NavigationContainer>
 	);
 }
 
@@ -54,8 +138,16 @@ const styles = StyleSheet.create({
 		width: Dimensions.get("window").width,
 		height: Dimensions.get("window").height,
 	},
+	image: {
+		width: "10%",
+		height: "10%",
+	},
+	header: {
+		fontFamily: "Montserrat-Bold"
+	},
+	backButton: {
+		borderRadius: 0,
+	}
 });
 
 export default App;
-
-

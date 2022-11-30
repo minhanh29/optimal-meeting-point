@@ -1,3 +1,4 @@
+
 import React from "react";
 import { View, 
     StyleSheet, 
@@ -9,9 +10,16 @@ import { View,
     Link,
     Linking,
     } from "react-native";
-
+import { useFonts } from "expo-font";
 
 const SignUp = () => {
+    const [fontsLoaded] = useFonts({
+		'Montserrat': require('./assets/fonts/Montserrat-Regular.ttf'),
+		'Montserrat-Italic': require('./assets/fonts/Montserrat-Italic-VariableFont_wght.ttf'),
+		'Montserrat-Bold': require('./assets/fonts/Montserrat-Bold.ttf'),
+        'jsMath-cmbx10': require('./assets/fonts/jsMath-cmbx10.ttf'),
+	});
+    if(!fontsLoaded) return null;
     const [name, setName] = React.useState("");
     const[username, setUsername] = React.useState("");
     const [address, setAddress] = React.useState("");
@@ -24,6 +32,7 @@ const SignUp = () => {
                 <Image style={{height: 100, width:100}} source={require('./images/logo.png')} resizeMode="contain" />
                 <Text style={{
                     color:'#9CC7CA',
+                    fontFamily:'jsMath-cmbx10',
                     fontSize: 50,
                     shadowOpacity: 0.25,
                     shadowColor: 'black',
@@ -56,9 +65,9 @@ const SignUp = () => {
                 </TouchableOpacity>
             </View>
             <View style={styles.message}>
-                <Text>
+                <Text style={{fontFamily: 'Montserrat'}}>
                     Already have an account?
-                    <Text style={{fontWeight:'bold',textDecorationLine:'underline'}} onPress={() => Linking.openURL}> Sign In</Text>
+                    <Text style={{fontFamily: 'Montserrat', fontWeight:'bold',textDecorationLine:'underline'}} onPress={() => Linking.openURL}> Sign In</Text>
                 </Text>
             </View>
         </KeyboardAvoidingView>
@@ -81,6 +90,7 @@ const styles = StyleSheet.create ({
         marginHorizontal: 30,
         alignItems: "center",
         justifyContent: 'center',
+        fontFamily:'Montserrat',
         shadowColor: 'black',
         shadowOpacity: 0.2,
         shadowOffset:{
@@ -92,19 +102,19 @@ const styles = StyleSheet.create ({
     textInput:{
         marginVertical: 13,
         fontWeight:'bold',
+        fontFamily: 'Montserrat',
         backgroundColor:'white',
         height: 40,
         width: '80%',
-        // color: 'white',
-        textAlign:'center',
-        borderRadius: 40,
+        paddingLeft: 20,
+        borderRadius: 35,
     },
     button:{
         marginTop: 20,
         height: 45,
         width: '80%',
         backgroundColor: '#EE6548',
-        borderRadius: 40,
+        borderRadius: 35,
         textAlign: 'center',
         alignContent:'center',
         justifyContent:'center',
@@ -119,7 +129,6 @@ const styles = StyleSheet.create ({
         marginTop: 15,
         alignItems: "center",
     }
-
 })
 
 export default SignUp;
