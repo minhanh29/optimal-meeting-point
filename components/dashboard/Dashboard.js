@@ -50,7 +50,7 @@ const Dashboard = ({navigation}) => {
 					<IconButton
 					icon={props => <Icon name="map-pin" {...props} />}
 					color="#EE6548"
-					style={{ alignSelf: "center", padding: 25, backgroundColor: 'white', borderRadius: 10, margin: 16,...styles.shadowBtn}}
+						style={{ alignSelf: "center", overflow: "button", padding: 25, backgroundColor: 'white', borderRadius: 10, margin: 16,...styles.shadowBtn}}
 					onPress={() => navigation.navigate("Address")}
 				/>
 					<IconButton
