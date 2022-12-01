@@ -1,17 +1,12 @@
-import React, { useState, useEffect } from "react";
-import { View, Dimension, Image } from "react-native";
+import React from "react";
+import { View, Image } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import MapView, { Marker, Callout } from "react-native-maps";
-import Svg, { Image as Imagesvg } from "react-native-svg";
+import Svg from "react-native-svg";
 import {
-  AppBar,
-  HStack,
   IconButton,
-  Stack,
   Text,
-  Image as ImageMaterial,
 } from "@react-native-material/core";
-import { useFonts } from "expo-font";
 import Icon from "@expo/vector-icons/Feather";
 import MIcon from "@expo/vector-icons/MaterialCommunityIcons";
 import AIcon from "@expo/vector-icons/AntDesign";
@@ -30,11 +25,6 @@ const initRegion = {
 };
 
 const rmit = {
-  latitude: 10.729567,
-  longitude: 106.6930756,
-};
-
-const myhome = {
   latitude: 10.729567,
   longitude: 106.6930756,
 };
@@ -165,6 +155,7 @@ const Dashboard = ({ navigation }) => {
             color="#9CC7CA"
             style={{
               alignSelf: "center",
+              overflow: "button",
               padding: 25,
               backgroundColor: "white",
               borderRadius: 10,
@@ -193,46 +184,7 @@ const Dashboard = ({ navigation }) => {
           color="#9CC7CA"
           style={{
             alignSelf: "center",
-            padding: 25,
-            backgroundColor: "white",
-            borderRadius: 10,
-            margin: 12,
-            ...styles.shadowBtn,
-          }}
-          onPress={() => navigation.navigate("Notifications")}
-        />
-        <IconButton
-          icon={(props) => <MIcon name="account-group" {...props} />}
-          color="#9CC7CA"
-          style={{
-            alignSelf: "center",
-            padding: 25,
-            backgroundColor: "white",
-            borderRadius: 10,
-            margin: 16,
-            ...styles.shadowBtn,
-          }}
-          onPress={() => navigation.navigate("Groups")}
-        />
-        <IconButton
-          icon={(props) => <AIcon name="search1" {...props} />}
-          color="#C2C2C2"
-          style={{
-            alignSelf: "center",
-            padding: 25,
-            backgroundColor: "white",
-            borderRadius: 10,
-            margin: 16,
-            ...styles.shadowBtn,
-          }}
-        />
-      </View>
-      <View style={styles.sideContainer}>
-        <IconButton
-          icon={(props) => <FIcon name="bell" {...props} />}
-          color="#9CC7CA"
-          style={{
-            alignSelf: "center",
+            overflow: "button",
             padding: 25,
             backgroundColor: "white",
             borderRadius: 10,
@@ -246,6 +198,7 @@ const Dashboard = ({ navigation }) => {
           color="#9CC7CA"
           style={{
             alignSelf: "center",
+            overflow: "button",
             padding: 25,
             backgroundColor: "white",
             borderRadius: 10,
@@ -259,6 +212,7 @@ const Dashboard = ({ navigation }) => {
           color="#9CC7CA"
           style={{
             alignSelf: "center",
+            overflow: "button",
             padding: 25,
             backgroundColor: "white",
             borderRadius: 10,
