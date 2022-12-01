@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { View,
     StyleSheet,
     TextInput,
@@ -6,18 +6,16 @@ import { View,
     Image,
     Text,
     KeyboardAvoidingView,
-    Link,
-    Linking,
     } from "react-native";
 
 import logo from "../../images/logo.png"
 
-const SignUp = () => {
-    const [name, setName] = React.useState("");
-    const[username, setUsername] = React.useState("");
-    const [address, setAddress] = React.useState("");
-    const [password, setPassword] = React.useState("");
-    const [passwordConfirm, setPasswordConfirm] = React.useState("");
+const SignUp = ({ navigation }) => {
+    const [name, setName] = useState("");
+    const[username, setUsername] = useState("");
+    const [address, setAddress] = useState("");
+    const [password, setPassword] = useState("");
+    const [passwordConfirm, setPasswordConfirm] = useState("");
 
     return (
         <KeyboardAvoidingView behavior={Platform.OS == "ios" ? "padding" :null} style={styles.container}>
@@ -47,10 +45,11 @@ const SignUp = () => {
                 <TextInput style={styles.textInput} value={address} onChangeText={setAddress} placeholder="Address"/>
             </View>
             <View style={styles.form}>
-                <TextInput style={styles.textInput} value={password} onChangeText={setPassword} placeholder="Password"/>
+                <TextInput style={styles.textInput} value={password} onChangeText={setPassword} secureTextEntry={true} placeholder="Password"/>
             </View>
+			<TextInput style={{height: 0.001}}/>
             <View style={styles.form}>
-                <TextInput style={styles.textInput} value={passwordConfirm} onChangeText={setPasswordConfirm} placeholder="Confirm Password"/>
+                <TextInput style={styles.textInput} value={passwordConfirm} onChangeText={setPasswordConfirm} secureTextEntry={true} placeholder="Confirm Password"/>
             </View>
             <View style={styles.form}>
                 <TouchableOpacity style={styles.button} onPress={() => {console.log("pressed")}}>
@@ -59,8 +58,13 @@ const SignUp = () => {
             </View>
             <View style={styles.message}>
                 <Text style={{fontFamily: 'Montserrat'}}>
-                    Already have an account?
-                    <Text style={{fontFamily: 'Montserrat', fontWeight:'bold',textDecorationLine:'underline'}} onPress={() => Linking.openURL}> Sign In</Text>
+                    Already have an account?&nbsp;
+                    <Text
+						style={{fontFamily: 'Montserrat-Bold', textDecorationLine:'underline'}}
+						onPress={() => navigation.navigate("Login")}
+					>
+						Sign In
+					</Text>
                 </Text>
             </View>
         </KeyboardAvoidingView>
