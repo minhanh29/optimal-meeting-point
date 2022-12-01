@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import { TouchableOpacity } from 'react-native'
+import { TouchableOpacity, TextInput } from 'react-native'
 import { Avatar, Stack, Text, Flex, Spacer } from "@react-native-material/core";
 import { useTheme } from '@react-navigation/native';
-import TextInput from "../common/TextInput"
 import { MaterialIcons } from '@expo/vector-icons'
 import * as ImagePicker from 'expo-image-picker';
 import { collection, getDocs } from "firebase/firestore";
@@ -99,6 +98,7 @@ const UpdateProfile = () => {
 				<TextInput
 					value={name}
 					onChangeText={setName}
+					style={styles.textInput}
 				/>
 			</Stack>
 
@@ -107,6 +107,7 @@ const UpdateProfile = () => {
 				<TextInput
 					value={username}
 					onChangeText={setUsername}
+					style={styles.textInput}
 				/>
 			</Stack>
 

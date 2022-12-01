@@ -1,7 +1,6 @@
-
 import React from "react";
-import { View, 
-    StyleSheet, 
+import { View,
+    StyleSheet,
     TextInput,
     TouchableOpacity,
     Image,
@@ -10,16 +9,10 @@ import { View,
     Link,
     Linking,
     } from "react-native";
-import { useFonts } from "expo-font";
+
+import logo from "../../images/logo.png"
 
 const SignUp = () => {
-    const [fontsLoaded] = useFonts({
-		'Montserrat': require('./assets/fonts/Montserrat-Regular.ttf'),
-		'Montserrat-Italic': require('./assets/fonts/Montserrat-Italic-VariableFont_wght.ttf'),
-		'Montserrat-Bold': require('./assets/fonts/Montserrat-Bold.ttf'),
-        'jsMath-cmbx10': require('./assets/fonts/jsMath-cmbx10.ttf'),
-	});
-    if(!fontsLoaded) return null;
     const [name, setName] = React.useState("");
     const[username, setUsername] = React.useState("");
     const [address, setAddress] = React.useState("");
@@ -29,7 +22,7 @@ const SignUp = () => {
     return (
         <KeyboardAvoidingView behavior={Platform.OS == "ios" ? "padding" :null} style={styles.container}>
             <View style={styles.logo}>
-                <Image style={{height: 100, width:100}} source={require('./images/logo.png')} resizeMode="contain" />
+                <Image style={{height: 100, width:100}} source={logo} resizeMode="contain" />
                 <Text style={{
                     color:'#9CC7CA',
                     fontFamily:'jsMath-cmbx10',
@@ -97,7 +90,6 @@ const styles = StyleSheet.create ({
             width: 1,
             height: 4,
         }
-        
     },
     textInput:{
         marginVertical: 13,
