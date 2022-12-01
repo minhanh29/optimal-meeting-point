@@ -12,6 +12,7 @@ import {
   Image as ImageMaterial,
 } from "@react-native-material/core";
 import SignUp from "./components/authentication/SignUp";
+import Login from "./components/authentication/Login";
 import Dashboard from "./components/dashboard/Dashboard";
 import Settings from "./components/settings/Settings";
 import ChangePassword from "./components/settings/ChangePassword";
@@ -88,8 +89,8 @@ const App = () => {
 			})}
 		>
 			<StackNavigator.Screen
-				name="Dashboard"
-				component={Dashboard}
+				name="Login"
+				component={Login}
 				options={{
 					headerShown: false
 				}}
@@ -97,6 +98,13 @@ const App = () => {
 			<StackNavigator.Screen
 				name="SignUp"
 				component={SignUp}
+				options={{
+					headerShown: false
+				}}
+			/>
+			<StackNavigator.Screen
+				name="Dashboard"
+				component={Dashboard}
 				options={{
 					headerShown: false
 				}}

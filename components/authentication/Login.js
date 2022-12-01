@@ -1,57 +1,62 @@
 import { StatusBar } from "expo-status-bar";
 import React, { useState } from "react";
-import {StyleSheet, Text, View, Image, TextInput, Button, TouchableOpacity} from "react-native";
- 
-export default function Login() {
+import {StyleSheet, Text, View, Image, TextInput, TouchableOpacity} from "react-native";
+
+const Login = ({ navigation }) => {
     const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
 
-	const [fontsLoaded] = useFonts({
-		'Montserrat': require('./../../assets/fonts/Montserrat-Regular.ttf'),
-		'Montserrat-Italic': require('./../../assets/fonts/Montserrat-Italic-VariableFont_wght.ttf'),
-		'Montserrat-Bold': require('./../../assets/fonts/Montserrat-Bold.ttf'),
-		'jsMath-cmbx10': require('./../../assets/fonts/jsMath-cmbx10.ttf')
-	});
-
-	if (!fontsLoaded)
-	return null
-
 	return (
-		<View style={styles.container}>
-		 <Image style={styles.image} source={require("./../../images/logo.png")} />
-		 <Text style={styles.appName}>OMP</Text>
-	
-		 <StatusBar style="auto" />
+	<View style={styles.container}>
+		<Image style={styles.image} source={require("./../../images/logo.png")} />
+		<Text style={styles.appName}>OMP</Text>
+
+		<StatusBar style="auto" />
 		<View style={styles.inputView}>
 			<TextInput
-			style={styles.TextInput}
-			placeholder="Username"
-			placeholderTextColor="#B4BABC"
-			onChangeText={(username) => setUsername(username)}
-			/>
-		</View>
-	
-		<View style={styles.inputView}>
-			<TextInput
-			style={styles.TextInput}
-			placeholder="Password"
-			placeholderTextColor="#B4BABC"
-			secureTextEntry={true}
-			onChangeText={(password) => setPassword(password)}
+				style={styles.TextInput}
+				placeholder="Username"
+				placeholderTextColor="#B4BABC"
+				value={username}
+				onChangeText={setUsername}
 			/>
 		</View>
 
-		<TouchableOpacity style={styles.loginBtn}>
+		<View style={styles.inputView}>
+			<TextInput
+				style={styles.TextInput}
+				placeholder="Password"
+				placeholderTextColor="#B4BABC"
+				secureTextEntry={true}
+				value={password}
+				onChangeText={setPassword}
+			/>
+		</View>
+
+		<TouchableOpacity
+			style={styles.loginBtn}
+			onPress={() => navigation.navigate("Dashboard")}
+		>
 			<Text style={styles.loginText}>Log In</Text>
 		</TouchableOpacity>
 
-		<TouchableOpacity>
-			<Text style={styles.signUp_button}>Don't have an account? Sign Up!</Text>
-		</TouchableOpacity> 
-    </View>
-  );
+		<TouchableOpacity
+			onPress={() => navigation.navigate("SignUp")}
+		>
+			<Text style={styles.signUp_button}>
+				Don't have an account?&nbsp;
+				<Text
+					style={{fontFamily: 'Montserrat-Bold', textDecorationLine:'underline'}}
+					onPress={() => navigation.navigate("SignUp")}
+				>
+					Sign Up
+				</Text>
+			</Text>
+		</TouchableOpacity>
+	</View>
+	);
 }
- 
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -80,7 +85,7 @@ const styles = StyleSheet.create({
 	width: 150,
 	height: 150
   },
- 
+
   inputView: {
     backgroundColor: "#FAFCFD",
     borderRadius: 30,
@@ -95,7 +100,7 @@ const styles = StyleSheet.create({
             height: 4,
         }
   },
- 
+
   TextInput: {
 	width: '100%',
     height: 50,
@@ -104,7 +109,7 @@ const styles = StyleSheet.create({
     marginLeft: 20,
 	fontFamily: 'Montserrat',
   },
- 
+
   signUp_button: {
 	fontFamily:'Montserrat',
 	fontSize: 14,
@@ -132,5 +137,8 @@ const styles = StyleSheet.create({
   loginText: {
 	color: "#FAFCFD",
 	fontFamily: 'Montserrat-Bold',
+	fontSize: 15,
   }
 });
+
+export default Login
