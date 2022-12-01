@@ -1,8 +1,7 @@
 import React, { useState } from 'react'
-import { TouchableOpacity, Platform } from 'react-native'
-import { Box, Button, Stack, Text, Switch, Flex, Spacer } from "@react-native-material/core";
+import { TouchableOpacity, TextInput } from 'react-native'
+import { Stack, Text, Spacer } from "@react-native-material/core";
 import { useTheme } from '@react-navigation/native';
-import TextInput from "../common/TextInput"
 
 import styles from "./styles"
 
@@ -28,6 +27,7 @@ const ChangePassword = () => {
 					value={currentPassword}
 					onChangeText={setCurrentPassword}
 					secureTextEntry={true}
+					style={styles.textInput}
 				/>
 			</Stack>
 
@@ -37,6 +37,7 @@ const ChangePassword = () => {
 					value={newPassword}
 					onChangeText={setNewPassword}
 					secureTextEntry={true}
+					style={styles.textInput}
 				/>
 			</Stack>
 
@@ -46,6 +47,7 @@ const ChangePassword = () => {
 					value={confirmPassword}
 					onChangeText={setConfirmPassword}
 					secureTextEntry={true}
+					style={styles.textInput}
 				/>
 			</Stack>
 

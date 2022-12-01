@@ -169,7 +169,6 @@ const Dashboard = ({ navigation }) => {
             color="#C2C2C2"
             style={{
               alignSelf: "center",
-              overflow: "button",
               padding: 25,
               backgroundColor: "white",
               borderRadius: 10,
@@ -185,6 +184,7 @@ const Dashboard = ({ navigation }) => {
           color="#9CC7CA"
           style={{
             alignSelf: "center",
+            overflow: "button",
             padding: 25,
             backgroundColor: "white",
             borderRadius: 10,
@@ -198,6 +198,7 @@ const Dashboard = ({ navigation }) => {
           color="#9CC7CA"
           style={{
             alignSelf: "center",
+            overflow: "button",
             padding: 25,
             backgroundColor: "white",
             borderRadius: 10,
@@ -211,6 +212,7 @@ const Dashboard = ({ navigation }) => {
           color="#9CC7CA"
           style={{
             alignSelf: "center",
+            overflow: "button",
             padding: 25,
             backgroundColor: "white",
             borderRadius: 10,
