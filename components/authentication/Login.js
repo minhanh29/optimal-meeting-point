@@ -1,14 +1,19 @@
 import { StatusBar } from "expo-status-bar";
 import React, { useState } from "react";
 import {StyleSheet, Text, View, Image, TextInput, TouchableOpacity} from "react-native";
+import { Feather } from '@expo/vector-icons';
+import { Flex } from "@react-native-material/core";
+
+import logo from "./../../images/logo.png"
 
 const Login = ({ navigation }) => {
     const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
+	const [hidePass, setHidePass] = useState(true);
 
 	return (
 	<View style={styles.container}>
-		<Image style={styles.image} source={require("./../../images/logo.png")} />
+		<Image style={styles.image} source={logo} />
 		<Text style={styles.appName}>OMP</Text>
 
 		<StatusBar style="auto" />
@@ -22,16 +27,23 @@ const Login = ({ navigation }) => {
 			/>
 		</View>
 
-		<View style={styles.inputView}>
+		<Flex style={styles.inputView} direction="row" justify="between" items="center">
 			<TextInput
 				style={styles.TextInput}
 				placeholder="Password"
 				placeholderTextColor="#B4BABC"
-				secureTextEntry={true}
+				secureTextEntry={hidePass}
 				value={password}
 				onChangeText={setPassword}
 			/>
-		</View>
+			<Feather
+				name={hidePass ? 'eye-off' : 'eye'}
+				onPress={() => setHidePass(!hidePass)}
+				color={hidePass ? "gray" : "black"}
+				size={24}
+				style={{ marginRight: 20 }}
+			/>
+		</Flex>
 
 		<TouchableOpacity
 			style={styles.loginBtn}
@@ -67,7 +79,7 @@ const styles = StyleSheet.create({
 
   appName: {
 	color:"#9CC7CA",
-	marginBottom: 15,
+	marginBottom: 35,
 	fontSize: 50,
 	fontFamily: 'jsMath-cmbx10',
 	shadowColor: '#000',
@@ -77,11 +89,9 @@ const styles = StyleSheet.create({
 	},
 	shadowOpacity: 0.25,
 	elevation:20
-
   },
 
   image: {
-    marginBottom: 15,
 	width: 150,
 	height: 150
   },
