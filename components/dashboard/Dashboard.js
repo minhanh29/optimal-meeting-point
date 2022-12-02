@@ -1,51 +1,140 @@
-import React, { useState, useEffect } from 'react'
-import { View, Dimensions } from 'react-native'
-import { StatusBar } from 'expo-status-bar';
-import MapView, { Marker } from 'react-native-maps';
+import React from "react";
+import { View, Image } from "react-native";
+import { StatusBar } from "expo-status-bar";
+import MapView, { Marker, Callout } from "react-native-maps";
+import Svg from "react-native-svg";
 import {
-	AppBar, HStack, IconButton, Stack, Image, Text, Button
+  IconButton,
+  Text,
 } from "@react-native-material/core";
 import Icon from "@expo/vector-icons/Feather";
-import MIcon from "@expo/vector-icons/MaterialCommunityIcons"
+import MIcon from "@expo/vector-icons/MaterialCommunityIcons";
 import AIcon from "@expo/vector-icons/AntDesign";
 import FIcon from "@expo/vector-icons/Feather";
+import 'react-native-gesture-handler';
 
 
-import mapStyleJson from "./../../mapStyle.json"
-import styles from "./styles"
+import mapStyleJson from "./../../mapStyle.json";
+import styles from "./styles";
 
-const mapStyle = mapStyleJson["mapStyle"]
+const mapStyle = mapStyleJson["mapStyle"];
 
 const initRegion = {
-	latitude: 10.729567,
-	longitude: 106.6930756,
-	latitudeDelta: 0.2,
-	longitudeDelta: 0.2,
-}
-
-const myhome = {
   latitude: 10.729567,
-  longitude: 106.6930756
-}
+  longitude: 106.6930756,
+  latitudeDelta: 0.2,
+  longitudeDelta: 0.2,
+};
 
+const rmit = {
+  latitude: 10.729567,
+  longitude: 106.6930756,
+};
 
-const Dashboard = ({navigation}) => {
-  return (
-    <View style={styles.container}>
-			<StatusBar style="dark" backgroundColor="white"/>
-			<MapView
-				style={styles.map}
-				initialRegion={initRegion}
-				customMapStyle={mapStyle}
+const myLocation = {
+  latitude: 10.795132588703474,
+  longitude: 106.72191374093879,
+};
+
+const Dashboard = ({ navigation }) => {
+	return (
+	<View style={styles.container}>
+		<StatusBar style="dark" backgroundColor="white" />
+		<MapView
+			style={styles.map}
+			initialRegion={initRegion}
+			customMapStyle={mapStyle}
+		>
+			<Marker
+				coordinate={rmit}
+				title={"RMIT"}
+				description={"RMIT University"}
 			>
-				<Marker
-					coordinate={myhome}
-					title="RMIT"
-					description="RMIT University"
-				/>
-			</MapView>
+				<Image
+					style={styles.marker_icon}
+					source={require("../../assets/location-dot.png")}
+				></Image>
+				<Callout tooltip>
+					<View>
+						<View style={styles.bubble}>
+							<Text style={styles.locationName}>Location's name</Text>
+							<Text>Description</Text>
+							<Image
+								style={styles.image}
+								source={require("../../images/bingsu.webp")}
+							/>
+						</View>
+					</View>
+				</Callout>
+			</Marker>
 
-			<View style={styles.bottomContainer}>
+			<Marker
+				coordinate={myLocation}
+				title={"user"}
+				description={"user info"}
+			>
+				<View
+					style={{
+						flexDirection: "row",
+						backgroundColor: "#00bfff",
+						borderTopLeftRadius: 60,
+						borderTopRightRadius: 60,
+						borderBottomRightRadius: 0,
+						borderBottomLeftRadius: 60,
+						transform: [{ rotate: "45deg" }],
+						alignSelf: "flex-start",
+						height: 45,
+						width: 45
+					}}
+				>
+					<Svg width={40} height={30}>
+						<Image
+							source={require("../../images/avatar.jpeg")}
+							width={40}
+							height={30}
+							style={{
+								height: 40,
+								width: 40,
+								transform: [{ rotate: "-45deg" }],
+								borderRadius: 90,
+								position: "absolute",
+								left: 1.5, // 1.5
+								bottom: -42 // -32
+							}}
+						/>
+					</Svg>
+				</View>
+				<Callout>
+					<View
+						style={{
+							flexDirection: "column",
+							width: 100,
+							height: 50
+						}}
+					>
+						<Text
+							style={{
+								marginLeft: 2,
+								marginBottom: 1,
+								color: "black",
+								fontWeight: "bold"
+							}}
+						>
+							User name
+						</Text>
+						<Text
+							style={{
+								marginLeft: 2,
+								color: "black"
+							}}
+						>
+							Description
+						</Text>
+					</View>
+				</Callout>
+			</Marker>
+		</MapView>
+		<View style={styles.bottomContainer}>
 				<View style={styles.bottomNav}>
 					<View style={{...styles.shadowBtn, shadowOpacity: Platform.OS == "ios" ? 0.25 : 0.5}}>
 						<IconButton
@@ -98,52 +187,8 @@ const Dashboard = ({navigation}) => {
 						/>
 					</View>
 			</View>
+	</View>
+	)
+};
 
-		</View>
-  )
-}
-
-export default Dashboard
-
-// const styles = StyleSheet.create({
-//     container: {
-// 		flex: 1,
-// 		backgroundColor: "#fff",
-// 		alignItems: "center",
-// 		justifyContent: "center",
-// 	},
-// 	map: {
-// 		width: Dimensions.get("window").width,
-// 		height: Dimensions.get("window").height,
-// 	},
-// 	bottomContainer:{
-// 		width: '100%',
-// 		position: 'absolute',
-// 		bottom: '5%',
-// 		backgroundColor: 'transparent',
-// 	},
-// 	bottomNav:{
-// 		width: '100%',
-// 		backgroundColor: "transparent",
-// 		borderRadius: 8,
-// 		justifyContent: 'center',
-// 		alignItems: 'center',
-// 		flexDirection: 'row',
-// 	},
-// 	sideContainer:{
-// 		position: 'absolute',
-// 		top: '8%',
-// 		right: 0,
-// 	},
-// 	shadowBtn:{
-// 		shadowColor: "#000",
-// 		shadowOffset: {
-// 			width: 0,
-// 			height: 7,
-// 		},
-// 		shadowOpacity: 0.53,
-// 		shadowRadius: 13.97,
-
-// 		elevation: 20,
-// 	},
-// })
+export default Dashboard;

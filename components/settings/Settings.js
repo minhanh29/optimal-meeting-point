@@ -164,6 +164,7 @@ const Settings = ({ navigation }) => {
 					...styles.buttonContainer,
 					backgroundColor: colors.mainColor2
 				}}
+				onPress={() => navigation.navigate("Login")}
 			>
 				<Text
 					style={styles.buttonTitle}
