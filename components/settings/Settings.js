@@ -18,6 +18,7 @@ const Settings = ({ navigation }) => {
 	const [avatar, setAvatar] = useState(null);
 
 	useEffect(() => {
+		checkIfLocationEnabled()
 		fetchUserInfo();
 	}, []);
 
@@ -35,8 +36,6 @@ const Settings = ({ navigation }) => {
 				return;
 			}
 			setCheckedLocation(data.gps_enabled)
-			if (data.gps_enabled)
-				checkIfLocationEnabled();
 			let address = await getAddressFromGeopoint(data.address)
 			setAddress(address)
 		} catch(e) {
@@ -60,6 +59,16 @@ const Settings = ({ navigation }) => {
 			console.log(e)
 		}
 	};
+
+	const handleLocationCheck = async () => {
+		if (!checkedLocation) {
+			let { status } = await Location.requestForegroundPermissionsAsync();
+			if (status !== 'granted') {
+				return;
+			}
+		}
+		setCheckedLocation(!checkedLocation)
+	}
 
 	return (
 		<Stack
@@ -147,7 +156,7 @@ const Settings = ({ navigation }) => {
 					}}
 					thumbColor="white"
 					value={checkedLocation}
-					onChange={() => setCheckedLocation(!checkedLocation)}
+					onChange={handleLocationCheck}
 				/>
 			</Flex>
 
