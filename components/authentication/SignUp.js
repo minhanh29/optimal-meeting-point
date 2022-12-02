@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { View, 
     StyleSheet, 
     TextInput,
@@ -10,7 +10,20 @@ import { View,
     Link,
     Linking,
     } from "react-native";
+import {
+    signUpAsync,
+    selectUser,
+    USER_SIGNUP_SUCCESS ,
+    USER_SIGNUP_PENDING,
+    USER_IDLE,
+    USER_SIGNUP_FAILED,
+    changeSignUpStatus,
+    signUpFail,
+} from "../../app/reducers/userSlice"
 import { useFonts } from "expo-font";
+import { useDispatch, useSelector } from "react-redux"
+import { Toast } from "react-native-toast-message/lib/src/Toast";
+import { USER_SIGNUP_FAILED } from "../../store/reducers/userSlice";
 
 const SignUp = () => {
     const [fontsLoaded] = useFonts({
@@ -21,11 +34,49 @@ const SignUp = () => {
 	});
     if(!fontsLoaded) return null;
     const [name, setName] = React.useState("");
-    const[username, setUsername] = React.useState("");
-    const [address, setAddress] = React.useState("");
+    const [username, setUsername] = React.useState("");
     const [password, setPassword] = React.useState("");
     const [passwordConfirm, setPasswordConfirm] = React.useState("");
+    const dispatch = useDispatch()
+	const user = useSelector(selectUser)
 
+    useEffect(() => {
+        if (user.signUpStatus === USER_SIGNUP_FAILED){
+            Toast.show({
+                type: 'error',
+                text1: 'Sign Up Failed',
+                text2: user.errorMessage,
+            })
+            dispatch(changeSignUpStatus(USER_IDLE))
+        }
+        if (user.signUpStatus === USER_SIGNUP_SUCCESS){
+            Toast.show({
+                type: 'success',
+                text1: 'Sign Up Success',
+                text2: user.errorMessage,
+            })
+            dispatch(changeSignUpStatus(USER_IDLE))
+        }
+    }, [user.signUpStatus])
+
+
+	const handleSignUp = () => {
+		if (!name || !username || !password || !confirmPassword){
+            dispatch(signUpFail('Please fill in the missing input'))
+        } else if(password.length < 6){
+            dispatch(signUpFail('Password need to be more than 6 digit'))
+        } else if(password !== confirmPassword){
+            dispatch(signUpFail("Confirmation Password does not match."))
+        } else{
+            dispatch(signUpAsync({name, username, password}))
+        }
+	}
+
+	const handleKeyDown = (e) => {
+		if (e.key === 'Enter') {
+			handleSignUp()
+		}
+	}
     return (
         <KeyboardAvoidingView behavior={Platform.OS == "ios" ? "padding" :null} style={styles.container}>
             <View style={styles.logo}>
@@ -45,22 +96,19 @@ const SignUp = () => {
                 }}>OMP</Text>
             </View>
             <View style={styles.form}>
-                <TextInput style={styles.textInput} value={name} onChangeText={setName} placeholder="Name"/>
+                <TextInput style={styles.textInput} value={name} onChangeText={setName} placeholder="Name" onKeyPress={handleKeyDown}/>
             </View>
             <View style={styles.form}>
-                <TextInput style={styles.textInput} value={username} onChangeText={setUsername} placeholder="Username"/>
+                <TextInput style={styles.textInput} value={username} onChangeText={setUsername} placeholder="Username"onKeyPress={handleKeyDown}/>
             </View>
             <View style={styles.form}>
-                <TextInput style={styles.textInput} value={address} onChangeText={setAddress} placeholder="Address"/>
+                <TextInput style={styles.textInput} value={password} onChangeText={setPassword} placeholder="Password" onKeyPress={handleKeyDown} secureTextEntry/>
             </View>
             <View style={styles.form}>
-                <TextInput style={styles.textInput} value={password} onChangeText={setPassword} placeholder="Password"/>
+                <TextInput style={styles.textInput} value={passwordConfirm} onChangeText={setPasswordConfirm} placeholder="Confirm Password" onKeyPress={handleKeyDown} secureTextEntry/>
             </View>
             <View style={styles.form}>
-                <TextInput style={styles.textInput} value={passwordConfirm} onChangeText={setPasswordConfirm} placeholder="Confirm Password"/>
-            </View>
-            <View style={styles.form}>
-                <TouchableOpacity style={styles.button} onPress={() => {console.log("pressed")}}>
+                <TouchableOpacity style={styles.button} onPress={() => {handleSignUp}}>
                     <Text style={styles.buttonTittle}>Sign Up</Text>
                 </TouchableOpacity>
             </View>

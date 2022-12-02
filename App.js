@@ -19,7 +19,8 @@ import { createStackNavigator } from "@react-navigation/stack";
 import Friends from "./components/friends/Friends";
 import SetAddress from "./components/address/SetAddress";
 import { Ionicons } from '@expo/vector-icons';
-
+import { Provider } from "react-redux";
+import { store } from "./store/store";
 
 const StackNavigator = createStackNavigator()
 
@@ -44,7 +45,8 @@ const App = () => {
 		return null
 
 	return (
-		<NavigationContainer theme={theme} >
+		<Provider store={store}>
+			<NavigationContainer theme={theme} >
 			<StackNavigator.Navigator
 				screenOptions={({navigation}) => ({
 					headerTitle: (props) => <Text
@@ -124,6 +126,7 @@ const App = () => {
 				/>
 			</StackNavigator.Navigator>
 		</NavigationContainer>
+		</Provider>
 	);
 }
 
