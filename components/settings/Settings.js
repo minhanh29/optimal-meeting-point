@@ -30,7 +30,7 @@ const Settings = ({ navigation }) => {
 			setUsername(data.username)
 			setAvatar(data.ava_url)
 
-			let { status } = await Location.requestPermissionsAsync();
+			let { status } = await Location.requestForegroundPermissionsAsync();
 			if (status !== 'granted') {
 				return;
 			}
@@ -163,6 +163,7 @@ const Settings = ({ navigation }) => {
 					...styles.buttonContainer,
 					backgroundColor: colors.mainColor2
 				}}
+				onPress={() => navigation.navigate("Login")}
 			>
 				<Text
 					style={styles.buttonTitle}

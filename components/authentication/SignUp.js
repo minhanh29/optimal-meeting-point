@@ -1,5 +1,5 @@
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { View, 
     StyleSheet, 
     TextInput,
@@ -7,8 +7,6 @@ import { View,
     Image,
     Text,
     KeyboardAvoidingView,
-    Link,
-    Linking,
     } from "react-native";
 import {
     signUpAsync,
@@ -19,26 +17,19 @@ import {
     USER_SIGNUP_FAILED,
     changeSignUpStatus,
     signUpFail,
-} from "../../app/reducers/userSlice"
+} from "../../a/reducers/userSlice"
 import { useFonts } from "expo-font";
-import { useDispatch, useSelector } from "react-redux"
+import { Provider, useDispatch, useSelector } from "react-redux"
 import { Toast } from "react-native-toast-message/lib/src/Toast";
-import { USER_SIGNUP_FAILED } from "../../store/reducers/userSlice";
+import store from '../../a/store';
 
 const SignUp = () => {
-    const [fontsLoaded] = useFonts({
-		'Montserrat': require('./assets/fonts/Montserrat-Regular.ttf'),
-		'Montserrat-Italic': require('./assets/fonts/Montserrat-Italic-VariableFont_wght.ttf'),
-		'Montserrat-Bold': require('./assets/fonts/Montserrat-Bold.ttf'),
-        'jsMath-cmbx10': require('./assets/fonts/jsMath-cmbx10.ttf'),
-	});
-    if(!fontsLoaded) return null;
     const [name, setName] = React.useState("");
     const [username, setUsername] = React.useState("");
     const [password, setPassword] = React.useState("");
     const [passwordConfirm, setPasswordConfirm] = React.useState("");
     const dispatch = useDispatch()
-	const user = useSelector(selectUser)
+	const user = useSelector(selectUser);
 
     useEffect(() => {
         if (user.signUpStatus === USER_SIGNUP_FAILED){
@@ -61,15 +52,7 @@ const SignUp = () => {
 
 
 	const handleSignUp = () => {
-		if (!name || !username || !password || !confirmPassword){
-            dispatch(signUpFail('Please fill in the missing input'))
-        } else if(password.length < 6){
-            dispatch(signUpFail('Password need to be more than 6 digit'))
-        } else if(password !== confirmPassword){
-            dispatch(signUpFail("Confirmation Password does not match."))
-        } else{
-            dispatch(signUpAsync({name, username, password}))
-        }
+        dispatch(signUpAsync({name, username, password}))
 	}
 
 	const handleKeyDown = (e) => {
@@ -77,10 +60,12 @@ const SignUp = () => {
 			handleSignUp()
 		}
 	}
+    console.log(store, "store");
     return (
-        <KeyboardAvoidingView behavior={Platform.OS == "ios" ? "padding" :null} style={styles.container}>
+        // <Provider store ={store}>
+                 <KeyboardAvoidingView behavior={Platform.OS == "ios" ? "padding" :null} style={styles.container}>
             <View style={styles.logo}>
-                <Image style={{height: 100, width:100}} source={require('./images/logo.png')} resizeMode="contain" />
+                <Image style={{height: 100, width:100}} source={logo} resizeMode="contain" />
                 <Text style={{
                     color:'#9CC7CA',
                     fontFamily:'jsMath-cmbx10',
@@ -104,6 +89,7 @@ const SignUp = () => {
             <View style={styles.form}>
                 <TextInput style={styles.textInput} value={password} onChangeText={setPassword} placeholder="Password" onKeyPress={handleKeyDown} secureTextEntry/>
             </View>
+			<TextInput style={{height: 0.001}}/>
             <View style={styles.form}>
                 <TextInput style={styles.textInput} value={passwordConfirm} onChangeText={setPasswordConfirm} placeholder="Confirm Password" onKeyPress={handleKeyDown} secureTextEntry/>
             </View>
@@ -114,11 +100,17 @@ const SignUp = () => {
             </View>
             <View style={styles.message}>
                 <Text style={{fontFamily: 'Montserrat'}}>
-                    Already have an account?
-                    <Text style={{fontFamily: 'Montserrat', fontWeight:'bold',textDecorationLine:'underline'}} onPress={() => Linking.openURL}> Sign In</Text>
+                    Already have an account?&nbsp;
+                    <Text
+						style={{fontFamily: 'Montserrat-Bold', textDecorationLine:'underline'}}
+						onPress={() => navigation.navigate("Login")}
+					>
+						Sign In
+					</Text>
                 </Text>
             </View>
         </KeyboardAvoidingView>
+        // </Provider>
     )
 };
 
@@ -145,7 +137,6 @@ const styles = StyleSheet.create ({
             width: 1,
             height: 4,
         }
-        
     },
     textInput:{
         marginVertical: 13,

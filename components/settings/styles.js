@@ -16,6 +16,20 @@ const styles = StyleSheet.create({
 		backgroundColor: "white",
 		elevation: 4,
 	},
+	textInput: {
+		width: "100%",
+		borderRadius: 15,
+		shadowOffset: {
+			width: 0,
+			height: 4,
+		},
+		shadowOpacity: 0.25,
+		shadowColor: "black",
+		padding: 17,
+		backgroundColor: "white",
+		fontFamily: "Montserrat",
+		elevation: 4,
+	},
 	cardHeader: {
 		fontFamily: "Montserrat-Bold",
 		fontSize: 15,
