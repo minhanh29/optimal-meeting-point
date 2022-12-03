@@ -1,14 +1,14 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import { StyleSheet, Text, View, Button } from "react-native";
+import React, { useCallback, useMemo, useRef } from "react";
 
 const Friends = () => {
   return (
     <View>
-      <Text>Friends</Text>
+      <Text>Friends List</Text>
     </View>
-  )
-}
+  );
+};
 
-export default Friends
+export default Friends;
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({});
