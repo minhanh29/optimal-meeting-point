@@ -1,22 +1,18 @@
-import React from "react";
+import React, { useState, useCallback, useRef, useMemo } from "react";
 import { View, Image } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import MapView, { Marker, Callout } from "react-native-maps";
 import Svg from "react-native-svg";
-import {
-  IconButton,
-  Text,
-} from "@react-native-material/core";
+import { IconButton, Text } from "@react-native-material/core";
 import Icon from "@expo/vector-icons/Feather";
 import MIcon from "@expo/vector-icons/MaterialCommunityIcons";
 import AIcon from "@expo/vector-icons/AntDesign";
 import FIcon from "@expo/vector-icons/Feather";
-import 'react-native-gesture-handler';
-
-
 import mapStyleJson from "./../../mapStyle.json";
 import styles from "./styles";
-
+import BottomSheet from "reanimated-bottom-sheet";
+import Animated from "react-native-reanimated";
+import { TouchableOpacity } from "react-native-gesture-handler";
 const mapStyle = mapStyleJson["mapStyle"];
 
 const initRegion = {
@@ -36,6 +32,29 @@ const myLocation = {
   longitude: 106.72191374093879,
 };
 
+const renderContent = () => (
+	<View style={styles.panel}>
+		<View>
+			<Text style={styles.panelTitle}>Location's Name</Text>
+			<Text style={styles.panelSubtitle}>Location's Address</Text>
+		</View>
+		<TouchableOpacity style={styles.panelButton}>
+			<Text style={styles.panelButtonTitle}>Choose This Location</Text>
+		</TouchableOpacity>
+	</View>
+);
+
+const renderHeader = () => (
+	<View style={styles.headerBottomSheet}>
+		<View style={styles.panelHeader}>
+			<View style={styles.panelHandle}></View>
+		</View>
+	</View>
+);
+
+const sheetRef = React.createRef();
+const fall = new Animated.Value(1);
+
 const Dashboard = ({ navigation }) => {
 	return (
 	<View style={styles.container}>
@@ -47,32 +66,19 @@ const Dashboard = ({ navigation }) => {
 		>
 			<Marker
 				coordinate={rmit}
-				title={"RMIT"}
-				description={"RMIT University"}
+				// title={"RMIT"}
+				// description={"RMIT University"}
 			>
-				<Image
-					style={styles.marker_icon}
-					source={require("../../assets/location-dot.png")}
-				></Image>
-				<Callout tooltip>
-					<View>
-						<View style={styles.bubble}>
-							<Text style={styles.locationName}>Location's name</Text>
-							<Text>Description</Text>
-							<Image
-								style={styles.image}
-								source={require("../../images/bingsu.webp")}
-							/>
-						</View>
-					</View>
-				</Callout>
+				<TouchableOpacity onPress={() => sheetRef.current.snapTo(0)}>
+					<Image
+						style={styles.marker_icon}
+						source={require("../../assets/location-dot.png")}
+					></Image>
+				</TouchableOpacity>
 			</Marker>
 
-			<Marker
-				coordinate={myLocation}
-				title={"user"}
-				description={"user info"}
-			>
+			{/* // User's location */}
+			<Marker coordinate={myLocation} title={"user"}>
 				<View
 					style={{
 						flexDirection: "row",
@@ -134,61 +140,144 @@ const Dashboard = ({ navigation }) => {
 				</Callout>
 			</Marker>
 		</MapView>
+		<BottomSheet
+			ref={sheetRef}
+			snapPoints={[550, 300, 0]}
+			style={styles.bottomSheetContainer}
+			renderContent={renderContent}
+			renderHeader={renderHeader}
+			initialSnap={2}
+			callbackNode={fall}
+			enabledGestureInteraction={true}
+		/>
 		<View style={styles.bottomContainer}>
-				<View style={styles.bottomNav}>
-					<View style={{...styles.shadowBtn, shadowOpacity: Platform.OS == "ios" ? 0.25 : 0.5}}>
-						<IconButton
+			<View style={styles.bottomNav}>
+				<View
+					style={{
+						...styles.shadowBtn,
+						shadowOpacity: Platform.OS == "ios" ? 0.25 : 0.5
+					}}
+				>
+					<IconButton
 						icon={props => <Icon name="map-pin" {...props} />}
 						color="#EE6548"
-						style={{ alignSelf: "center",overflow:'hidden',padding: 25, backgroundColor: 'white', borderRadius: 10, margin: 16,...styles.shadowBtn}}
+						style={{
+							alignSelf: "center",
+							overflow: "hidden",
+							padding: 25,
+							backgroundColor: "white",
+							borderRadius: 10,
+							margin: 16,
+							...styles.shadowBtn
+						}}
 						onPress={() => navigation.navigate("Address")}
 					/>
-					</View>
-					<View style={{...styles.shadowBtn, shadowOpacity: Platform.OS == "ios" ? 0.23 : 0.5}}>
-						<IconButton
+				</View>
+				<View
+					style={{
+						...styles.shadowBtn,
+						shadowOpacity: Platform.OS == "ios" ? 0.23 : 0.5
+					}}
+				>
+					<IconButton
 						icon={props => <MIcon name="account-group" {...props} />}
 						color="#9CC7CA"
-						style={{ alignSelf: "center", padding: 25, backgroundColor: 'white', borderRadius: 10, margin: 16,...styles.shadowBtn }}
+						style={{
+							alignSelf: "center",
+							padding: 25,
+							backgroundColor: "white",
+							borderRadius: 10,
+							margin: 16,
+							...styles.shadowBtn
+						}}
 						onPress={() => navigation.navigate("Groups")}
 					/>
-					</View>
-					<View style={{...styles.shadowBtn, shadowOpacity: Platform.OS == "ios" ? 0.23 : 0.5}}>
-						<IconButton
+				</View>
+				<View
+					style={{
+						...styles.shadowBtn,
+						shadowOpacity: Platform.OS == "ios" ? 0.23 : 0.5
+					}}
+				>
+					<IconButton
 						icon={props => <AIcon name="search1" {...props} />}
 						color="#C2C2C2"
-						style={{ alignSelf: "center", padding: 25, backgroundColor: 'white', borderRadius: 10, margin: 16, ...styles.shadowBtn}}
+						style={{
+							alignSelf: "center",
+							padding: 25,
+							backgroundColor: "white",
+							borderRadius: 10,
+							margin: 16,
+							...styles.shadowBtn
+						}}
 					/>
-					</View>
 				</View>
 			</View>
-			<View style={styles.sideContainer}>
-					<View style={{...styles.shadowBtn, shadowOpacity: Platform.OS == "ios" ? 0.23 : 0.5}}>
-						<IconButton
-							icon={props => <FIcon name="bell" {...props} />}
-							color="#9CC7CA"
-							style={{ alignSelf: "center", padding: 25, backgroundColor: 'white', borderRadius: 10, margin: 12,...styles.shadowBtn,}}
-							onPress={() => navigation.navigate("Notifications")}
-						/>
-					</View>
-					<View style={{...styles.shadowBtn, shadowOpacity: Platform.OS == "ios" ? 0.23 : 0.5}}>
-						<IconButton
-							icon={props => <AIcon name="setting" {...props} />}
-							color="#9CC7CA"
-							style={{ alignSelf: "center", padding: 25, backgroundColor: 'white', borderRadius: 10, margin: 12, ...styles.shadowBtn,}}
-							onPress={() => navigation.navigate("Settings")}
-						/>
-					</View>
-					<View style={{...styles.shadowBtn, shadowOpacity: Platform.OS == "ios" ? 0.23 : 0.5}}>
-						<IconButton
-							icon={props => <AIcon name="contacts" {...props} />}
-							color="#9CC7CA"
-							style={{ alignSelf: "center",  padding: 25, backgroundColor: 'white', borderRadius: 10, margin: 12, ...styles.shadowBtn,}}
-							onPress={() => navigation.navigate("Friends")}
-						/>
-					</View>
+		</View>
+		<View style={styles.sideContainer}>
+			<View
+				style={{
+					...styles.shadowBtn,
+					shadowOpacity: Platform.OS == "ios" ? 0.23 : 0.5
+				}}
+			>
+				<IconButton
+					icon={props => <FIcon name="bell" {...props} />}
+					color="#9CC7CA"
+					style={{
+						alignSelf: "center",
+						padding: 25,
+						backgroundColor: "white",
+						borderRadius: 10,
+						margin: 12,
+						...styles.shadowBtn
+					}}
+					onPress={() => navigation.navigate("Notifications")}
+				/>
 			</View>
+			<View
+				style={{
+					...styles.shadowBtn,
+					shadowOpacity: Platform.OS == "ios" ? 0.23 : 0.5
+				}}
+			>
+				<IconButton
+					icon={props => <AIcon name="setting" {...props} />}
+					color="#9CC7CA"
+					style={{
+						alignSelf: "center",
+						padding: 25,
+						backgroundColor: "white",
+						borderRadius: 10,
+						margin: 12,
+						...styles.shadowBtn
+					}}
+					onPress={() => navigation.navigate("Settings")}
+				/>
+			</View>
+			<View
+				style={{
+					...styles.shadowBtn,
+					shadowOpacity: Platform.OS == "ios" ? 0.23 : 0.5
+				}}
+			>
+				<IconButton
+					icon={props => <AIcon name="contacts" {...props} />}
+					color="#9CC7CA"
+					style={{
+						alignSelf: "center",
+						padding: 25,
+						backgroundColor: "white",
+						borderRadius: 10,
+						margin: 12,
+						...styles.shadowBtn
+					}}
+					onPress={() => navigation.navigate("Friends")}
+				/>
+			</View>
+		</View>
 	</View>
-	)
+  );
 };
 
 export default Dashboard;
