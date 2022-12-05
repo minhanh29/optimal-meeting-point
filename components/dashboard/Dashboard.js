@@ -149,7 +149,7 @@ const Dashboard = ({ navigation }) => {
 						icon={props => <MIcon name="account-group" {...props} />}
 						color="#9CC7CA"
 						style={{ alignSelf: "center", padding: 25, backgroundColor: 'white', borderRadius: 10, margin: 16,...styles.shadowBtn }}
-						onPress={() => navigation.navigate("Groups")}
+						onPress={() => navigation.navigate("Groups")} //Mot nho sua lai thanh group
 					/>
 					</View>
 					<View style={{...styles.shadowBtn, shadowOpacity: Platform.OS == "ios" ? 0.23 : 0.5}}>
