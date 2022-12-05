@@ -21,13 +21,13 @@ import Groups from "./components/groups/Groups"
 import Notifications from "./components/notifications/Notifications";
 import { useFonts } from 'expo-font';
 import 'react-native-gesture-handler';
-import { NavigationContainrer } from "@react-navigation/native";
+import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import Friends from "./components/friends/Friends";
 import SetAddress from "./components/address/SetAddress";
 import { Ionicons } from '@expo/vector-icons';
 import { Provider } from "react-redux";
-import { store } from "./a/store";
+import { store } from "./redux/store";
 
 const StackNavigator = createStackNavigator()
 
@@ -139,7 +139,7 @@ const App = () => {
 			<StackNavigator.Screen name="Address" component={SetAddress} />
 		</StackNavigator.Navigator>
 	</NavigationContainer>
-	// </Provider>
+	</Provider>
 	);
 }
 

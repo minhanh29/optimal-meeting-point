@@ -1,11 +1,13 @@
-import { firebase } from "@react-native-firebase/firestore";
+import {
+	GeoPoint
+} from 'firebase/firestore'
 import { createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import {
 	auth,
 	createUserWithEmailAndPassword,
 	createUser,
 	signOut,
-} from "../../firebase"
+} from "../../firebaseConfig"
 
 export const USER_IDLE = 0
 export const USER_SIGNUP_SUCCESS = 1
@@ -18,7 +20,7 @@ const initialState = {
         name: "",
         username: "",
         avaUrl: "",
-        address: new firebase.firestore.GeoPoint(10.729567, 106.6930756),
+        address: new GeoPoint(10.729567, 106.6930756),
         adress_text: "702 Nguyen Van Linh Street, Tan Phong Ward, District 7, Ho Chi Minh City",
         gps_enabled: true,
     },

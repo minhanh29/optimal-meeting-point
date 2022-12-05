@@ -1,7 +1,6 @@
-
 import React, { useEffect, useState } from "react";
-import { View, 
-    StyleSheet, 
+import { View,
+    StyleSheet,
     TextInput,
     TouchableOpacity,
     Image,
@@ -17,11 +16,12 @@ import {
     USER_SIGNUP_FAILED,
     changeSignUpStatus,
     signUpFail,
-} from "../../a/reducers/userSlice"
+} from "../../redux/reducers/userSlice"
 import { useFonts } from "expo-font";
 import { Provider, useDispatch, useSelector } from "react-redux"
 import { Toast } from "react-native-toast-message/lib/src/Toast";
-import store from '../../a/store';
+import store from '../../redux/store';
+import logo from "./../../images/logo.png"
 
 const SignUp = () => {
     const [name, setName] = React.useState("");

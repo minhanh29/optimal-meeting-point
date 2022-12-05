@@ -1,3 +1,17 @@
+import {
+	doc,
+	setDoc,
+	getFirestore,
+} from 'firebase/firestore'
+import {
+	getAuth,
+	createUserWithEmailAndPassword,
+	updateProfile,
+	onAuthStateChanged,
+	signInWithEmailAndPassword,
+	signOut
+} from 'firebase/auth';
+
 import { initializeApp } from 'firebase/app';
 
 // Initialize Firebase
@@ -13,3 +27,25 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 
+export const db = getFirestore(app)
+const auth = getAuth();
+
+const createUser = (id, name, email, ava_url, address, hash) => {
+  return setDoc(doc( db, "user", id),{
+    name,
+    username,
+    ava_url,
+    address,
+    gps_enabled,
+    hash
+    }
+  )}
+
+export {
+  createUserWithEmailAndPassword,
+	updateProfile,
+	onAuthStateChanged,
+	signInWithEmailAndPassword,
+	signOut,
+  createUser,
+}
