@@ -1,5 +1,4 @@
-import { useState } from "react";
-import * as React from 'react'
+import React, { useState, useCallback, useRef } from "react";
 import { StatusBar } from "expo-status-bar";
 import MapView, { Callout, Marker } from "react-native-maps";
 import { StyleSheet, View, Dimensions, Image } from "react-native";
@@ -18,10 +17,10 @@ import Dashboard from "./components/dashboard/Dashboard";
 import Settings from "./components/settings/Settings";
 import ChangePassword from "./components/settings/ChangePassword";
 import UpdateProfile from "./components/settings/UpdateProfile";
-import Groups from "./components/groups/Groups"
+import Groups from "./components/groups/Groups";
 import Notifications from "./components/notifications/Notifications";
-import { useFonts } from 'expo-font';
-import 'react-native-gesture-handler';
+import { useFonts } from "expo-font";
+import "react-native-gesture-handler";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import Friends from "./components/friends/Friends";
@@ -29,8 +28,7 @@ import SetAddress from "./components/address/SetAddress";
 import { Ionicons } from '@expo/vector-icons';
 import CreateGroup from "./components/groups/CreateGroup";
 
-
-const StackNavigator = createStackNavigator()
+const StackNavigator = createStackNavigator();
 
 export const theme = {
 	colors: {
@@ -41,17 +39,15 @@ export const theme = {
 	},
 };
 
-
 const App = () => {
-	const [fontsLoaded] = useFonts({
-		'Montserrat': require('./assets/fonts/Montserrat-Regular.ttf'),
-		'Montserrat-Italic': require('./assets/fonts/Montserrat-Italic-VariableFont_wght.ttf'),
-		'Montserrat-Bold': require('./assets/fonts/Montserrat-Bold.ttf'),
-		'jsMath-cmbx10': require("./assets/fonts/jsMath-cmbx10.ttf")
-	});
+  const [fontsLoaded] = useFonts({
+    Montserrat: require("./assets/fonts/Montserrat-Regular.ttf"),
+    "Montserrat-Italic": require("./assets/fonts/Montserrat-Italic-VariableFont_wght.ttf"),
+    "Montserrat-Bold": require("./assets/fonts/Montserrat-Bold.ttf"),
+    "jsMath-cmbx10": require("./assets/fonts/jsMath-cmbx10.ttf"),
+  });
 
-	if (!fontsLoaded)
-		return null
+  if (!fontsLoaded) return null;
 
 	return (
 		<NavigationContainer theme={theme}>
