@@ -3,13 +3,27 @@ import React, { useState } from "react";
 import {StyleSheet, Text, View, Image, TextInput, TouchableOpacity} from "react-native";
 import { Feather } from '@expo/vector-icons';
 import { Flex } from "@react-native-material/core";
-
 import logo from "./../../images/logo.png"
+import { logInAsync, loginFail } from "../../redux/reducers/userSlice";
+import { useDispatch } from "react-redux";
+import { useNavigation } from "@react-navigation/native";
 
 const Login = ({ navigation }) => {
     const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
 	const [hidePass, setHidePass] = useState(true);
+
+	const dispatch = useDispatch()
+
+	const handleLogIn = () => {
+        if(!username || !password) {
+            dispatch(loginFail('Please fill in the missing input'))
+        } else{
+            dispatch(logInAsync({username, password}))
+			navigation.navigate("Dashboard")
+			
+        }
+    }
 
 	return (
 	<View style={styles.container}>
@@ -47,7 +61,7 @@ const Login = ({ navigation }) => {
 
 		<TouchableOpacity
 			style={styles.loginBtn}
-			onPress={() => navigation.navigate("Dashboard")}
+			onPress={() => dispatch(() => {handleLogIn()})}
 		>
 			<Text style={styles.loginText}>Log In</Text>
 		</TouchableOpacity>

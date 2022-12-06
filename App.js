@@ -10,7 +10,6 @@ import {
   Stack,
   Text,
   Image as ImageMaterial,
-  Provider,
 } from "@react-native-material/core";
 import SignUp from "./components/authentication/SignUp";
 import Login from "./components/authentication/Login";
@@ -27,7 +26,9 @@ import { createStackNavigator } from "@react-navigation/stack";
 import Friends from "./components/friends/Friends";
 import SetAddress from "./components/address/SetAddress";
 import { Ionicons } from '@expo/vector-icons';
+import { Provider } from "react-redux";
 import { store } from "./redux/store";
+
 const StackNavigator = createStackNavigator()
 
 export const theme = {
@@ -50,7 +51,8 @@ const App = () => {
 
 	if (!fontsLoaded)
 		return null
-		
+	
+	// console.log(store.getState(), "state")
 	return (
 		<Provider store = {store}>
 			<NavigationContainer theme={theme}>

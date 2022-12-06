@@ -1,39 +1,61 @@
 import React, { useEffect, useState } from "react";
-import { View, 
-    StyleSheet, 
+import { View,
+    StyleSheet,
     TextInput,
     TouchableOpacity,
     Image,
     Text,
     KeyboardAvoidingView,
     } from "react-native";
+import {
+    signUpAsync,
+    selectUser,
+    USER_SIGNUP_SUCCESS ,
+    USER_SIGNUP_PENDING,
+    USER_IDLE,
+    USER_SIGNUP_FAILED,
+    changeSignUpStatus,
+    signUpFail,
+} from "../../redux/reducers/userSlice"
+import { useFonts } from "expo-font";
+import { Provider, useDispatch, useSelector } from "react-redux"
 import logo from "./../../images/logo.png"
-import { useSelector, useDispatch } from "react-redux";
-import { Provider } from "@react-native-material/core";
-import { store } from "../../redux/store";
+// import { selectUser } from "../../redux/reducers/userSlice";
 
 const SignUp = ({ navigation }) => {
     const [name, setName] = React.useState("");
     const [username, setUsername] = React.useState("");
     const [password, setPassword] = React.useState("");
-    const [passwordConfirm, setPasswordConfirm] = React.useState("");
+    const [confirmPassword, setConfirmPassword] = React.useState("");
 
-    const user = useSelector((state) => state.user)
+   
     const dispatch = useDispatch()
+    const user = useSelector(selectUser)
 
-    
     useEffect(() => {
         if (user.signUpStatus === USER_SIGNUP_FAILED){
             console.log("failed")
-            dispatch(changeSignUpStatus(USER_IDLE))
+            // dispatch(changeSignUpStatus(USER_IDLE))
+            console.log("error", user.errorMessage)
+            dispatch(signUpFail(USER_SIGNUP_FAILED))
         } else if (user.signUpStatus === USER_SIGNUP_SUCCESS){
             console.log("succeeded")
             dispatch(changeSignUpStatus(USER_IDLE))
         }
     },[user.signUpStatus])
 
+    const handleSignUp = () => {
+		if (!name || !username || !password || !confirmPassword){
+            dispatch(signUpFail('Please fill in the missing input'))
+        } else if(password.length < 6){
+            dispatch(signUpFail('Password need to be more than 6 digit'))
+        } else if(password !== confirmPassword){
+            dispatch(signUpFail("Confirmation Password does not match."))
+        } else{
+            dispatch(signUpAsync({name, username, password}))
+        }
+	}
     return (
-        <Provider store={store}>
             <KeyboardAvoidingView behavior={Platform.OS == "ios" ? "padding" :null} style={styles.container}>
             <View style={styles.logo}>
                 <Image style={{height: 100, width:100}} source={logo} resizeMode="contain" />
@@ -62,11 +84,11 @@ const SignUp = ({ navigation }) => {
             </View>
 			<TextInput style={{height: 0.001}}/>
             <View style={styles.form}>
-                <TextInput style={styles.textInput} value={passwordConfirm} onChangeText={setPasswordConfirm} placeholder="Confirm Password" secureTextEntry/>
+                <TextInput style={styles.textInput} value={confirmPassword} onChangeText={setConfirmPassword} placeholder="Confirm Password" secureTextEntry/>
             </View>
             <View style={styles.form}>
                 <TouchableOpacity style={styles.button}>
-                    <Text style={styles.buttonTittle}>Sign Up</Text>
+                    <Text style={styles.buttonTittle} onPress={() => handleSignUp()}>Sign Up</Text>
                 </TouchableOpacity>
             </View>
             <View style={styles.message}>
@@ -81,7 +103,6 @@ const SignUp = ({ navigation }) => {
                 </Text>
             </View>
         </KeyboardAvoidingView>
-    </Provider>
     )
 };
 

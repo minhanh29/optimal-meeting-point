@@ -15,10 +15,11 @@ import {
 export const db = getFirestore(app)
 export const auth = getAuth();
 
-const createUser = (id, name, username, ava_url, address, address_text, gps_enabled) => {
+const createUser = (id, name, email, ava_url, address, address_text, gps_enabled) => {
   return setDoc(doc( db, "user", id),{
     name,
-    username,
+    // username,
+	email,
     ava_url,
     address,
 	address_text,

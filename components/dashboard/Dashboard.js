@@ -14,6 +14,8 @@ import FIcon from "@expo/vector-icons/Feather";
 
 import mapStyleJson from "./../../mapStyle.json";
 import styles from "./styles";
+import { useSelector } from "react-redux";
+import { selectUser } from "../../redux/reducers/userSlice";
 
 const mapStyle = mapStyleJson["mapStyle"];
 
@@ -35,6 +37,9 @@ const myLocation = {
 };
 
 const Dashboard = ({ navigation }) => {
+	const user = useSelector(selectUser)
+
+	console.log("User Info", user.user.address)
 	return (
 	<View style={styles.container}>
 		<StatusBar style="dark" backgroundColor="white" />

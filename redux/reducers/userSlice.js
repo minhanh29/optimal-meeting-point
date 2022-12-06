@@ -1,15 +1,23 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice} from "@reduxjs/toolkit";
+import { GeoPoint } from "firebase/firestore";
 import {
 	auth,
 	createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
 	createUser,
 	signOut,
-} from "../../firebase"
+    getUserInfo,
+} from "../../firebaseConfig"
+
 export const USER_IDLE = 0
 
 export const USER_SIGNUP_SUCCESS = 1
 export const USER_SIGNUP_FAILED = 2
 export const USER_SIGNUP_PENDING = 3
+
+export const USER_LOGIN_SUCCESS = 3
+export const USER_LOGIN_FAILED = 4
+export const USER_LOGIN_PENDING = 5
 
 const authErrors = {
 	"auth/wrong-password": "The password is invalid or the user does not have a password.",
@@ -147,56 +155,95 @@ const authErrors = {
     "auth/web-storage-unsupported": "This browser is not supported or 3rd party cookies and data may be disabled.",
     "auth/already-initialized": "initializeAuth() has already been called with different options. To avoid this error, call initializeAuth() with the same options as when it was originally called, or call getAuth() to return the already initialized instance."
 }
-
 const initialState = {
     user: {
-		id: "",
-		name: "",
-		username: "",
-		ava_url: "",
-		address: "",
-		address_text: "",
-		gps_enabled: true,
-	}
+        id: "",
+        name: "",
+        username: "",
+        avaUrl: "",
+        address: new GeoPoint(10.729567, 106.6930756),
+        adress_text: "702 Nguyen Van Linh Street, Tan Phong Ward, District 7, Ho Chi Minh City",
+        gps_enabled: true,
+    },
+    signUpStatus: USER_IDLE,
+    status: USER_IDLE,  // login status
+    errorMessage: "",
 }
 
-// export const signUpAsync = createAsyncThunk('user/signUpAsync', async(data)=> {
-//     const res = await createUserWithEmailAndPassword(auth, data.username, data.password)
+export const signUpAsync = createAsyncThunk('user/signUpAsync', async (data)=>{
+    // create an account on firebase auth
+    console.log(data)
+    console.log("run 1")
+    const res = await createUserWithEmailAndPassword(auth, data.username + "@omp.com", data.password)
+    console.log("res", res)
+    //save to Firestore
+    await createUser(res.user.uid, data.name, data.username, "", new GeoPoint(10.729567, 106.6930756), "702 Nguyen Van Linh Street, Tan Phong Ward, District 7, Ho Chi Minh City", true)
 
-//     await createUser(res.user.uid, data.name, data.username)
+    await signOut(auth)
+})
 
-//     await signOut(auth)
-// }) 
+export const logInAsync = createAsyncThunk('user/logInAsync', async (data) => {
+    console.log("login", data)
+	const res = await signInWithEmailAndPassword(auth, data.username + "@omp.com",data.password)
+    console.log("UserID", res.user.uid)
+	const userData = await getUserInfo(res.user.uid)
+	const userInfo = userData.data()
+    console.log("Test User INfo", userInfo) //Cai nay bi undefined
+	return {
+		id: res.user.uid,
+		...userInfo
+	}
+})
+
 const userSlice = createSlice({
     name: 'user',
-    initialState: {
-        ...initialState,
-        signUpStatus: USER_IDLE,
-    },
+    initialState,
     reducers:{
         changeSignUpStatus: (state,action) => {
 			state.signUpStatus = action.payload
 		},
         signUpFail: (state, action) => {
-			state.errorMessage = action.payload
+            state.errorMessage = action.payload
 			state.signUpStatus = USER_SIGNUP_FAILED
 		},
+        changeStatus: (state,action) => {
+			state.status = action.payload
+		},
+        loginFail: (state, action) => {
+			state.errorMessage = action.payload
+			state.status = USER_LOGIN_FAILED
+		},
     },
-    extraReducers: builder => {
-		builder
-			.addCase(signUpAsync.rejected, (state, action) => {
-				state.signUpStatus = USER_SIGNUP_FAILED
-				state.errorMessage = authErrors[action.error.code] ?  authErrors[action.error.code] : "Unknown Error!";
-			})
-			.addCase(signUpAsync.pending, (state, action) => {
-				state.signUpStatus = USER_SIGNUP_PENDING
-			})
-			.addCase(signUpAsync.fulfilled, (state, action) => {
-				state.signUpStatus = USER_SIGNUP_SUCCESS
-			})
-        }
+    extraReducers: builder =>{
+        builder
+        .addCase(signUpAsync.pending, state =>{
+            state.signUpStatus = USER_SIGNUP_PENDING
+        })
+        .addCase(signUpAsync.fulfilled, state => {
+            state.signUpStatus = USER_SIGNUP_SUCCESS
+        })
+        .addCase(signUpAsync.rejected, (state, action) => {
+            state.errorMessage = authErrors[action.error.code] ?  authErrors[action.error.code] : "Unknown Error!";
+            console.log(action)
+            state.signUpStatus = USER_SIGNUP_FAILED
+        })
+        .addCase(logInAsync.rejected, (state, action) => {
+            console.log(action)
+            state.status = USER_LOGIN_FAILED
+            state.errorMessage = authErrors[action.error.code] ?  authErrors[action.error.code] : "Unknown Error!";
+        })
+        .addCase(logInAsync.pending, (state, action) => {
+            state.status = USER_LOGIN_PENDING
+        })
+        .addCase(logInAsync.fulfilled, (state, action) => {
+            console.log("Action payload",action)
+            state.user = action.payload;
+            state.status = USER_LOGIN_SUCCESS
+        })
+    }
 })
 
+export const selectUser = (state) => state.user
 export const {changeSignUpStatus, signUpFail} = userSlice.actions
 
 export default userSlice.reducer
