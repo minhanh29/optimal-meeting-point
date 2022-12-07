@@ -1,5 +1,6 @@
 import {
 	doc,
+  getDoc,
 	setDoc,
 	getFirestore,
 } from 'firebase/firestore'
@@ -30,16 +31,21 @@ const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app)
 const auth = getAuth();
 
-const createUser = (id, name, email, ava_url, address, hash) => {
-  return setDoc(doc( db, "user", id),{
+const createUser = (id, name, username, ava_url, address, address_text, gps_enabled) => {
+  return setDoc(doc(db, "user", id),{
     name,
     username,
     ava_url,
     address,
+    address_text,
     gps_enabled,
-    hash
     }
-  )}
+)};
+
+const getUserInfo = (id) => {
+  return getDoc(doc(db, "user", id))
+};
+
 
 export {
   createUserWithEmailAndPassword,
@@ -48,4 +54,6 @@ export {
 	signInWithEmailAndPassword,
 	signOut,
   createUser,
+  getUserInfo,
+  auth,
 }
