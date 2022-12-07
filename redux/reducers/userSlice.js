@@ -245,6 +245,6 @@ const userSlice = createSlice({
 })
 
 export const selectUser = (state) => state.user
-export const {changeSignUpStatus, signUpFail} = userSlice.actions
+export const {changeSignUpStatus, signUpFail, logInAsync, loginFail} = userSlice.actions
 
 export default userSlice.reducer

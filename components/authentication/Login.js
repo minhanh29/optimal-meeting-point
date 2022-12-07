@@ -6,9 +6,6 @@ import { Flex } from "@react-native-material/core";
 import logo from "./../../images/logo.png"
 import { logInAsync, loginFail } from "../../redux/reducers/userSlice";
 import { useDispatch } from "react-redux";
-import { useNavigation } from "@react-navigation/native";
-import { db } from "../../firebaseConfig"
-import { collection, getDoc, doc } from "firebase/firestore";
 
 const Login = ({ navigation }) => {
     const [username, setUsername] = useState("");
