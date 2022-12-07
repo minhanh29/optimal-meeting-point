@@ -1,14 +1,17 @@
 import { StyleSheet, Text, View, TextInput } from 'react-native'
 import { Avatar, Box, Stack, Switch, Flex, Spacer, IconButton } from "@react-native-material/core";
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useTheme } from '@react-navigation/native';
 import AIcon from "@expo/vector-icons/AntDesign";
 import Icon from "@expo/vector-icons/Ionicons";
 import FIcon from "@expo/vector-icons/Feather";
 import MIcon from "@expo/vector-icons/MaterialIcons"
 import styles from "./styles"
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../../firebaseConfig"
 const Groups = ({ navigation }) => {
   const { colors } = useTheme();
+
   return (
     <View>
       <Stack
