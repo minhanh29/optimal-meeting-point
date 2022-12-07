@@ -10,6 +10,9 @@ import AIcon from "@expo/vector-icons/AntDesign";
 import FIcon from "@expo/vector-icons/Feather";
 import mapStyleJson from "./../../mapStyle.json";
 import styles from "./styles";
+import { useSelector } from "react-redux";
+import { selectUser } from "../../redux/reducers/userSlice";
+
 import BottomSheet from "reanimated-bottom-sheet";
 import Animated from "react-native-reanimated";
 import { TouchableOpacity } from "react-native-gesture-handler";
@@ -56,6 +59,9 @@ const sheetRef = React.createRef();
 const fall = new Animated.Value(1);
 
 const Dashboard = ({ navigation }) => {
+	const user = useSelector(selectUser)
+
+	// console.log("User Info", user.user.address)
 	return (
 	<View style={styles.container}>
 		<StatusBar style="dark" backgroundColor="white" />
