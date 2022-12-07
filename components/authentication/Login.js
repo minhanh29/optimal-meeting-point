@@ -26,13 +26,6 @@ const Login = ({ navigation }) => {
         }
     }
 	
-	const fetchUserInfo = async () => {
-		try {
-			const querySnapshot = await getDoc(doc(db, "user", ));
-		} catch(e) {
-			console.log(e)
-		}
-	}
 
 	return (
 	<View style={styles.container}>
