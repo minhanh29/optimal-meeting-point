@@ -11,7 +11,6 @@ import {
     signUpAsync,
     selectUser,
     USER_SIGNUP_SUCCESS ,
-    USER_SIGNUP_PENDING,
     USER_IDLE,
     USER_SIGNUP_FAILED,
     changeSignUpStatus,
