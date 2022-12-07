@@ -1,7 +1,6 @@
-
 import React, { useEffect, useState } from "react";
-import { View, 
-    StyleSheet, 
+import { View,
+    StyleSheet,
     TextInput,
     TouchableOpacity,
     Image,
@@ -17,53 +16,47 @@ import {
     USER_SIGNUP_FAILED,
     changeSignUpStatus,
     signUpFail,
-} from "../../a/reducers/userSlice"
+} from "../../redux/reducers/userSlice"
 import { useFonts } from "expo-font";
 import { Provider, useDispatch, useSelector } from "react-redux"
-import { Toast } from "react-native-toast-message/lib/src/Toast";
-import store from '../../a/store';
+import logo from "./../../images/logo.png"
+// import { selectUser } from "../../redux/reducers/userSlice";
 
-const SignUp = () => {
+const SignUp = ({ navigation }) => {
     const [name, setName] = React.useState("");
     const [username, setUsername] = React.useState("");
     const [password, setPassword] = React.useState("");
-    const [passwordConfirm, setPasswordConfirm] = React.useState("");
+    const [confirmPassword, setConfirmPassword] = React.useState("");
+
+   
     const dispatch = useDispatch()
-	const user = useSelector(selectUser);
+    const user = useSelector(selectUser)
 
     useEffect(() => {
         if (user.signUpStatus === USER_SIGNUP_FAILED){
-            Toast.show({
-                type: 'error',
-                text1: 'Sign Up Failed',
-                text2: user.errorMessage,
-            })
+            console.log("failed")
+            // dispatch(changeSignUpStatus(USER_IDLE))
+            console.log("error", user.errorMessage)
+            dispatch(signUpFail(USER_SIGNUP_FAILED))
+        } else if (user.signUpStatus === USER_SIGNUP_SUCCESS){
+            console.log("succeeded")
             dispatch(changeSignUpStatus(USER_IDLE))
         }
-        if (user.signUpStatus === USER_SIGNUP_SUCCESS){
-            Toast.show({
-                type: 'success',
-                text1: 'Sign Up Success',
-                text2: user.errorMessage,
-            })
-            dispatch(changeSignUpStatus(USER_IDLE))
+    },[user.signUpStatus])
+
+    const handleSignUp = () => {
+		if (!name || !username || !password || !confirmPassword){
+            dispatch(signUpFail('Please fill in the missing input'))
+        } else if(password.length < 6){
+            dispatch(signUpFail('Password need to be more than 6 digit'))
+        } else if(password !== confirmPassword){
+            dispatch(signUpFail("Confirmation Password does not match."))
+        } else{
+            dispatch(signUpAsync({name, username, password}))
         }
-    }, [user.signUpStatus])
-
-
-	const handleSignUp = () => {
-        dispatch(signUpAsync({name, username, password}))
 	}
-
-	const handleKeyDown = (e) => {
-		if (e.key === 'Enter') {
-			handleSignUp()
-		}
-	}
-    console.log(store, "store");
     return (
-        // <Provider store ={store}>
-                 <KeyboardAvoidingView behavior={Platform.OS == "ios" ? "padding" :null} style={styles.container}>
+            <KeyboardAvoidingView behavior={Platform.OS == "ios" ? "padding" :null} style={styles.container}>
             <View style={styles.logo}>
                 <Image style={{height: 100, width:100}} source={logo} resizeMode="contain" />
                 <Text style={{
@@ -81,21 +74,21 @@ const SignUp = () => {
                 }}>OMP</Text>
             </View>
             <View style={styles.form}>
-                <TextInput style={styles.textInput} value={name} onChangeText={setName} placeholder="Name" onKeyPress={handleKeyDown}/>
+                <TextInput style={styles.textInput} value={name} onChangeText={setName} placeholder="Name" />
             </View>
             <View style={styles.form}>
-                <TextInput style={styles.textInput} value={username} onChangeText={setUsername} placeholder="Username"onKeyPress={handleKeyDown}/>
+                <TextInput style={styles.textInput} value={username} onChangeText={setUsername} placeholder="Username"/>
             </View>
             <View style={styles.form}>
-                <TextInput style={styles.textInput} value={password} onChangeText={setPassword} placeholder="Password" onKeyPress={handleKeyDown} secureTextEntry/>
+                <TextInput style={styles.textInput} value={password} onChangeText={setPassword} placeholder="Password" secureTextEntry/>
             </View>
 			<TextInput style={{height: 0.001}}/>
             <View style={styles.form}>
-                <TextInput style={styles.textInput} value={passwordConfirm} onChangeText={setPasswordConfirm} placeholder="Confirm Password" onKeyPress={handleKeyDown} secureTextEntry/>
+                <TextInput style={styles.textInput} value={confirmPassword} onChangeText={setConfirmPassword} placeholder="Confirm Password" secureTextEntry/>
             </View>
             <View style={styles.form}>
-                <TouchableOpacity style={styles.button} onPress={() => {handleSignUp}}>
-                    <Text style={styles.buttonTittle}>Sign Up</Text>
+                <TouchableOpacity style={styles.button}>
+                    <Text style={styles.buttonTittle} onPress={() => handleSignUp()}>Sign Up</Text>
                 </TouchableOpacity>
             </View>
             <View style={styles.message}>
@@ -110,7 +103,6 @@ const SignUp = () => {
                 </Text>
             </View>
         </KeyboardAvoidingView>
-        // </Provider>
     )
 };
 
@@ -118,9 +110,10 @@ const styles = StyleSheet.create ({
     container:{
         backgroundColor: '#EDF4F7',
         flex: 1,
+        justifyContent: "center",
+        // alignItems: 'center',
     },
     logo:{
-        marginTop:120,
         marginBottom: 20,
         width:'100%',
         alignItems: 'center',
