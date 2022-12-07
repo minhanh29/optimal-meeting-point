@@ -30,11 +30,12 @@ const Settings = ({ navigation }) => {
 			setName(data.name)
 			setUsername(data.username)
 			setAvatar(data.ava_url)
-
 			let { status } = await Location.requestForegroundPermissionsAsync();
 			if (status !== 'granted') {
-				return;
+			  console.log('Location permission not granted!');
+			  return;
 			}
+			
 			setCheckedLocation(data.gps_enabled)
 			let address = await getAddressFromGeopoint(data.address)
 			setAddress(address)

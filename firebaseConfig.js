@@ -32,7 +32,7 @@ export const db = getFirestore(app)
 const auth = getAuth();
 
 const createUser = (id, name, username, ava_url, address, address_text, gps_enabled) => {
-  return setDoc(doc( db, "user", id),{
+  return setDoc(doc(db, "user", id),{
     name,
     username,
     ava_url,
@@ -41,6 +41,7 @@ const createUser = (id, name, username, ava_url, address, address_text, gps_enab
     gps_enabled,
     }
 )};
+
 const getUserInfo = (id) => {
   return getDoc(doc(db, "user", id))
 };

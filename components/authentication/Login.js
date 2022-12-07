@@ -7,6 +7,8 @@ import logo from "./../../images/logo.png"
 import { logInAsync, loginFail } from "../../redux/reducers/userSlice";
 import { useDispatch } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
+import { db } from "../../firebaseConfig"
+import { collection, getDoc, doc } from "firebase/firestore";
 
 const Login = ({ navigation }) => {
     const [username, setUsername] = useState("");
@@ -21,9 +23,16 @@ const Login = ({ navigation }) => {
         } else{
             dispatch(logInAsync({username, password}))
 			navigation.navigate("Dashboard")
-			
         }
     }
+	
+	const fetchUserInfo = async () => {
+		try {
+			const querySnapshot = await getDoc(doc(db, "user", ));
+		} catch(e) {
+			console.log(e)
+		}
+	}
 
 	return (
 	<View style={styles.container}>

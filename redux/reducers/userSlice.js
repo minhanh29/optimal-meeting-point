@@ -9,6 +9,7 @@ import {
     getUserInfo,
 } from "../../firebaseConfig"
 
+
 export const USER_IDLE = 0
 
 export const USER_SIGNUP_SUCCESS = 1
@@ -187,8 +188,8 @@ export const logInAsync = createAsyncThunk('user/logInAsync', async (data) => {
 	const res = await signInWithEmailAndPassword(auth, data.username + "@omp.com",data.password)
     console.log("UserID", res.user.uid)
 	const userData = await getUserInfo(res.user.uid)
-	const userInfo = userData.data()
-    console.log("Test User INfo", userInfo) //Cai nay bi undefined
+    const userInfo = userData.data()
+    console.log("Test User INfo", userInfo) 
 	return {
 		id: res.user.uid,
 		...userInfo
