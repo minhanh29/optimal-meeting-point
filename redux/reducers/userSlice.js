@@ -170,6 +170,7 @@ const initialState = {
     signUpStatus: USER_IDLE,
     status: USER_IDLE,  // login status
     errorMessage: "",
+	isAuthenticated: true,
 }
 
 export const signUpAsync = createAsyncThunk('user/signUpAsync', async (data)=>{
@@ -221,6 +222,7 @@ const userSlice = createSlice({
         })
         .addCase(signUpAsync.fulfilled, state => {
             state.signUpStatus = USER_SIGNUP_SUCCESS
+			state.isAuthenticated = false
         })
         .addCase(signUpAsync.rejected, (state, action) => {
             state.errorMessage = authErrors[action.error.code] ?  authErrors[action.error.code] : "Unknown Error!";
@@ -236,12 +238,14 @@ const userSlice = createSlice({
         .addCase(logInAsync.fulfilled, (state, action) => {
             state.user = action.payload;
             state.status = USER_LOGIN_SUCCESS
+			state.isAuthenticated = true
         })
         .addCase(logOutAsync.fulfilled, (state, action) => {
             state.user = initialState.user
             state.status = USER_IDLE
 			state.signUpStatus = USER_IDLE
 			state.errorMessage = ""
+			state.isAuthenticated = false
         })
     }
 })
