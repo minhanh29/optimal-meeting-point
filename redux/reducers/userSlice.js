@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import { GeoPoint } from "firebase/firestore";
+import { geoToDict } from "../../components/common/Utils";
 import {
 	auth,
 	createUserWithEmailAndPassword,
@@ -162,7 +163,7 @@ const initialState = {
         name: "",
         username: "",
         avaUrl: "",
-        address: new GeoPoint(10.729567, 106.6930756),
+        address: {latitude: 10.729567, longitude: 106.6930756},
         adress_text: "702 Nguyen Van Linh Street, Tan Phong Ward, District 7, Ho Chi Minh City",
         gps_enabled: true,
     },
@@ -173,27 +174,25 @@ const initialState = {
 
 export const signUpAsync = createAsyncThunk('user/signUpAsync', async (data)=>{
     // create an account on firebase auth
-    console.log(data)
-    console.log("run 1")
     const res = await createUserWithEmailAndPassword(auth, data.username + "@omp.com", data.password)
-    console.log("res", res)
     //save to Firestore
     await createUser(res.user.uid, data.name, data.username, "", new GeoPoint(10.729567, 106.6930756), "702 Nguyen Van Linh Street, Tan Phong Ward, District 7, Ho Chi Minh City", true)
-
     await signOut(auth)
 })
 
 export const logInAsync = createAsyncThunk('user/logInAsync', async (data) => {
-    console.log("login", data)
 	const res = await signInWithEmailAndPassword(auth, data.username + "@omp.com",data.password)
-    console.log("UserID", res.user.uid)
 	const userData = await getUserInfo(res.user.uid)
     const userInfo = userData.data()
-    console.log("Test User INfo", userInfo) 
 	return {
 		id: res.user.uid,
-		...userInfo
+		...userInfo,
+		address: geoToDict(userInfo.address)  // prevent non-serializable error
 	}
+})
+
+export const logOutAsync = createAsyncThunk('user/logOutAsync', async () => {
+    await signOut(auth)
 })
 
 const userSlice = createSlice({
@@ -225,11 +224,9 @@ const userSlice = createSlice({
         })
         .addCase(signUpAsync.rejected, (state, action) => {
             state.errorMessage = authErrors[action.error.code] ?  authErrors[action.error.code] : "Unknown Error!";
-            console.log(action)
             state.signUpStatus = USER_SIGNUP_FAILED
         })
         .addCase(logInAsync.rejected, (state, action) => {
-            console.log(action)
             state.status = USER_LOGIN_FAILED
             state.errorMessage = authErrors[action.error.code] ?  authErrors[action.error.code] : "Unknown Error!";
         })
@@ -237,9 +234,14 @@ const userSlice = createSlice({
             state.status = USER_LOGIN_PENDING
         })
         .addCase(logInAsync.fulfilled, (state, action) => {
-            console.log("Action payload",action)
             state.user = action.payload;
             state.status = USER_LOGIN_SUCCESS
+        })
+        .addCase(logOutAsync.fulfilled, (state, action) => {
+            state.user = initialState.user
+            state.status = USER_IDLE
+			state.signUpStatus = USER_IDLE
+			state.errorMessage = ""
         })
     }
 })

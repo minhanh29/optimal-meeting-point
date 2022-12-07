@@ -1,15 +1,8 @@
 import React, { useState, useCallback, useRef } from "react";
-import { StatusBar } from "expo-status-bar";
-import MapView, { Callout, Marker } from "react-native-maps";
 import { StyleSheet, View, Dimensions, Image } from "react-native";
-import Svg, { Image as Imagesvg } from "react-native-svg";
 import {
-  AppBar,
-  HStack,
   IconButton,
-  Stack,
   Text,
-  Image as ImageMaterial,
 } from "@react-native-material/core";
 import SignUp from "./components/authentication/SignUp";
 import Login from "./components/authentication/Login";
@@ -41,16 +34,15 @@ export const theme = {
 };
 
 const App = () => {
-  const [fontsLoaded] = useFonts({
-    Montserrat: require("./assets/fonts/Montserrat-Regular.ttf"),
-    "Montserrat-Italic": require("./assets/fonts/Montserrat-Italic-VariableFont_wght.ttf"),
-    "Montserrat-Bold": require("./assets/fonts/Montserrat-Bold.ttf"),
-    "jsMath-cmbx10": require("./assets/fonts/jsMath-cmbx10.ttf"),
-  });
+	const [fontsLoaded] = useFonts({
+		Montserrat: require("./assets/fonts/Montserrat-Regular.ttf"),
+		"Montserrat-Italic": require("./assets/fonts/Montserrat-Italic-VariableFont_wght.ttf"),
+		"Montserrat-Bold": require("./assets/fonts/Montserrat-Bold.ttf"),
+		"jsMath-cmbx10": require("./assets/fonts/jsMath-cmbx10.ttf"),
+	});
 
-  if (!fontsLoaded) return null;
+	if (!fontsLoaded) return null;
 
-	console.log("store", store)
 	return (
 		<Provider store = {store}>
 			<NavigationContainer theme={theme}>
