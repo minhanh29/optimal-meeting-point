@@ -16,8 +16,10 @@ import {
     changeSignUpStatus,
     signUpFail,
 } from "../../redux/reducers/userSlice"
-import {useDispatch, useSelector } from "react-redux"
+import { useFonts } from "expo-font";
+import { Provider, useDispatch, useSelector } from "react-redux"
 import logo from "./../../images/logo.png"
+// import { selectUser } from "../../redux/reducers/userSlice";
 
 const SignUp = ({ navigation }) => {
     const [name, setName] = React.useState("");

@@ -176,6 +176,7 @@ export const signUpAsync = createAsyncThunk('user/signUpAsync', async (data)=>{
     console.log(data)
     console.log("run 1")
     const res = await createUserWithEmailAndPassword(auth, data.username + "@omp.com", data.password)
+    console.log("res", res)
     //save to Firestore
     await createUser(res.user.uid, data.name, data.username, "", new GeoPoint(10.729567, 106.6930756), "702 Nguyen Van Linh Street, Tan Phong Ward, District 7, Ho Chi Minh City", true)
 

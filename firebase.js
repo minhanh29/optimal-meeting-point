@@ -13,24 +13,25 @@ import {
 } from 'firebase/auth';
 
 export const db = getFirestore(app)
-const auth = getAuth();
+export const auth = getAuth();
 
-const createUser = (id, name, email, ava_url, address, hash) => {
+const createUser = (id, name, email, ava_url, address, address_text, gps_enabled) => {
   return setDoc(doc( db, "user", id),{
     name,
-    username,
+    // username,
+	email,
     ava_url,
     address,
+	address_text,
     gps_enabled,
-    hash
     }
-  )}
+)}
 
 export {
-  createUserWithEmailAndPassword,
+  	createUserWithEmailAndPassword,
 	updateProfile,
 	onAuthStateChanged,
 	signInWithEmailAndPassword,
 	signOut,
-  createUser,
+  	createUser,
 }
