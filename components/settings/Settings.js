@@ -5,6 +5,10 @@ import { useTheme } from '@react-navigation/native';
 import * as Location from 'expo-location';
 import { db } from "../../firebaseConfig"
 import { collection, getDocs } from "firebase/firestore";
+import {
+	logOutAsync
+} from "../../redux/reducers/userSlice"
+import { useDispatch } from "react-redux"
 
 import styles from "./styles"
 import { getAddressFromGeopoint } from "../common/Utils"
@@ -16,6 +20,8 @@ const Settings = ({ navigation }) => {
 	const [name, setName] = useState("Minh Anh");
 	const [username, setUsername] = useState("minhanh");
 	const [avatar, setAvatar] = useState(null);
+
+	const dispatch = useDispatch()
 
 	useEffect(() => {
 		checkIfLocationEnabled()
@@ -35,7 +41,7 @@ const Settings = ({ navigation }) => {
 			  console.log('Location permission not granted!');
 			  return;
 			}
-			
+
 			setCheckedLocation(data.gps_enabled)
 			let address = await getAddressFromGeopoint(data.address)
 			setAddress(address)
@@ -69,6 +75,11 @@ const Settings = ({ navigation }) => {
 			}
 		}
 		setCheckedLocation(!checkedLocation)
+	}
+
+	const handleLogout = () => {
+		dispatch(logOutAsync())
+		navigation.navigate("Login")
 	}
 
 	return (
@@ -173,7 +184,7 @@ const Settings = ({ navigation }) => {
 					...styles.buttonContainer,
 					backgroundColor: colors.mainColor2
 				}}
-				onPress={() => navigation.navigate("Login")}
+				onPress={handleLogout}
 			>
 				<Text
 					style={styles.buttonTitle}
