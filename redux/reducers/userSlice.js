@@ -170,7 +170,7 @@ const initialState = {
     signUpStatus: USER_IDLE,
     status: USER_IDLE,  // login status
     errorMessage: "",
-	isAuthenticated: true,
+	isAuthenticated: false,
 }
 
 export const signUpAsync = createAsyncThunk('user/signUpAsync', async (data)=>{

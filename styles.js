@@ -20,7 +20,8 @@ const styles = StyleSheet.create({
 		shadowColor: "black",
 		padding: 15,
 		elevation: 4,
-		marginBottom: "15%"
+		marginBottom: "15%",
+		overflow: "visible",
 	},
 	buttonTitle: {
 		fontFamily: "Montserrat-Bold",
