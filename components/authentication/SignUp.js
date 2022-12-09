@@ -19,7 +19,7 @@ import {
     signUpFail,
 } from "../../redux/reducers/userSlice"
 import { useFonts } from "expo-font";
-import { Provider, useDispatch, useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import logo from "./../../images/logo.png"
 import Spinner from 'react-native-loading-spinner-overlay';
 
