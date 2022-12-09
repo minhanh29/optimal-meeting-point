@@ -62,8 +62,8 @@ const createGroupandUser = (data) => {
   })
 }
 
-const getGroupName = () => {
-	return getDocs(collection(db, "group"));
+const getGroupName = (id) => {
+	return getDoc(doc(db, "group", id));
 }
 
 

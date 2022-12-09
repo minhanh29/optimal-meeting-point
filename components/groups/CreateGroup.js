@@ -21,9 +21,8 @@ const CreateGroup = () => {
     const dispatch = useDispatch()
     const user = useSelector(selectUser)
     const group = useSelector(selectGroup)
-    
-    console.log(group)
-    
+    const [selectedIndex, setSelectedIndex] = useState([]);
+    // console.log(selectedIndex)
 
    
 
@@ -56,18 +55,27 @@ const CreateGroup = () => {
        
 
 
+    // Click + => include user to the memberList | click - => remove user from the the memberList
+    const handleAdd = (user, index) => {
+        setSelectedIndex(prev =>{
+            const isInclude = selectedIndex.includes(index)
+            if(isInclude){
+                return selectedIndex.filter(item => item !== index)
+            }else{
+                return [...prev, index]
+            }
+        })
+       
+        setMemberList(prev => {
+            const isInclude = memberList.includes(user)
+            if(isInclude){
+                return memberList.filter(item => item !== user)
+            }else{
+                return [...prev, user]
+            }
+        })
+    
 
-    const handleAdd = (user) => {
-        // if(iconBtn == 'plus')
-        //     setIconBtn("minus");
-
-        // else{
-        //     setIconBtn("plus")
-        // }
-
-        setMemberList(memberList => ([
-            ...memberList, user.name
-        ]))
     }
 
     //Done 50% add to group db, doing groupNuser db
@@ -134,12 +142,12 @@ const CreateGroup = () => {
                                             items="center"
                                             direction="row"
                                         >
-                                            <Avatar
+                                            {/* <Avatar
                                                 label={user.name}
                                                 icon={props => <Icon name="account" {...props} />}
                                                 image={avatar ? { uri: user.ava_url } : null}
                                                 imageStyle={{ borderRadius: 10 }}
-                                            />
+                                            /> */}
                                             <Stack
                                                 style={{ marginLeft: 17 }}
                                                 spacing={5}
@@ -154,10 +162,10 @@ const CreateGroup = () => {
                                             </Stack>
 
                                             <IconButton
-                                                icon={props => <FIcon name={'plus'} {...props} />}
+                                                icon={props => <FIcon name={ selectedIndex.includes(index) ? 'minus' : 'plus'} {...props} />}
                                                 color="black"
                                                 style={{ alignSelf: "center", padding: 20, backgroundColor: 'transparent', borderRadius: 10, color: '#9ACDD0', marginRight: 20 }}
-                                                onPress={() => handleAdd(user)}
+                                                onPress={() => handleAdd(user, index)}
                                             />
                                         </Flex>
                                     </Box>

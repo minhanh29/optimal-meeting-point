@@ -20,33 +20,46 @@ const Groups = ({ navigation }) => {
   const [groupNameMap, setGroupNameMap] = useState({})
   const dispatch = useDispatch()
   const group = useSelector(selectGroup);
-  console.log(groupNameMap)
-  const result = {}
+  console.log("Data", dataList)
 
   //Cannot see the group name after creating group
-  const fetchGroupName = async () => {
+  const fetchGroupName = async (refList) => {
+    const groupDict = {...groupNameMap}
+    const groups = []
     try {
-      const res = await getGroupName()
-      const result = {}
-      res.forEach(doc => {
-        result[doc.id] = doc.data().group_name
-      })
+      for(let i = 0; i< refList.length; i++){
+        data = refList[i]
+        if(!data.group_id in groupDict){
+          groups.push(groupDict[data.group_id])
+          continue
+          
+        }
+        const res = await getGroupName(data.group_id)
+
+          groupDict[res.id] = {
+            id: data.id,
+            ...res.data()
+          }
+          groups.push(groupDict[data.group_id])
+      }
       
-      setGroupNameMap(result)
-    } catch (e) { }
+      }catch (e) { }
+    setDataList(groups)
+    setGroupNameMap(groupDict)
   }
 
   useEffect(
     () => onSnapshot(query(collection(db, "groupNuser"), where("user_id", "==", user.user.id)), (snapshot) => {
         // Update to Redux
-        setDataList(snapshot.docs.map((doc) => ({...doc.data(), id: doc.id})))
+        const refList = snapshot.docs.map((doc) => ({...doc.data(), id: doc.id}))
+        fetchGroupName(refList)
     }
     ),
     []
 );
 
   useEffect(() => {
-    fetchGroupName()
+    // fetchGroupName()
   },[])
 
 
@@ -95,7 +108,7 @@ const Groups = ({ navigation }) => {
                     w="70%"
                   >
                     <Text style={styles.cardHeader} >
-                      {groupNameMap[data.group_id]}
+                      {data.group_name}
                     </Text>
                     <Text style={styles.infoContent} >
                       3 members
