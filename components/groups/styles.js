@@ -77,7 +77,6 @@ const styles = StyleSheet.create({
     searchHolder:{
         backgroundColor: 'white',
         borderRadius: 15,
-		marginTop: 15,
     },
     searchInput: {
 		width: "80%",
@@ -112,6 +111,9 @@ const styles = StyleSheet.create({
 		shadowRadius: 4.65,
 
 		elevation: 8,
+	},
+	listContainer:{
+		width: '80%'
 	},
 })
 

@@ -1,6 +1,11 @@
 import * as Location from 'expo-location';
 
 
+export const geoToDict = (geopoint) => ({
+	latitude: geopoint.latitude,
+	longitude: geopoint.longitude,
+})
+
 export const getAddressFromGeopoint = async (geopoint) => {
 	if (!geopoint)
 		return ""

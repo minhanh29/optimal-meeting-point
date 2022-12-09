@@ -5,8 +5,12 @@ import { useTheme } from '@react-navigation/native';
 import styles from "./styles"
 import AIcon from "@expo/vector-icons/AntDesign";
 import FIcon from "@expo/vector-icons/Feather";
-import { db } from "../../firebaseConfig"
+import { createGroupandUser, db } from "../../firebaseConfig"
 import { collection, doc, getDocs, query, addDoc } from "firebase/firestore";
+import { useDispatch, useSelector } from 'react-redux';
+import { selectUser } from '../../redux/reducers/userSlice';
+import { createGroupAsync, selectGroup, GROUP_CREATE_SUCCESS } from '../../redux/reducers/groupSlice';
+
 const CreateGroup = () => {
     const { colors } = useTheme();
     const [avatar, setAvatar] = useState(null);
@@ -14,14 +18,14 @@ const CreateGroup = () => {
     // const [iconBtn, setIconBtn]  = useState("plus");
     const [memberList, setMemberList] = useState([])
     const [groupName, setGroupName] = useState("Group name")
-    console.log("Here is member", memberList)
-    console.log("Group", groupName)
+    const dispatch = useDispatch()
+    const user = useSelector(selectUser)
+    const group = useSelector(selectGroup)
+    
+    console.log(group)
+    
 
-    const createGroup = (data) => {
-        return addDoc(collection(db, "group"), {
-            ...data
-        });
-    }
+   
 
     const fetchUserInfo = async () => {
         try {
@@ -49,6 +53,9 @@ const CreateGroup = () => {
         fetchUserInfo();
     }, []);
 
+       
+
+
 
     const handleAdd = (user) => {
         // if(iconBtn == 'plus')
@@ -69,9 +76,10 @@ const CreateGroup = () => {
             const data = {
                 group_name: groupName.trim(),
                 location: '',
+                user_id: user.user.id,
             }
-
-            await createGroup(data)
+            dispatch(createGroupAsync(data))
+            
         } catch (e) {
             console.log(e)
         }
@@ -110,51 +118,54 @@ const CreateGroup = () => {
                         />
                     </Flex>
 
-                    <Stack w='80%' spacing={20}>
-                        {userList.map((user, index) => {
-                            return (
-                                <Box
-                                    elevation={4}
-                                    backgroundColor="white"
-                                    style={styles.cardContainer}
-                                    w='100%'
-                                    key={index}
-                                >
-                                    <Flex
-                                        w="100%"
-                                        items="center"
-                                        direction="row"
+                    <ScrollView style={styles.listContainer}>
+                        <Stack w='100%' spacing={20}>
+                            {userList.map((user, index) => {
+                                return (
+                                    <Box
+                                        elevation={3}
+                                        backgroundColor="white"
+                                        style={styles.cardContainer}
+                                        w='100%'
+                                        key={index}
                                     >
-                                        <Avatar
-                                            label={user.name}
-                                            icon={props => <Icon name="account" {...props} />}
-                                            image={avatar ? { uri: user.ava_url } : null}
-                                            imageStyle={{ borderRadius: 10 }}
-                                        />
-                                        <Stack
-                                            style={{ marginLeft: 17 }}
-                                            spacing={5}
-                                            w="58%"
+                                        <Flex
+                                            w="100%"
+                                            items="center"
+                                            direction="row"
                                         >
-                                            <Text style={styles.cardHeader} >
-                                                {user.name}
-                                            </Text>
-                                            <Text style={styles.infoContent} >
-                                                @{user.username}
-                                            </Text>
-                                        </Stack>
+                                            <Avatar
+                                                label={user.name}
+                                                icon={props => <Icon name="account" {...props} />}
+                                                image={avatar ? { uri: user.ava_url } : null}
+                                                imageStyle={{ borderRadius: 10 }}
+                                            />
+                                            <Stack
+                                                style={{ marginLeft: 17 }}
+                                                spacing={5}
+                                                w="58%"
+                                            >
+                                                <Text style={styles.cardHeader} >
+                                                    {user.name}
+                                                </Text>
+                                                <Text style={styles.infoContent} >
+                                                    @{user.username}
+                                                </Text>
+                                            </Stack>
 
-                                        <IconButton
-                                            icon={props => <FIcon name={'plus'} {...props} />}
-                                            color="black"
-                                            style={{ alignSelf: "center", padding: 20, backgroundColor: 'transparent', borderRadius: 10, color: '#9ACDD0', marginRight: 20 }}
-                                            onPress={() => handleAdd(user)}
-                                        />
-                                    </Flex>
-                                </Box>
-                            )
-                        })}
-                    </Stack>
+                                            <IconButton
+                                                icon={props => <FIcon name={'plus'} {...props} />}
+                                                color="black"
+                                                style={{ alignSelf: "center", padding: 20, backgroundColor: 'transparent', borderRadius: 10, color: '#9ACDD0', marginRight: 20 }}
+                                                onPress={() => handleAdd(user)}
+                                            />
+                                        </Flex>
+                                    </Box>
+                                )
+                            })}
+                        </Stack>
+                    </ScrollView>
+
                     <Spacer />
                     <Stack w='100%' items="center">
                         <Text style={styles.subContent}>Number of members: 2</Text>

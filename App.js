@@ -1,15 +1,8 @@
 import React, { useState, useCallback, useRef } from "react";
-import { StatusBar } from "expo-status-bar";
-import MapView, { Callout, Marker } from "react-native-maps";
 import { StyleSheet, View, Dimensions, Image } from "react-native";
-import Svg, { Image as Imagesvg } from "react-native-svg";
 import {
-	AppBar,
-	HStack,
-	IconButton,
-	Stack,
-	Text,
-	Image as ImageMaterial,
+  IconButton,
+  Text,
 } from "@react-native-material/core";
 import SignUp from "./components/authentication/SignUp";
 import Login from "./components/authentication/Login";
@@ -19,16 +12,19 @@ import ChangePassword from "./components/settings/ChangePassword";
 import UpdateProfile from "./components/settings/UpdateProfile";
 import Groups from "./components/groups/Groups";
 import Notifications from "./components/notifications/Notifications";
-import { useFonts } from "expo-font";
-import "react-native-gesture-handler";
+import { useFonts } from 'expo-font';
+import 'react-native-gesture-handler';
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import Friends from "./components/friends/Friends";
 import SetAddress from "./components/address/SetAddress";
 import { Ionicons } from '@expo/vector-icons';
 import CreateGroup from "./components/groups/CreateGroup";
+import { Provider, useSelector } from "react-redux";
+import { store } from "./redux/store";
+import { selectUser } from "./redux/reducers/userSlice";
 
-const StackNavigator = createStackNavigator();
+const StackNavigator = createStackNavigator()
 
 export const theme = {
 	colors: {
@@ -39,19 +35,22 @@ export const theme = {
 	},
 };
 
-const App = () => {
-  const [fontsLoaded] = useFonts({
-    Montserrat: require("./assets/fonts/Montserrat-Regular.ttf"),
-    "Montserrat-Italic": require("./assets/fonts/Montserrat-Italic-VariableFont_wght.ttf"),
-    "Montserrat-Bold": require("./assets/fonts/Montserrat-Bold.ttf"),
-    "jsMath-cmbx10": require("./assets/fonts/jsMath-cmbx10.ttf"),
-  });
+const AppInner = () => {
+	const { isAuthenticated } = useSelector(selectUser)
 
-  if (!fontsLoaded) return null;
+	const [fontsLoaded] = useFonts({
+		Montserrat: require("./assets/fonts/Montserrat-Regular.ttf"),
+		"Montserrat-Italic": require("./assets/fonts/Montserrat-Italic-VariableFont_wght.ttf"),
+		"Montserrat-Bold": require("./assets/fonts/Montserrat-Bold.ttf"),
+		"jsMath-cmbx10": require("./assets/fonts/jsMath-cmbx10.ttf"),
+	});
+
+	if (!fontsLoaded) return null;
 
 	return (
 		<NavigationContainer theme={theme}>
 			<StackNavigator.Navigator
+				initialRouteName={isAuthenticated ? "Dashboard" : "Login"}
 				screenOptions={({ navigation }) => ({
 					headerTitle: props => (
 						<Text {...props} variant="h6" style={styles.header} />
@@ -141,7 +140,6 @@ const App = () => {
 					options={{
 						title: "Your Groups"
 					}} />
-				
 				<StackNavigator.Screen name="Notifications" component={Notifications} />
 				<StackNavigator.Screen name="Friends" component={Friends} />
 				<StackNavigator.Screen name="Address" component={SetAddress} />
@@ -149,6 +147,12 @@ const App = () => {
 		</NavigationContainer>
 	);
 }
+
+const App = () => (
+	<Provider store={store}>
+		<AppInner />
+	</Provider>
+)
 
 const styles = StyleSheet.create({
 	container: {

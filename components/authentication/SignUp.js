@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View,
     StyleSheet,
     TextInput,
@@ -6,19 +6,77 @@ import { View,
     Image,
     Text,
     KeyboardAvoidingView,
+	Alert,
     } from "react-native";
-
-import logo from "../../images/logo.png"
+import {
+    signUpAsync,
+    selectUser,
+    USER_SIGNUP_SUCCESS ,
+    USER_IDLE,
+    USER_SIGNUP_FAILED,
+	USER_SIGNUP_PENDING,
+    changeSignUpStatus,
+    signUpFail,
+} from "../../redux/reducers/userSlice"
+import { useFonts } from "expo-font";
+import { Provider, useDispatch, useSelector } from "react-redux"
+import logo from "./../../images/logo.png"
+import Spinner from 'react-native-loading-spinner-overlay';
 
 const SignUp = ({ navigation }) => {
-    const [name, setName] = useState("");
-    const[username, setUsername] = useState("");
-    const [address, setAddress] = useState("");
-    const [password, setPassword] = useState("");
-    const [passwordConfirm, setPasswordConfirm] = useState("");
+    const [name, setName] = React.useState("");
+    const [username, setUsername] = React.useState("");
+    const [password, setPassword] = React.useState("");
+    const [confirmPassword, setConfirmPassword] = React.useState("");
 
+
+    const dispatch = useDispatch()
+    const user = useSelector(selectUser)
+
+    useEffect(() => {
+        if (user.signUpStatus === USER_SIGNUP_FAILED){
+            dispatch(changeSignUpStatus(USER_IDLE))
+			showErrorMessage(user.errorMessage)
+        } else if (user.signUpStatus === USER_SIGNUP_SUCCESS){
+            dispatch(changeSignUpStatus(USER_IDLE))
+			Alert.alert(
+				"Sign Up Success",
+				"You have created a new account successfully",
+				[{
+					text: "Log In",
+					onPress: () => navigation.navigate("Login")
+				},]);
+        }
+    },[user.signUpStatus])
+
+	const showErrorMessage = (message) => {
+		Alert.alert(
+			"Sign Up Failed",
+			message,
+			[{ text: "OK" }],
+			{ cancelable: true }
+		);
+	}
+
+    const handleSignUp = () => {
+		if (!name || !username || !password || !confirmPassword){
+			showErrorMessage('Please fill in the missing input')
+        } else if(password.length < 6){
+			showErrorMessage('Password need to be more than 6 digit')
+        } else if(password !== confirmPassword){
+			showErrorMessage("Confirmation Password does not match.")
+        } else{
+            dispatch(signUpAsync({name, username, password}))
+        }
+	}
     return (
-        <KeyboardAvoidingView behavior={Platform.OS == "ios" ? "padding" :null} style={styles.container}>
+		<KeyboardAvoidingView behavior={Platform.OS == "ios" ? "padding" :null} style={styles.container}>
+			<Spinner
+				visible={user.signUpStatus === USER_SIGNUP_PENDING}
+				textContent={'Signing Up...'}
+				textStyle={{color: "white"}}
+				cancelable={true}
+			/>
             <View style={styles.logo}>
                 <Image style={{height: 100, width:100}} source={logo} resizeMode="contain" />
                 <Text style={{
@@ -36,24 +94,21 @@ const SignUp = ({ navigation }) => {
                 }}>OMP</Text>
             </View>
             <View style={styles.form}>
-                <TextInput style={styles.textInput} value={name} onChangeText={setName} placeholder="Name"/>
+                <TextInput style={styles.textInput} value={name} onChangeText={setName} placeholder="Name" />
             </View>
             <View style={styles.form}>
-                <TextInput style={styles.textInput} value={username} onChangeText={setUsername} placeholder="Username"/>
+				<TextInput style={styles.textInput} value={username} onChangeText={value => setUsername(value.toLowerCase())} placeholder="Username"/>
             </View>
             <View style={styles.form}>
-                <TextInput style={styles.textInput} value={address} onChangeText={setAddress} placeholder="Address"/>
-            </View>
-            <View style={styles.form}>
-                <TextInput style={styles.textInput} value={password} onChangeText={setPassword} secureTextEntry={true} placeholder="Password"/>
+                <TextInput style={styles.textInput} value={password} onChangeText={setPassword} placeholder="Password" secureTextEntry/>
             </View>
 			<TextInput style={{height: 0.001}}/>
             <View style={styles.form}>
-                <TextInput style={styles.textInput} value={passwordConfirm} onChangeText={setPasswordConfirm} secureTextEntry={true} placeholder="Confirm Password"/>
+                <TextInput style={styles.textInput} value={confirmPassword} onChangeText={setConfirmPassword} placeholder="Confirm Password" secureTextEntry/>
             </View>
             <View style={styles.form}>
-                <TouchableOpacity style={styles.button} onPress={() => {console.log("pressed")}}>
-                    <Text style={styles.buttonTittle}>Sign Up</Text>
+                <TouchableOpacity style={styles.button}>
+                    <Text style={styles.buttonTittle} onPress={() => handleSignUp()}>Sign Up</Text>
                 </TouchableOpacity>
             </View>
             <View style={styles.message}>
@@ -75,9 +130,10 @@ const styles = StyleSheet.create ({
     container:{
         backgroundColor: '#EDF4F7',
         flex: 1,
+        justifyContent: "center",
+        // alignItems: 'center',
     },
     logo:{
-        marginTop:120,
         marginBottom: 20,
         width:'100%',
         alignItems: 'center',
