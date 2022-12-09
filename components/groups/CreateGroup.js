@@ -22,7 +22,7 @@ const CreateGroup = () => {
     const user = useSelector(selectUser)
     const group = useSelector(selectGroup)
     const [selectedIndex, setSelectedIndex] = useState([]);
-    // console.log(selectedIndex)
+    console.log(memberList)
 
    
 
@@ -142,12 +142,12 @@ const CreateGroup = () => {
                                             items="center"
                                             direction="row"
                                         >
-                                            {/* <Avatar
+                                            <Avatar
                                                 label={user.name}
                                                 icon={props => <Icon name="account" {...props} />}
                                                 image={avatar ? { uri: user.ava_url } : null}
                                                 imageStyle={{ borderRadius: 10 }}
-                                            /> */}
+                                            />
                                             <Stack
                                                 style={{ marginLeft: 17 }}
                                                 spacing={5}
