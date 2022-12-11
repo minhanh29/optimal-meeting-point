@@ -2464,6 +2464,11 @@ agent-base@6:
   dependencies:
     debug "4"
 
+agentkeepalive@0.1.5:
+  version "0.1.5"
+  resolved "https://registry.yarnpkg.com/agentkeepalive/-/agentkeepalive-0.1.5.tgz#d8deacd5afb1023294222fc2479a9dd035fd90b7"
+  integrity sha512-66UIpYHYaoebXMRvuZ7P+9n6vOpWS31MIWDcpQS22In1bidIIXs2+fYJIqBinKSid3QcUPfDqYQLX8F+b+5Zhg==
+
 aggregate-error@^3.0.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/aggregate-error/-/aggregate-error-3.1.0.tgz#92670ff50f5359bdb7a3e0d40d0ec30c5737687a"
@@ -2481,6 +2486,14 @@ ajv@^8.11.0:
     json-schema-traverse "^1.0.0"
     require-from-string "^2.0.2"
     uri-js "^4.2.2"
+
+algolia-search@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/algolia-search/-/algolia-search-2.0.1.tgz#a3c9b011364c2f5c0e28503b93550a2fe1bbf7a0"
+  integrity sha512-BPsz/sJSDZXrZgGgee69cCOWOvFqAjfXButZm+4x2uG1W8kxgKKC/dm/444CeNYD0JKNAlL7M0LJJvdPi3qQMQ==
+  dependencies:
+    agentkeepalive "0.1.5"
+    underscore "1.4.4"
 
 anser@^1.4.9:
   version "1.4.10"
@@ -7441,6 +7454,11 @@ uglify-es@^3.1.9:
   dependencies:
     commander "~2.13.0"
     source-map "~0.6.1"
+
+underscore@1.4.4:
+  version "1.4.4"
+  resolved "https://registry.yarnpkg.com/underscore/-/underscore-1.4.4.tgz#61a6a32010622afa07963bf325203cf12239d604"
+  integrity sha512-ZqGrAgaqqZM7LGRzNjLnw5elevWb5M8LEoDMadxIW3OWbcv72wMMgKdwOKpd5Fqxe8choLD8HN3iSj3TUh/giQ==
 
 unicode-canonical-property-names-ecmascript@^2.0.0:
   version "2.0.0"
