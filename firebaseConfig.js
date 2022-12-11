@@ -17,6 +17,16 @@ import {
 	signOut
 } from 'firebase/auth';
 
+import {
+	ref,
+	uploadBytes,
+	uploadString,
+	deleteObject,
+	getDownloadURL,
+	getStorage,
+} from 'firebase/storage'
+
+
 import { initializeApp } from 'firebase/app';
 
 // Initialize Firebase
@@ -34,6 +44,8 @@ const app = initializeApp(firebaseConfig);
 
 export const db = getFirestore(app)
 const auth = getAuth();
+
+export const storage = getStorage(app)
 
 const createUser = (id, name, username, ava_url, address, address_text, gps_enabled) => {
   return setDoc(doc(db, "user", id),{
@@ -71,18 +83,105 @@ const deleteGroup = (id) => {
 	return deleteDoc(doc(db, "groupNuser", id))
 }
 
+const updateUser = (id, data) => {
+	return setDoc(doc(db, "user", id), data, { merge: true })
+};
 
+
+
+// CLOUD STORAGE
+const uploadFile = async (folderName, imageUri, fileName) => {
+    // // Upload the file and metadata
+    try {
+		const blob = await new Promise((resolve, reject) => {
+			const xhr = new XMLHttpRequest();
+			xhr.onload = function() {
+				resolve(xhr.response);
+			};
+			xhr.onerror = function(e) {
+				console.log(e);
+				reject(new TypeError("Network request failed"));
+			};
+			xhr.responseType = "blob";
+			xhr.open("GET", imageUri, true);
+			xhr.send(null);
+		});
+
+		const timestamp = (new Date()).getTime()
+		const imageRef = ref(storage, `${folderName}/ ${timestamp}_${fileName}`)
+        // await uploadBytes(imageRef, imageUri)
+        await uploadBytes(imageRef, blob)
+        const url = await getDownloadURL(imageRef)
+        // console.log("URL" ,url)
+        return {
+			success: true,
+			mess: url
+        }
+    } catch (error) {
+        return {
+			success: false,
+			mess: error.message
+        }
+    }
+}
+
+const downloadFile = async (folderName, fileName) => {
+	const imageRef = ref(storage, `${folderName}/ ${fileName}`)
+		try {
+		const url = await getDownloadURL(imageRef)
+		return {
+			success: true,
+			mess: url
+		}
+	} catch (error) {
+		return {
+			success: false,
+			mess: error.message
+		}
+	}
+}
+
+
+const deleteFile = async (folderName,fileName) => {
+    const deleteRef = ref(storage, `${folderName}/ ${fileName}`)
+    try {
+      await deleteObject(deleteRef)
+    } catch(error){
+      return error.message
+    }
+}
+
+const deleteFileByUrl = async (url) => {
+    var fileRef = storage.refFromURL(url)
+
+    // Delete the file using the delete() method
+    return await fileRef.delete().then(() => {
+
+        // File deleted successfully
+        // console.log("File Deleted")
+    }).catch(function (error) {
+        // Some Error occurred
+        console.log(error.mess)
+    });
+}
+
+// ============
 export {
-  createUserWithEmailAndPassword,
+	createUserWithEmailAndPassword,
 	updateProfile,
 	onAuthStateChanged,
 	signInWithEmailAndPassword,
 	signOut,
-  createUser,
-  getUserInfo,
-  auth,
-  createGroup,
-  createGroupandUser,
-  getGroupName,
-  deleteGroup,
+	createUser,
+	getUserInfo,
+	auth,
+	createGroup,
+	createGroupandUser,
+	getGroupName,
+	deleteGroup,
+	updateUser,
+	uploadFile,
+	downloadFile,
+	deleteFile,
+	deleteFileByUrl,
 }
