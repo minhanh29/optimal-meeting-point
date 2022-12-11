@@ -4,13 +4,18 @@ import { Avatar, Stack, Text, Flex, Spacer } from "@react-native-material/core";
 import { useTheme } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons'
 import * as ImagePicker from 'expo-image-picker';
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, getDoc, doc } from "firebase/firestore";
+import { useDispatch, useSelector } from "react-redux"
+import {
+    selectUser,
+} from "../../redux/reducers/userSlice"
 import { db } from "../../firebaseConfig"
 
 import styles from "./styles"
 
 const UpdateProfile = () => {
 	const { colors } = useTheme();
+	const { user } = useSelector(selectUser)
 
 	const [avatar, setAvatar] = useState(null);
 	const [name, setName] = useState("Minh Anh");
@@ -21,10 +26,12 @@ const UpdateProfile = () => {
 	}, [])
 
 	const fetchUserInfo = async () => {
+		if (user.id === "")
+			return
+
 		try {
-			const querySnapshot = await getDocs(collection(db, "user"));
-			const doc = querySnapshot.docs[0]
-			const data = doc.data()
+			const myDoc = await getDoc(doc(db, "user", user.id));
+			const data = myDoc.data()
 			setName(data.name)
 			setUsername(data.username)
 			setAvatar(data.ava_url)
