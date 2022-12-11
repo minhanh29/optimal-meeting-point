@@ -3,6 +3,10 @@ import {
   getDoc,
 	setDoc,
 	getFirestore,
+  addDoc,
+  collection,
+  getDocs,
+  deleteDoc,
 } from 'firebase/firestore'
 import {
 	getAuth,
@@ -46,6 +50,27 @@ const getUserInfo = (id) => {
   return getDoc(doc(db, "user", id))
 };
 
+const createGroup = (data) => {
+  return addDoc(collection(db, "group"), {
+  ...data
+});
+}
+
+const createGroupandUser = (data) => {
+  return addDoc(collection(db, "groupNuser" ),{
+    ...data
+  })
+}
+
+const getGroupName = (id) => {
+	return getDoc(doc(db, "group", id));
+}
+
+
+const deleteGroup = (id) => {
+	return deleteDoc(doc(db, "groupNuser", id))
+}
+
 
 export {
   createUserWithEmailAndPassword,
@@ -56,4 +81,8 @@ export {
   createUser,
   getUserInfo,
   auth,
+  createGroup,
+  createGroupandUser,
+  getGroupName,
+  deleteGroup,
 }
