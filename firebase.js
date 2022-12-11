@@ -27,6 +27,7 @@ const createUser = (id, name, email, ava_url, address, address_text, gps_enabled
     }
 )}
 
+
 export {
   	createUserWithEmailAndPassword,
 	updateProfile,
