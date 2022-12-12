@@ -78,7 +78,7 @@ const Groups = ({ navigation }) => {
         items="center"
         paddingTop={35}
       >
-        <Flex direction='row' w='80%' style={styles.searchHolder}>
+        <Flex direction='row' w='80%' style={{...styles.searchHolder, marginTop:  Platform.OS == "ios" ? 20 : 0}}>
           <AIcon name="search1" style={styles.iconImg} color='B4BABC' />
           <TextInput
             style={styles.searchInput}
@@ -135,6 +135,15 @@ const Groups = ({ navigation }) => {
                 icon={props => <MIcon name="group-add" {...props} />}
                 color="#9CC7CA"
                 onPress={() => navigation.navigate("CreateGroup")}
+              >
+              </IconButton>
+            </View>
+            <View style={{ ...styles.shadowBtn, shadowOpacity: Platform.OS == "ios" ? 0.23 : 0.5 }}>
+              <IconButton
+                style={{ alignSelf: "center", overflow: 'hidden', padding: 25, backgroundColor: 'white', borderRadius: 10, marginBottom: 16, }}
+                icon={props => <MIcon name="group-add" {...props} />}
+                color="#9CC7CA"
+                onPress={() => navigation.navigate("GroupInfo")}
               >
               </IconButton>
             </View>
