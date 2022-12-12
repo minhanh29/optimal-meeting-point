@@ -113,7 +113,8 @@ const styles = StyleSheet.create({
 		elevation: 8,
 	},
 	listContainer:{
-		width: '80%'
+		width: '80%',
+		height: '50%'
 	},
 })
 

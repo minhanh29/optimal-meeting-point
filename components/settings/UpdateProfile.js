@@ -99,7 +99,7 @@ const UpdateProfile = () => {
 			console.log(e.message)
 		}
 		setLoaded(true)
-
+		console.log("LOADED", loaded)
 		Alert.alert(
 			title,
 			message,
