@@ -1,18 +1,26 @@
 import React, { useState, useEffect } from 'react'
-import { TouchableOpacity, TextInput } from 'react-native'
+import { TouchableOpacity, TextInput, Alert } from 'react-native'
 import { Avatar, Stack, Text, Flex, Spacer } from "@react-native-material/core";
 import { useTheme } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons'
 import * as ImagePicker from 'expo-image-picker';
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "../../firebaseConfig"
+import { getDoc, doc } from "firebase/firestore";
+import { useDispatch, useSelector } from "react-redux"
+import {
+    selectUser,
+} from "../../redux/reducers/userSlice"
+import { db, updateUser, uploadFile } from "../../firebaseConfig"
+import Spinner from 'react-native-loading-spinner-overlay';
 
 import styles from "./styles"
 
 const UpdateProfile = () => {
 	const { colors } = useTheme();
+	const { user } = useSelector(selectUser)
 
+	const [loaded, setLoaded] = useState(false);
 	const [avatar, setAvatar] = useState(null);
+	const [hasAvaChanged, setHasAvaChanged] = useState(false);
 	const [name, setName] = useState("Minh Anh");
 	const [username, setUsername] = useState("minhanh");
 
@@ -21,13 +29,16 @@ const UpdateProfile = () => {
 	}, [])
 
 	const fetchUserInfo = async () => {
+		if (user.id === "")
+			return
+
 		try {
-			const querySnapshot = await getDocs(collection(db, "user"));
-			const doc = querySnapshot.docs[0]
-			const data = doc.data()
+			const myDoc = await getDoc(doc(db, "user", user.id));
+			const data = myDoc.data()
 			setName(data.name)
 			setUsername(data.username)
 			setAvatar(data.ava_url)
+			setLoaded(true)
 		} catch(e) {
 			console.log(e)
 		}
@@ -43,9 +54,59 @@ const UpdateProfile = () => {
 		});
 
 		if (!result.canceled) {
+			console.log(result.assets[0])
+			if (result.assets[0].fileSize > 1000000) {
+				Alert.alert(
+					"Error",
+					"File size too large",
+					[{ text: "OK" }],
+					{ cancelable: true }
+				);
+				return
+			}
+
 			setAvatar(result.assets[0].uri);
+			setHasAvaChanged(true)
 		}
 	};
+
+	const handleSave = async () => {
+		if (user.id === "")
+			return
+
+		setLoaded(false)
+		let title = "Update Success"
+		let message = "Your profile is updated successfully!";
+
+		try {
+			let ava_url = avatar
+			if (hasAvaChanged && avatar) {
+				const filename = avatar.substring(avatar.lastIndexOf('/') + 1);
+				const res = await uploadFile("avatar", avatar, filename)
+
+				if (res.success)
+					ava_url = res.mess
+				else
+					throw Error(res.mess)
+			}
+
+			await updateUser(user.id, {
+				name, ava_url
+			})
+		} catch (e) {
+			title = "Error"
+			message = e.message
+			console.log(e.message)
+		}
+		setLoaded(true)
+
+		Alert.alert(
+			title,
+			message,
+			[{ text: "OK" }],
+			{ cancelable: true }
+		);
+	}
 
 	return (
 		<Stack
@@ -56,6 +117,13 @@ const UpdateProfile = () => {
 			paddingTop={50}
 			spacing={25}
 		>
+			<Spinner
+				visible={!loaded}
+				textContent={'Loading...'}
+				textStyle={{color: "white"}}
+				cancelable={true}
+			/>
+
 			<TouchableOpacity
 				elevation={4}
 				backgroundColor="white"
@@ -104,11 +172,7 @@ const UpdateProfile = () => {
 
 			<Stack w="80%" items="start" spacing={7}>
 				<Text style={styles.text}>Username</Text>
-				<TextInput
-					value={username}
-					onChangeText={setUsername}
-					style={styles.textInput}
-				/>
+				<Text style={styles.textContent}>{username}</Text>
 			</Stack>
 
 			<Spacer />
@@ -117,6 +181,7 @@ const UpdateProfile = () => {
 					...styles.buttonContainer,
 					backgroundColor: colors.mainColor2
 				}}
+				onPress={handleSave}
 			>
 				<Text
 					style={styles.buttonTitle}

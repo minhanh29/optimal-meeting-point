@@ -32,7 +32,7 @@ const Groups = ({ navigation }) => {
         if(!data.group_id in groupDict){
           groups.push(groupDict[data.group_id])
           continue
-          
+
         }
         const res = await getGroupName(data.group_id)
 
@@ -42,7 +42,7 @@ const Groups = ({ navigation }) => {
           }
           groups.push(groupDict[data.group_id])
       }
-      
+
       }catch (e) { }
     setDataList(groups)
     setGroupNameMap(groupDict)

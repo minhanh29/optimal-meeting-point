@@ -57,6 +57,10 @@ const styles = StyleSheet.create({
 		fontSize: 15,
 		textAlign: 'center',
 	},
+	textContent: {
+		fontFamily: "Montserrat-Bold",
+		fontSize: 15,
+	},
 })
 
 export default styles;
