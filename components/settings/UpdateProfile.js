@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from "react-redux"
 import {
     selectUser,
 } from "../../redux/reducers/userSlice"
-import { db, updateUser, uploadFile } from "../../firebaseConfig"
+import { db, updateUser, uploadFile, deleteFileByUrl } from "../../firebaseConfig"
 import Spinner from 'react-native-loading-spinner-overlay';
 
 import styles from "./styles"
@@ -20,6 +20,7 @@ const UpdateProfile = () => {
 
 	const [loaded, setLoaded] = useState(false);
 	const [avatar, setAvatar] = useState(null);
+	const [oldAvatar, setOldAvatar] = useState(null);
 	const [hasAvaChanged, setHasAvaChanged] = useState(false);
 	const [name, setName] = useState("Minh Anh");
 	const [username, setUsername] = useState("minhanh");
@@ -65,8 +66,11 @@ const UpdateProfile = () => {
 				return
 			}
 
+			if (!hasAvaChanged) {
+				setOldAvatar(avatar)
+				setHasAvaChanged(true)
+			}
 			setAvatar(result.assets[0].uri);
-			setHasAvaChanged(true)
 		}
 	};
 
@@ -83,6 +87,12 @@ const UpdateProfile = () => {
 			if (hasAvaChanged && avatar) {
 				const filename = avatar.substring(avatar.lastIndexOf('/') + 1);
 				const res = await uploadFile("avatar", avatar, filename)
+				if (oldAvatar) {
+					const error = await deleteFileByUrl(oldAvatar)
+					setOldAvatar(null)
+					if (error)
+						throw Error(error)
+				}
 
 				if (res.success)
 					ava_url = res.mess
@@ -99,6 +109,7 @@ const UpdateProfile = () => {
 			console.log(e.message)
 		}
 		setLoaded(true)
+		setHasAvaChanged(false)
 
 		Alert.alert(
 			title,
