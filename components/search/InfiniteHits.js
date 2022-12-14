@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import { StyleSheet, Text, FlatList, ScrollView } from 'react-native';
+import { StyleSheet, Text, FlatList} from 'react-native';
 import { Avatar, Stack, Box, Flex } from '@react-native-material/core';
 import PropTypes from 'prop-types';
 import { connectInfiniteHits } from 'react-instantsearch-native';
@@ -15,7 +15,7 @@ const test = [{
 }]
 
 const InfiniteHits = ({hits, hasMore, refineNext}) => {
-    console.log(test[0].name)
+    // console.log(hits[0].objectID)
     return (
         <FlatList
         data={test}
@@ -56,47 +56,6 @@ const InfiniteHits = ({hits, hasMore, refineNext}) => {
                 </Box>
             </Stack>
         )}/>
-    //     <ScrollView style={styles.listContainer}>
-    //     <Stack w='100%' spacing={20}>
-    //         {hits.map((hit, index) => {
-    //             return (
-    //                 <Box
-    //                     elevation={3}
-    //                     backgroundColor="white"
-    //                     style={styles.cardContainer}
-    //                     w='100%'
-    //                     key={index}
-    //                 >
-    //                     <Flex
-    //                         w="100%"
-    //                         items="center"
-    //                         direction="row"
-    //                     >
-    //                         <Avatar
-    //                             label={hit.name}
-    //                             icon={props => <Icon name="account" {...props} />}
-    //                             image={hit.ava_url ? { uri: hit.ava_url } : null}
-    //                             imageStyle={{ borderRadius: 10 }}
-    //                         />
-    //                         <Stack
-    //                             style={{ marginLeft: 17 }}
-    //                             spacing={5}
-    //                             w="58%"
-    //                         >
-    //                             <Text style={styles.cardHeader} >
-    //                                 {hit.name}
-    //                             </Text>
-    //                             <Text style={styles.infoContent} >
-    //                                 @{hit.username}
-    //                             </Text>
-    //                         </Stack>
-    //                     </Flex>
-    //                 </Box>
-    //             )
-    //         })}
-    //     </Stack>
-    // </ScrollView>
-        
     )
 }
 
@@ -108,7 +67,7 @@ InfiniteHits.propTypes = {
 }
 
 const styles = StyleSheet.create({
-    cardContainer: {
+    card: {
 		width: "100%",
 		borderRadius: 15,
 		shadowOffset: {
@@ -121,12 +80,12 @@ const styles = StyleSheet.create({
 		backgroundColor: "white",
 		elevation: 4,
 	},
-    infoContent: {
+    info: {
 		fontFamily: "Montserrat",
 		fontSize: 10,
 		width: "70%"
 	},
-    cardHeader: {
+    card: {
 		fontFamily: "Montserrat-Bold",
 		fontSize: 15,
 	},
