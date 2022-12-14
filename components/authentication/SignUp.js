@@ -6,6 +6,7 @@ import { View,
     Image,
     Text,
     KeyboardAvoidingView,
+	Alert,
     } from "react-native";
 import {
     signUpAsync,
@@ -13,13 +14,14 @@ import {
     USER_SIGNUP_SUCCESS ,
     USER_IDLE,
     USER_SIGNUP_FAILED,
+	USER_SIGNUP_PENDING,
     changeSignUpStatus,
     signUpFail,
 } from "../../redux/reducers/userSlice"
 import { useFonts } from "expo-font";
-import { Provider, useDispatch, useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import logo from "./../../images/logo.png"
-// import { selectUser } from "../../redux/reducers/userSlice";
+import Spinner from 'react-native-loading-spinner-overlay';
 
 const SignUp = ({ navigation }) => {
     const [name, setName] = React.useState("");
@@ -27,35 +29,54 @@ const SignUp = ({ navigation }) => {
     const [password, setPassword] = React.useState("");
     const [confirmPassword, setConfirmPassword] = React.useState("");
 
-   
+
     const dispatch = useDispatch()
     const user = useSelector(selectUser)
 
     useEffect(() => {
         if (user.signUpStatus === USER_SIGNUP_FAILED){
-            console.log("failed")
-            // dispatch(changeSignUpStatus(USER_IDLE))
-            console.log("error", user.errorMessage)
-            dispatch(signUpFail(USER_SIGNUP_FAILED))
-        } else if (user.signUpStatus === USER_SIGNUP_SUCCESS){
-            console.log("succeeded")
             dispatch(changeSignUpStatus(USER_IDLE))
+			showErrorMessage(user.errorMessage)
+        } else if (user.signUpStatus === USER_SIGNUP_SUCCESS){
+            dispatch(changeSignUpStatus(USER_IDLE))
+			Alert.alert(
+				"Sign Up Success",
+				"You have created a new account successfully",
+				[{
+					text: "Log In",
+					onPress: () => navigation.navigate("Login")
+				},]);
         }
     },[user.signUpStatus])
 
+	const showErrorMessage = (message) => {
+		Alert.alert(
+			"Sign Up Failed",
+			message,
+			[{ text: "OK" }],
+			{ cancelable: true }
+		);
+	}
+
     const handleSignUp = () => {
 		if (!name || !username || !password || !confirmPassword){
-            dispatch(signUpFail('Please fill in the missing input'))
+			showErrorMessage('Please fill in the missing input')
         } else if(password.length < 6){
-            dispatch(signUpFail('Password need to be more than 6 digit'))
+			showErrorMessage('Password need to be more than 6 digit')
         } else if(password !== confirmPassword){
-            dispatch(signUpFail("Confirmation Password does not match."))
+			showErrorMessage("Confirmation Password does not match.")
         } else{
             dispatch(signUpAsync({name, username, password}))
         }
 	}
     return (
-            <KeyboardAvoidingView behavior={Platform.OS == "ios" ? "padding" :null} style={styles.container}>
+		<KeyboardAvoidingView behavior={Platform.OS == "ios" ? "padding" :null} style={styles.container}>
+			<Spinner
+				visible={user.signUpStatus === USER_SIGNUP_PENDING}
+				textContent={'Signing Up...'}
+				textStyle={{color: "white"}}
+				cancelable={true}
+			/>
             <View style={styles.logo}>
                 <Image style={{height: 100, width:100}} source={logo} resizeMode="contain" />
                 <Text style={{
@@ -76,7 +97,7 @@ const SignUp = ({ navigation }) => {
                 <TextInput style={styles.textInput} value={name} onChangeText={setName} placeholder="Name" />
             </View>
             <View style={styles.form}>
-                <TextInput style={styles.textInput} value={username} onChangeText={setUsername} placeholder="Username"/>
+				<TextInput style={styles.textInput} value={username} onChangeText={value => setUsername(value.toLowerCase())} placeholder="Username"/>
             </View>
             <View style={styles.form}>
                 <TextInput style={styles.textInput} value={password} onChangeText={setPassword} placeholder="Password" secureTextEntry/>

@@ -16,6 +16,7 @@ import { selectUser } from "../../redux/reducers/userSlice";
 import BottomSheet from "reanimated-bottom-sheet";
 import Animated from "react-native-reanimated";
 import { TouchableOpacity } from "react-native-gesture-handler";
+
 const mapStyle = mapStyleJson["mapStyle"];
 
 const initRegion = {
