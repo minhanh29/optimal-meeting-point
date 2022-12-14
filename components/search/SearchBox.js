@@ -1,18 +1,27 @@
 import React from "react";
 import { StyleSheet, View, TextInput } from "react-native";
+import { Flex, Stack } from "@react-native-material/core";
+import AIcon from "@expo/vector-icons/AntDesign";
 import PropTypes from 'prop-types';
 import { connectSearchBox } from "react-instantsearch-native";
 
 const SearchBox = ({currentRefinement, refine}) => {
     return(
-        <View style={styles.container}>
-            <TextInput
-            style={styles.input}
-            onChangeText={value => refine(value)}
-            value={currentRefinement}/>
-        </View>
+        <Stack mt={45} h="100%" w="100%" items="center" spacing={25}>
+             <Flex direction='row' w='80%' style={styles.container}>
+                <AIcon name="search1" style={styles.iconImg} color='B4BABC' />
+                <TextInput
+                    style={styles.input}
+                    placeholder='Search friend'
+                    color='#B4BABC'
+                    onChangeText={value => refine(value)}
+                    value={currentRefinement}
+                />
+            </Flex>
+        </Stack>
     )
 }
+
 SearchBox.propTypes = {
     currentRefinement: PropTypes.string.isRequired,
     refine: PropTypes.func.isRequired,
@@ -20,24 +29,28 @@ SearchBox.propTypes = {
 
 const styles = StyleSheet.create({
     container: {
-        padding: 50,
+        backgroundColor: 'white',
+        borderRadius: 15,
     },
+
     input:{
-        height: 48,
-        padding: 12,
-        fontSize: 16,
-        backgroundColor: '#fff',
-        borderRadius: 40,
-        borderWidth: 1,
-        borderColor: '#ddd',
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowRadius: 2,
-        shadowOpacity: 0.2,
-    }
+        width: "80%",
+		paddingTop: 14,
+        paddingBottom: 14,
+		backgroundColor: "white",
+        borderColor: 'transparent',
+		fontFamily: "Montserrat",
+        elevation: 0,
+        shadowOpacity: 0,
+        borderBottomWidth: 0,
+        borderRadius: 15,
+    },
+    iconImg:{
+        fontSize: 20,
+        backgroundColor: 'transparent',
+        padding: 17,
+		borderRadius: 15,
+    },
 })
 
 export default connectSearchBox(SearchBox)

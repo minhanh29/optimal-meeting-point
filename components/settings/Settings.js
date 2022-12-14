@@ -4,14 +4,14 @@ import { Avatar, Box, Stack, Text, Switch, Flex, Spacer } from "@react-native-ma
 import { useTheme } from '@react-navigation/native';
 import * as Location from 'expo-location';
 import { db } from "../../firebaseConfig"
-import { collection, getDocs } from "firebase/firestore";
+import { onSnapshot, doc } from "firebase/firestore";
 import {
-	logOutAsync
+	logOutAsync,
+	selectUser
 } from "../../redux/reducers/userSlice"
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 
 import styles from "./styles"
-import { getAddressFromGeopoint } from "../common/Utils"
 
 const Settings = ({ navigation }) => {
 	const { colors } = useTheme();
@@ -22,33 +22,22 @@ const Settings = ({ navigation }) => {
 	const [avatar, setAvatar] = useState(null);
 
 	const dispatch = useDispatch()
+	const { user } = useSelector(selectUser)
 
 	useEffect(() => {
 		checkIfLocationEnabled()
-		fetchUserInfo();
-	}, []);
+		if (user.id === "")
+			return
 
-	const fetchUserInfo = async () => {
-		try {
-			const querySnapshot = await getDocs(collection(db, "user"));
-			const doc = querySnapshot.docs[0]
-			const data = doc.data()
+		onSnapshot(doc(db, "user", user.id), (snapshot) => {
+			const data = snapshot.data()
 			setName(data.name)
 			setUsername(data.username)
 			setAvatar(data.ava_url)
-			let { status } = await Location.requestForegroundPermissionsAsync();
-			if (status !== 'granted') {
-			  console.log('Location permission not granted!');
-			  return;
-			}
-
 			setCheckedLocation(data.gps_enabled)
-			let address = await getAddressFromGeopoint(data.address)
-			setAddress(address)
-		} catch(e) {
-			console.log(e)
-		}
-	}
+			setAddress(data.address_text)
+		})
+	}, [user.id]);
 
 	const checkIfLocationEnabled = async () => {
 		try {
@@ -62,6 +51,13 @@ const Settings = ({ navigation }) => {
 					{ cancelable: false }
 				);
 			}
+
+			let { status } = await Location.requestForegroundPermissionsAsync();
+			if (status !== 'granted') {
+			  console.log('Location permission not granted!');
+			  return;
+			}
+
 		} catch(e) {
 			console.log(e)
 		}
