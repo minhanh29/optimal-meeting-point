@@ -8,10 +8,11 @@ import InfiniteHits from "../search/InfiniteHits";
 const Friends = () => {
   return (
     <View>
-      <InstantSearch searchClient={searchClient} indexName="username">
+		<InstantSearch searchClient={searchClient} indexName="username">
          <SearchBox/>
          <InfiniteHits/>
       </InstantSearch>
+		<Text>Hello</Text>
     </View>
   );
 };

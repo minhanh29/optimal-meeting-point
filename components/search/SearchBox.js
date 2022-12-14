@@ -7,7 +7,7 @@ import { connectSearchBox } from "react-instantsearch-native";
 
 const SearchBox = ({currentRefinement, refine}) => {
     return(
-        <Stack mt={45} h="100%" w="100%" items="center" spacing={25}>
+        <Stack mt={45} h="auto" w="100%" items="center" spacing={25}>
              <Flex direction='row' w='80%' style={styles.container}>
                 <AIcon name="search1" style={styles.iconImg} color='B4BABC' />
                 <TextInput

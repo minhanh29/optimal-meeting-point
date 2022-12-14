@@ -15,14 +15,14 @@ const test = [{
 }]
 
 const InfiniteHits = ({hits, hasMore, refineNext}) => {
-    console.log(test[0].name)
+    // console.log(test[0].name)
     return (
         <FlatList
-        data={test}
+        data={hits}
         keyExtractor={item => item.objectID}
         onEndReached={() => hasMore && refineNext}
         renderItem = {({item}) => (
-            <Stack w='100%' spacing={20}>
+            <Box w='100%' spacing={20}>
                 <Box
                     elevation={3}
                     backgroundColor="white"
@@ -54,7 +54,7 @@ const InfiniteHits = ({hits, hasMore, refineNext}) => {
                         </Stack>
                     </Flex>
                 </Box>
-            </Stack>
+            </Box>
         )}/>
     //     <ScrollView style={styles.listContainer}>
     //     <Stack w='100%' spacing={20}>
@@ -96,7 +96,7 @@ const InfiniteHits = ({hits, hasMore, refineNext}) => {
     //         })}
     //     </Stack>
     // </ScrollView>
-        
+
     )
 }
 
