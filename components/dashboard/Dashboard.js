@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useRef, useMemo } from "react";
 import { View, Image } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import MapView, { Marker, Callout } from "react-native-maps";
+import MapView, { Marker, Callout, PROVIDER_GOOGLE } from "react-native-maps";
 import Svg from "react-native-svg";
 import { IconButton, Text } from "@react-native-material/core";
 import Icon from "@expo/vector-icons/Feather";
@@ -61,6 +61,8 @@ const fall = new Animated.Value(1);
 
 const Dashboard = ({ navigation }) => {
 	const user = useSelector(selectUser)
+	const [marker, setMarker] = useState(null)
+	// console.log(marker)
 
 	// console.log("User Info", user.user.address)
 	return (
@@ -70,7 +72,14 @@ const Dashboard = ({ navigation }) => {
 			style={styles.map}
 			initialRegion={initRegion}
 			customMapStyle={mapStyle}
+			provider={PROVIDER_GOOGLE}
+			onPress={ (event) => setMarker(event.nativeEvent.coordinate) }
 		>
+			{marker && 
+				<Marker
+					coordinate={marker}
+				></Marker>
+			}
 			<Marker
 				coordinate={rmit}
 				// title={"RMIT"}
