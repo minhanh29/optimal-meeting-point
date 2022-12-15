@@ -28,8 +28,11 @@ const styles = StyleSheet.create({
     // shadowOpacity: 0.5,
     // shadowRadius: 4,
     backgroundColor: 'white',
-    borderRadius: 15,
-}
+    flex: 1,
+    padding: 8,
+    borderRadius: 8,
+},
+
 });
 
 export default styles;

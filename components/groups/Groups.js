@@ -12,7 +12,7 @@ import { db, getGroupName } from "../../firebaseConfig"
 import { useDispatch, useSelector } from 'react-redux';
 import { selectUser } from '../../redux/reducers/userSlice';
 import { useState } from 'react';
-import { deleteGroupAsync, selectGroup, GROUP_DELETE_PENDING } from '../../redux/reducers/groupSlice';
+import { deleteGroupAsync, selectGroup, GROUP_DELETE_PENDING, GROUP_DELETE_FAILED, GROUP_DELETE_SUCCESS, changeGroupStatus, GROUP_IDLE } from '../../redux/reducers/groupSlice';
 import Spinner from 'react-native-loading-spinner-overlay';
 const Groups = ({ navigation }) => {
   const { colors } = useTheme();
@@ -22,6 +22,34 @@ const Groups = ({ navigation }) => {
   const dispatch = useDispatch()
   const group = useSelector(selectGroup); //Ko work
   console.log("STATÚS", group.status)
+
+  useEffect(() => {
+    if(group.status === GROUP_DELETE_FAILED ){
+        Alert.alert(
+            "Leave Group",
+            "Failed to leave group",
+            [
+                {
+                  text: "OK",
+                },
+            ],
+            { cancelable: true }
+        )
+        dispatch(changeGroupStatus(GROUP_IDLE))
+    }if(group.status === GROUP_DELETE_SUCCESS){
+        Alert.alert(
+            "Leave Group",
+            "You have successfully leave the group",
+            [
+                {
+                  text: "OK",
+                },
+            ],
+            { cancelable: true }
+        )
+        dispatch(changeGroupStatus(GROUP_IDLE))
+    }
+},[group.status])
 
 
   //Cannot see the group name after creating group
@@ -64,24 +92,10 @@ const Groups = ({ navigation }) => {
 
   //Left the group
   const handleDelete = (group_id) => {
-    let title = "Left Group Success"
-    let message = "You have successfully left the group"
-
     try {
       dispatch(deleteGroupAsync(group_id))
     } catch (e) {
-      title = "Error"
-      message = e.message
     }
-
-
-    Alert.alert(
-      title,
-      message,
-      [{ test: "OK" }],
-      { cancelable: true }
-    )
-
   }
 
   return (  

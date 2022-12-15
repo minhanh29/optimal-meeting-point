@@ -5,11 +5,18 @@ import { useState } from 'react'
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete'
 import { useTheme } from '@react-navigation/native';
 import { Stack } from '@react-native-material/core'
+import { useRef } from 'react'
+import { useEffect } from 'react'
 
 const SetAddress = () => {
   const { colors } = useTheme();
   const [addressText, setAddressText] = useState({})
   console.log("Ađress", addressText)
+  const ref = useRef()
+
+  useEffect(() => {
+    ref.current?.setAddressText('Some Text');
+  }, []);
 
   return (
     <Stack
@@ -20,9 +27,10 @@ const SetAddress = () => {
       paddingTop={35}
     >
       <View style={{...styles.searchContainer,marginTop: Platform.OS == "ios" ? 50 : 40 }}>
-        <GooglePlacesAutocomplete
+        {/* <GooglePlacesAutocomplete
+          style= {{flex: 0}}
           placeholder='Search Location'
-          onPress={(data, details = null) => {
+          onPress={(data, details) => {
             console.log(details)
             setAddressText({
               location: details.geometry.location,
@@ -62,7 +70,8 @@ const SetAddress = () => {
               backgroundColor: 'transparent'
             },
             }}
-        />
+        /> */}
+        
       </View>
     </Stack>
   )

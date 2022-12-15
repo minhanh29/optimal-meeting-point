@@ -8,8 +8,8 @@ import FIcon from "@expo/vector-icons/Feather";
 import { db } from "../../firebaseConfig"
 import { collection, doc, getDocs, query, addDoc } from "firebase/firestore";
 import { useDispatch, useSelector } from 'react-redux';
-import { selectUser } from '../../redux/reducers/userSlice';
-import { createGroupAsync, selectGroup, GROUP_CREATE_SUCCESS } from '../../redux/reducers/groupSlice';
+import { selectUser, USER_IDLE } from '../../redux/reducers/userSlice';
+import { createGroupAsync, selectGroup, GROUP_CREATE_SUCCESS, GROUP_CREATE_PENDING, GROUP_CREATE_FAILED, GROUP_IDLE, changeGroupStatus } from '../../redux/reducers/groupSlice';
 import Spinner from 'react-native-loading-spinner-overlay';
 
 const CreateGroup = ({navigation}) => {
@@ -19,8 +19,7 @@ const CreateGroup = ({navigation}) => {
     // const [iconBtn, setIconBtn]  = useState("plus");
     const [memberList, setMemberList] = useState([])
     const [groupName, setGroupName] = useState("")
-    const [loaded, setLoaded] = useState(false)
-    console.log("Loaded",loaded)
+    
     const dispatch = useDispatch()
     const user = useSelector(selectUser)
     const group = useSelector(selectGroup)
@@ -54,6 +53,35 @@ const CreateGroup = ({navigation}) => {
         fetchUserInfo();
     }, []);
 
+    useEffect(() => {
+        if(group.status === GROUP_CREATE_FAILED ){
+            Alert.alert(
+                "Created Group",
+                "Failed to create group",
+                [
+                    {
+                      text: "OK",
+                    },
+                ],
+                { cancelable: true }
+            )
+            dispatch(changeGroupStatus(GROUP_IDLE))
+        }if(group.status === GROUP_CREATE_SUCCESS){
+            Alert.alert(
+                "Created Group",
+                "Your group has been created successfully",
+                [
+                    {
+                      text: "OK",
+                      onPress: () => navigation.navigate("Groups"),
+                    },
+                ],
+                { cancelable: true }
+            )
+            dispatch(changeGroupStatus(GROUP_IDLE))
+        }
+    },[group.status])
+
 
 
 
@@ -86,10 +114,6 @@ const CreateGroup = ({navigation}) => {
             return
         }
 
-        setLoaded(false)
-        let title = "Create Group Success"
-        let message = "Your group is created successfully"
-
         try {
             const data = {
                 group_name: groupName.trim(),
@@ -99,22 +123,7 @@ const CreateGroup = ({navigation}) => {
             dispatch(createGroupAsync(data))
 
         } catch (e) {
-            title = "Error"
-            message = e.message
         }
-        setLoaded(true)
-
-        Alert.alert(
-            title,
-            message,
-            [
-                {
-                  text: "OK",
-                  onPress: () => navigation.navigate("Groups"),
-                },
-            ],
-            { cancelable: true }
-        )
     }
 
     return (
@@ -125,12 +134,12 @@ const CreateGroup = ({navigation}) => {
             items="center"
             paddingTop={35}
         >
-            {/* <Spinner
-                visible={!loaded}
+            <Spinner
+                visible={group.status === GROUP_CREATE_PENDING}
                 textContent={'Loading...'}
                 textStyle={{ color: "white" }}
                 cancelable={true}
-            /> ko work */}
+            /> 
             <Stack w="80%" items="start">
                 <TextInput
                     style={styles.textInput}
