@@ -6,7 +6,8 @@ import {
 } from "@react-native-material/core";
 import SignUp from "./components/authentication/SignUp";
 import Login from "./components/authentication/Login";
-import Dashboard from "./components/dashboard/Dashboard";
+// import Dashboard from "./components/dashboard/Dashboard";
+import Dashboard from "./components/dashboard/DraftMap";
 import Settings from "./components/settings/Settings";
 import ChangePassword from "./components/settings/ChangePassword";
 import UpdateProfile from "./components/settings/UpdateProfile";
