@@ -1,18 +1,18 @@
 import React from "react";
-import { StyleSheet, View, TextInput } from "react-native";
+import { StyleSheet, TextInput } from "react-native";
 import { Flex, Stack } from "@react-native-material/core";
 import AIcon from "@expo/vector-icons/AntDesign";
 import PropTypes from 'prop-types';
 import { connectSearchBox } from "react-instantsearch-native";
 
-const SearchBox = ({currentRefinement, refine}) => {
+const SearchBox = ({searchBoxName,currentRefinement, refine}) => {
     return(
-        <Stack mt={45} h="100%" w="100%" items="center" spacing={25}>
+        <Stack mt={45} h="auto" w="100%" items="center" spacing={25} mb={15}>
              <Flex direction='row' w='80%' style={styles.container}>
                 <AIcon name="search1" style={styles.iconImg} color='B4BABC' />
                 <TextInput
                     style={styles.input}
-                    placeholder='Search friend'
+                    placeholder= {searchBoxName}
                     color='#B4BABC'
                     onChangeText={value => refine(value)}
                     value={currentRefinement}

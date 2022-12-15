@@ -4,42 +4,33 @@ import { Avatar, Stack, Box, Flex } from '@react-native-material/core';
 import PropTypes from 'prop-types';
 import { connectInfiniteHits } from 'react-instantsearch-native';
 
-const test = [{
-    objectID: 1,
-    name: 'han',
-    username: 'han0910',
-},{
-    objectID: 2,
-    name: 'sang',
-    username: 'sangnguyen',
-}]
 
 const InfiniteHits = ({hits, hasMore, refineNext}) => {
-    // console.log(hits[0].objectID)
     return (
         <FlatList
-        data={test}
+        style={styles.listContainer}
+        data={hits}
         keyExtractor={item => item.objectID}
         onEndReached={() => hasMore && refineNext}
         renderItem = {({item}) => (
-            <Stack w='100%' spacing={20}>
+            <Box w='100%' spacing={20}>
                 <Box
                     elevation={3}
                     backgroundColor="white"
                     style={styles.cardContainer}
-                    w='100%'
+                    w='80%'
                 >
                     <Flex
                         w="100%"
                         items="center"
                         direction="row"
                     >
-                        {/* <Avatar
+                        <Avatar
                             label={item.name}
                             icon={props => <Icon name="account" {...props} />}
                             image={item.ava_url ? { uri: item.ava_url } : null}
                             imageStyle={{ borderRadius: 10 }}
-                        /> */}
+                        />
                         <Stack
                             style={{ marginLeft: 17 }}
                             spacing={5}
@@ -54,7 +45,7 @@ const InfiniteHits = ({hits, hasMore, refineNext}) => {
                         </Stack>
                     </Flex>
                 </Box>
-            </Stack>
+            </Box>
         )}/>
     )
 }
@@ -67,25 +58,26 @@ InfiniteHits.propTypes = {
 }
 
 const styles = StyleSheet.create({
-    card: {
+    cardContainer: {
 		width: "100%",
 		borderRadius: 15,
 		shadowOffset: {
 			width: 0,
 			height: 4,
 		},
+        marginBottom: 10,
 		shadowOpacity: 0.25,
 		shadowColor: "black",
 		padding: 17,
 		backgroundColor: "white",
 		elevation: 4,
 	},
-    info: {
+    infoContent: {
 		fontFamily: "Montserrat",
 		fontSize: 10,
 		width: "70%"
 	},
-    card: {
+    cardHeader: {
 		fontFamily: "Montserrat-Bold",
 		fontSize: 15,
 	},
@@ -93,6 +85,10 @@ const styles = StyleSheet.create({
         padding: 10,
         flexDirection: 'column',
     },
+    listContainer:{
+        marginLeft: 45,
+		width: '80%'
+	},
 
 })
 
