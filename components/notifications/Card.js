@@ -22,7 +22,7 @@ const Card = ({isChecked, handleCheckbox, id, title, content, ava}) => {
 				/>
 				<Avatar
 					label={title}
-					image={{ uri: ava}}
+					image={ava === "" ? null : { uri: ava}}
 					imageStyle={{ borderRadius: 10 }}
 					size={45}
 				/>

@@ -6,7 +6,8 @@ import {
 } from "@react-native-material/core";
 import SignUp from "./components/authentication/SignUp";
 import Login from "./components/authentication/Login";
-import Dashboard from "./components/dashboard/Dashboard";
+// import Dashboard from "./components/dashboard/Dashboard";
+import Dashboard from "./components/dashboard/DraftMap";
 import Settings from "./components/settings/Settings";
 import ChangePassword from "./components/settings/ChangePassword";
 import UpdateProfile from "./components/settings/UpdateProfile";
@@ -19,6 +20,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import Friends from "./components/friends/Friends";
 import SetAddress from "./components/address/SetAddress";
 import { Ionicons } from '@expo/vector-icons';
+import CreateGroup from "./components/groups/CreateGroup";
 import { Provider, useSelector } from "react-redux";
 import { store } from "./redux/store";
 import { selectUser } from "./redux/reducers/userSlice";
@@ -26,12 +28,12 @@ import { selectUser } from "./redux/reducers/userSlice";
 const StackNavigator = createStackNavigator()
 
 export const theme = {
-  colors: {
-    mainColor1: "#9CC7CA",
-    mainColor2: "#EE6548",
-    background: "#EDF4F7",
-    backButton: "#B4D8D7",
-  },
+	colors: {
+		mainColor1: "#9CC7CA",
+		mainColor2: "#EE6548",
+		background: "#EDF4F7",
+		backButton: "#B4D8D7",
+	},
 };
 
 const AppInner = () => {
@@ -126,7 +128,19 @@ const AppInner = () => {
 						title: "Update Profile"
 					}}
 				/>
-				<StackNavigator.Screen name="Groups" component={Groups} />
+				<StackNavigator.Screen
+					name="CreateGroup"
+					component={CreateGroup}
+					options={{
+						title: "Create Groups"
+					}}
+				/>
+				<StackNavigator.Screen
+					name="Groups"
+					component={Groups}
+					options={{
+						title: "Your Groups"
+					}} />
 				<StackNavigator.Screen name="Notifications" component={Notifications} />
 				<StackNavigator.Screen name="Friends" component={Friends} />
 				<StackNavigator.Screen name="Address" component={SetAddress} />
@@ -142,26 +156,26 @@ const App = () => (
 )
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  map: {
-    width: Dimensions.get("window").width,
-    height: Dimensions.get("window").height,
-  },
-  image: {
-    width: "10%",
-    height: "10%",
-  },
-  header: {
-    fontFamily: "Montserrat-Bold",
-  },
-  backButton: {
-    borderRadius: 0,
-  },
+	container: {
+		flex: 1,
+		backgroundColor: "#fff",
+		alignItems: "center",
+		justifyContent: "center",
+	},
+	map: {
+		width: Dimensions.get("window").width,
+		height: Dimensions.get("window").height,
+	},
+	image: {
+		width: "10%",
+		height: "10%",
+	},
+	header: {
+		fontFamily: "Montserrat-Bold"
+	},
+	backButton: {
+		borderRadius: 0,
+	}
 });
 
 export default App;

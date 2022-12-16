@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
 		},
 		shadowOpacity: 0.25,
 		shadowColor: "black",
-		padding: 17,
+		padding: 15,
 		backgroundColor: "white",
 		fontFamily: "Montserrat",
 		elevation: 4,
@@ -56,6 +56,10 @@ const styles = StyleSheet.create({
 		fontFamily: "Montserrat-Bold",
 		fontSize: 15,
 		textAlign: 'center',
+	},
+	textContent: {
+		fontFamily: "Montserrat-Bold",
+		fontSize: 15,
 	},
 })
 
