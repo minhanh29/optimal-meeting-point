@@ -1,12 +1,12 @@
 import { View, Text } from 'react-native'
 import styles from './styles'
 import React from 'react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete'
 import { useTheme } from '@react-navigation/native';
 import { Stack } from '@react-native-material/core'
 import { useRef } from 'react'
-import { useEffect } from 'react'
+import Config from "react-native-config";
 
 const SetAddress = () => {
   const { colors } = useTheme();
@@ -14,7 +14,7 @@ const SetAddress = () => {
   console.log("Ađress", addressText)
   const ref = useRef()
 
- 
+
 
   return (
     <Stack
@@ -45,14 +45,14 @@ const SetAddress = () => {
         //   const title = rowData.structured_formatting.main_text;
         //   const address = rowData.structured_formatting.secondary_text
         //   return(
-        //     <View> 
-        //        <Text>{title}</Text> 
-        //        <Text style={styles.locationAddress}>{address}</Text> 
+        //     <View>
+        //        <Text>{title}</Text>
+        //        <Text style={styles.locationAddress}>{address}</Text>
         //     </View>
         //   )
-        // }} 
+        // }}
         query={{
-          key: 'AIzaSyAXtp-vw6IoEEWX6aVYD-Ug-2Qkp6uT-jE',
+          key: Config.GOOGLE_MAPS_API_KEY,
           language: 'en',
           components: 'country:vn'  // Limit to only Vietnam
         }}
@@ -61,7 +61,7 @@ const SetAddress = () => {
     </View>
     </Stack>
 
-    
+
   )
 }
 
