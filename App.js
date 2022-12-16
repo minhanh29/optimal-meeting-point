@@ -18,6 +18,7 @@ import 'react-native-gesture-handler';
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import Friends from "./components/friends/Friends";
+import AddFriends from "./components/friends/AddFriends";
 import SetAddress from "./components/address/SetAddress";
 import { Ionicons } from '@expo/vector-icons';
 import CreateGroup from "./components/groups/CreateGroup";
@@ -143,6 +144,7 @@ const AppInner = () => {
 					}} />
 				<StackNavigator.Screen name="Notifications" component={Notifications} />
 				<StackNavigator.Screen name="Friends" component={Friends} />
+				<StackNavigator.Screen name="AddFriends" component={AddFriends} />
 				<StackNavigator.Screen name="Address" component={SetAddress} />
 			</StackNavigator.Navigator>
 		</NavigationContainer>

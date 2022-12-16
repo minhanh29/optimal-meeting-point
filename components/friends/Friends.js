@@ -1,37 +1,50 @@
-import { StyleSheet, View, Button } from "react-native";
+import { StyleSheet, View, Button, TextInput } from "react-native";
 import React, { useCallback, useMemo, useRef } from "react";
-import { Avatar, Box, Stack, Icon, Text, Flex, Spacer } from "@react-native-material/core";
+import { Avatar, Box, Stack, Icon, Text, Flex, Spacer, IconButton } from "@react-native-material/core";
 import { db } from "../../firebaseConfig"
 import { collection, getDocs } from "firebase/firestore";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useTheme } from '@react-navigation/native';
 import AIcon from "@expo/vector-icons/AntDesign";
-// import styles from "./styles";
+// import Icon from "@expo/vector-icons/Ionicons";
+import FIcon from "@expo/vector-icons/Feather";
+import MIcon from "@expo/vector-icons/MaterialIcons"
+import styles from "./styles";
+import { selectUser } from "../../redux/reducers/userSlice";
 
-const Friends = ({navigate}) => {
+const Friends = ({navigation}) => {
   const { colors } = useTheme();
-  return (
-    <Stack backgroundColor={colors.background}
-    h="100%"
-    w="100%"
-    items="center"
-    paddingTop={50}
-    spacing={20}
-    >
-      <Box elevation={4}
-      backgroundColor="white"
-      >
-        <Flex w="100%"
-        items="center"
-        direction="row">
-          <AIcon name="seach1" size={24} color="#C2C2C2"/>
-        </Flex>
-      </Box>
+  const user = useSelector(selectUser);
 
-    </Stack>
+  return (
+    <View>
+      <Stack 
+      backgroundColor={colors.background}
+      h="100%"
+      w="100%"
+      items="center"
+      paddingTop={35}
+      >
+      
+          <Flex w="70%" style={styles.searchHolder} direction="row">
+            <AIcon name="search1" style={styles.iconImg} color='B4BABC'/>
+            <TextInput
+              style={styles.searchInput}
+              placeholder='Search friends'
+              color='#B4BABC'
+            />
+            <IconButton 
+            icon={props => <AIcon name="adduser" {...props} style={styles.iconImg} color='B4BABC' />}
+            onPress={() => navigation.navigate("AddFriends")}
+            />
+
+          </Flex>
+
+      </Stack>
+    </View>
+    
   );
 };
 
 export default Friends;
 
-const styles = StyleSheet.create({});
