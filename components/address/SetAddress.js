@@ -14,9 +14,7 @@ const SetAddress = () => {
   console.log("Ađress", addressText)
   const ref = useRef()
 
-  useEffect(() => {
-    ref.current?.setAddressText('Some Text');
-  }, []);
+ 
 
   return (
     <Stack
@@ -26,54 +24,44 @@ const SetAddress = () => {
       items="center"
       paddingTop={35}
     >
-      <View style={{...styles.searchContainer,marginTop: Platform.OS == "ios" ? 50 : 40 }}>
-        {/* <GooglePlacesAutocomplete
-          style= {{flex: 0}}
-          placeholder='Search Location'
-          onPress={(data, details) => {
-            console.log(details)
-            setAddressText({
-              location: details.geometry.location,
-              address: details.formatted_address,
-            })
-          }}
-          enablePoweredByContainer={false}
-          fetchDetails={true}
-          GooglePlacesDetailsQuery={{
-            fields: ['formatted_address', 'geometry'],
-          }}
-          // renderRow={(rowData) => {
-          //   const title = rowData.structured_formatting.main_text;
-          //   const address = rowData.structured_formatting.secondary_text
-          //   return(
-          //     <View> 
-          //        <Text>{title}</Text> 
-          //        <Text style={styles.locationAddress}>{address}</Text> 
-          //     </View>
-          //   )
-          // }} 
-          query={{
-            key: 'AIzaSyAXtp-vw6IoEEWX6aVYD-Ug-2Qkp6uT-jE',
-            language: 'en',
-            // components: 'country:vn'  // Limit to only Vietnam
-          }}
-          styles={{
-            container: {
-              flex: 0,
-            },
-            description: {
-              color: '#000',
-              fontSize: 14,
-            },
-            separator:{
-              height: 0.75,
-              backgroundColor: 'transparent'
-            },
-            }}
-        /> */}
-        
-      </View>
+    <View style={{...styles.searchContainer,marginTop: Platform.OS == "ios" ? 50 : 40 }}>
+      <GooglePlacesAutocomplete
+        style={{flex: 1}}
+        placeholder='Search Location'
+        keepResultsAfterBlur = {true}
+        onPress={(data, details) => {
+          console.log(details)
+          setAddressText({
+            location: details.geometry.location,
+            address: details.formatted_address,
+          })
+        }}
+        minLength={2}
+        fetchDetails={true}
+        // GooglePlacesDetailsQuery={{
+        //   fields: ['formatted_address', 'geometry'],
+        // }}
+        // renderRow={(rowData) => {
+        //   const title = rowData.structured_formatting.main_text;
+        //   const address = rowData.structured_formatting.secondary_text
+        //   return(
+        //     <View> 
+        //        <Text>{title}</Text> 
+        //        <Text style={styles.locationAddress}>{address}</Text> 
+        //     </View>
+        //   )
+        // }} 
+        query={{
+          key: 'AIzaSyAXtp-vw6IoEEWX6aVYD-Ug-2Qkp6uT-jE',
+          language: 'en',
+          components: 'country:vn'  // Limit to only Vietnam
+        }}
+      />
+
+    </View>
     </Stack>
+
+    
   )
 }
 
