@@ -21,7 +21,8 @@ const mapStyle = mapStyleJson["mapStyle"];
 
 const radius = 2 * 1000;  // 2km
 const placeType = "cafe"
-const googleAPIKey = "AIzaSyAXtp-vw6IoEEWX6aVYD-Ug-2Qkp6uT-jE"
+// const googleAPIKey = "AIzaSyAXtp-vw6IoEEWX6aVYD-Ug-2Qkp6uT-jE"
+const googleAPIKey = "AIzaSyAmdFtD0mKY5OkanGXSU6hR_-el1hKSpL4"
 const locationList = [
 	{
 	  latitude: 10.729567,
