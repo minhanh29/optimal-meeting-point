@@ -22,8 +22,7 @@ const styles = StyleSheet.create({
   searchContainer: {
     backgroundColor: 'white',
     borderRadius: 15,
-    position: 'absolute',
-    width: '100%',
+    width: '95%',
     // shadowColor: 'black',
     // shadowOffset: {width:2, height: 2},
     // shadowOpacity: 0.5,
@@ -33,6 +32,8 @@ const styles = StyleSheet.create({
     padding: 8,
     borderRadius: 8,
     height: Dimensions.get("window").height,
+    marginLeft: 30,
+    marginRight: 30,
   },
 
   iconContainer:{
@@ -53,13 +54,9 @@ const styles = StyleSheet.create({
     height: 36,
     borderRadius: 36/2,
   },
-  textContainer:{
-    marginLeft: 20,
-    width: '80%',
-    overflow: "hidden",
-  },  
   titleText:{
     fontWeight: "bold",
+    width: '100%',
   },
 });
 
