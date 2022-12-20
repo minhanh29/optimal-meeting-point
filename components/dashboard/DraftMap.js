@@ -12,6 +12,7 @@ import mapStyleJson from "./../../mapStyle.json";
 import styles from "./styles";
 import { useSelector } from "react-redux";
 import { selectUser } from "../../redux/reducers/userSlice";
+import { GOOGLE_MAPS_API_KEY } from '@env';
 
 import BottomSheet from "reanimated-bottom-sheet";
 import Animated from "react-native-reanimated";
@@ -21,7 +22,6 @@ const mapStyle = mapStyleJson["mapStyle"];
 
 const radius = 2 * 1000;  // 2km
 const placeType = "cafe"
-const googleAPIKey = "AIzaSyAXtp-vw6IoEEWX6aVYD-Ug-2Qkp6uT-jE"
 const locationList = [
 	{
 	  latitude: 10.729567,
@@ -169,7 +169,7 @@ const Dashboard = ({ navigation }) => {
 
 		setMiddlePoint({longitude, latitude})
 
-		const url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + latitude + "," + longitude + "&radius=" + radius + "&type=" + placeType + "&key=" + googleAPIKey;
+		const url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + latitude + "," + longitude + "&radius=" + radius + "&type=" + placeType + "&key=" + GOOGLE_MAPS_API_KEY;
 		fetch(url)
 			.then(res => {
 				return res.json();

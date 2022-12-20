@@ -24,17 +24,19 @@ const CreateGroup = () => {
     const [selectedIndex, setSelectedIndex] = useState([]);
     console.log(memberList)
 
-   
+
 
     const fetchUserInfo = async () => {
         try {
             const querySnapshot = await getDocs(collection(db, "user"));
             const result = []
             querySnapshot.forEach(doc => {
-                result.push({
-                    id: doc.id,
-                    ...doc.data()
-                })
+				if (doc.id !== user.user.id) {
+					result.push({
+						id: doc.id,
+						...doc.data()
+					})
+				}
             })
 
             const doc = querySnapshot.docs[0]
@@ -52,7 +54,6 @@ const CreateGroup = () => {
         fetchUserInfo();
     }, []);
 
-       
 
 
     // Click + => include user to the memberList | click - => remove user from the the memberList
@@ -65,7 +66,7 @@ const CreateGroup = () => {
                 return [...prev, index]
             }
         })
-       
+
         setMemberList(prev => {
             const isInclude = memberList.includes(user)
             if(isInclude){
@@ -74,7 +75,7 @@ const CreateGroup = () => {
                 return [...prev, user]
             }
         })
-    
+
 
     }
 
@@ -85,9 +86,10 @@ const CreateGroup = () => {
                 group_name: groupName.trim(),
                 location: '',
                 user_id: user.user.id,
+				memberIds: memberList.map(item => item.id)
             }
             dispatch(createGroupAsync(data))
-            
+
         } catch (e) {
             console.log(e)
         }

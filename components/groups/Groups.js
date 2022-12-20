@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TextInput } from 'react-native'
+import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native'
 import { Avatar, Box, Stack, Switch, Flex, Spacer, IconButton } from "@react-native-material/core";
 import React, { useEffect } from 'react'
 import { useTheme } from '@react-navigation/native';
@@ -12,7 +12,8 @@ import { db, getGroupName } from "../../firebaseConfig"
 import { useDispatch, useSelector } from 'react-redux';
 import { selectUser } from '../../redux/reducers/userSlice';
 import { useState } from 'react';
-import { deleteGroupAsync, selectGroup } from '../../redux/reducers/groupSlice';
+import { deleteGroupAsync, selectGroup, changeEnterGroup } from '../../redux/reducers/groupSlice';
+
 const Groups = ({ navigation }) => {
   const { colors } = useTheme();
   const user = useSelector(selectUser)
@@ -28,8 +29,8 @@ const Groups = ({ navigation }) => {
     const groups = []
     try {
       for(let i = 0; i< refList.length; i++){
-        data = refList[i]
-        if(!data.group_id in groupDict){
+        let data = refList[i]
+        if(data.group_id in groupDict){
           groups.push(groupDict[data.group_id])
           continue
 
@@ -43,24 +44,22 @@ const Groups = ({ navigation }) => {
           groups.push(groupDict[data.group_id])
       }
 
-      }catch (e) { }
+	}catch (e) {
+		console.log(e.message)
+	}
     setDataList(groups)
     setGroupNameMap(groupDict)
   }
 
-  useEffect(
-    () => onSnapshot(query(collection(db, "groupNuser"), where("user_id", "==", user.user.id)), (snapshot) => {
-        // Update to Redux
-        const refList = snapshot.docs.map((doc) => ({...doc.data(), id: doc.id}))
-        fetchGroupName(refList)
-    }
-    ),
-    []
-);
-
-  useEffect(() => {
-    // fetchGroupName()
-  },[])
+	useEffect(
+		() => onSnapshot(query(collection(db, "groupNuser"), where("user_id", "==", user.user.id)), (snapshot) => {
+			// Update to Redux
+			const refList = snapshot.docs.map((doc) => ({...doc.data(), id: doc.id}))
+			fetchGroupName(refList)
+		}
+		),
+		[]
+	);
 
 
   //Left the group
@@ -68,6 +67,14 @@ const Groups = ({ navigation }) => {
     console.log("ID",group_id)
     dispatch(deleteGroupAsync(group_id))
   }
+
+	const handleEnter = (id) => {
+		dispatch(changeEnterGroup({
+			enterGroup: true,
+			group_id: id
+		}))
+		navigation.navigate("Dashboard")
+	}
 
   return (
     <View>
@@ -90,12 +97,13 @@ const Groups = ({ navigation }) => {
         <Stack w='80%' spacing={20} marginTop={20}>
           {dataList.map((data, index) => {
             return (
-              <Box
+              <TouchableOpacity
                 elevation={4}
                 backgroundColor="white"
                 style={styles.groupCardContainer}
                 w='100%'
                 key={index}
+				onPress={() => handleEnter(data.group_id)}
               >
                 <Flex
                   w="100%"
@@ -122,7 +130,7 @@ const Groups = ({ navigation }) => {
                     onPress={() => handleDelete(data.id)}
                   />
                 </Flex>
-              </Box>
+              </TouchableOpacity>
             )
           })}
         </Stack>
