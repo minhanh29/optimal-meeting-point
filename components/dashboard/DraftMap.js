@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef, useMemo } from "react";
+import React, { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { View, Image, Alert } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import MapView, { Marker, Callout } from "react-native-maps";
@@ -12,8 +12,10 @@ import mapStyleJson from "./../../mapStyle.json";
 import styles from "./styles";
 import { useSelector } from "react-redux";
 import { selectUser } from "../../redux/reducers/userSlice";
+import { selectGroup} from "../../redux/reducers/groupSlice";
 import { GOOGLE_MAPS_API_KEY } from '@env';
 
+import { getGroupName } from "../../firebaseConfig"
 import BottomSheet from "reanimated-bottom-sheet";
 import Animated from "react-native-reanimated";
 import { TouchableOpacity } from "react-native-gesture-handler";
@@ -143,8 +145,25 @@ const AvaMarker = ({ava_url, location}) => (
 
 const Dashboard = ({ navigation }) => {
 	const user = useSelector(selectUser)
+	const group = useSelector(selectGroup)
+	const [groupData, setGroupData] = useState(null)
 	const [middlePoint, setMiddlePoint] = useState(null)
 	const [suggestion, setSuggestion] = useState([])
+
+	useEffect(() => {
+		if (group.enterGroup) {
+			fetchGroupData()
+		}
+	}, [group.enterGroup, group.groupId])
+
+	const fetchGroupData = async () => {
+		try {
+			const group_data = await getGroupName(group.groupId)
+			setGroupData(group_data.data())
+		} catch (e) {
+			console.log(e.message)
+		}
+	}
 
 	const findMeetingPoints = () => {
 		if (locationList.length == 0) {
@@ -208,6 +227,7 @@ const Dashboard = ({ navigation }) => {
 			initialRegion={initRegion}
 			customMapStyle={mapStyle}
 		>
+
 			{/* {middlePoint ? */}
 			{/* <Marker */}
 			{/* 	coordinate={middlePoint} */}
@@ -252,6 +272,11 @@ const Dashboard = ({ navigation }) => {
 			callbackNode={fall}
 			enabledGestureInteraction={true}
 		/>
+		{groupData ?
+		<View style={styles.topContainer}>
+			<Text style={styles.topTitle}>{groupData.group_name}</Text>
+		</View> : null}
+
 		<View style={styles.bottomContainer}>
 			<View style={styles.bottomNav}>
 				<View

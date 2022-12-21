@@ -39,6 +39,7 @@ const Groups = ({ navigation }) => {
 
           groupDict[res.id] = {
             id: data.id,
+			group_id: data.group_id,
             ...res.data()
           }
           groups.push(groupDict[data.group_id])
@@ -69,9 +70,10 @@ const Groups = ({ navigation }) => {
   }
 
 	const handleEnter = (id) => {
+		console.log("Enter", id)
 		dispatch(changeEnterGroup({
 			enterGroup: true,
-			group_id: id
+			groupId: id
 		}))
 		navigation.navigate("Dashboard")
 	}
