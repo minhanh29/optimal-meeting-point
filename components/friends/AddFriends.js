@@ -12,6 +12,7 @@ import MIcon from "@expo/vector-icons/MaterialIcons"
 import styles from "./styles";
 import { selectUser } from '../../redux/reducers/userSlice';
 import { useState } from "react";
+import { addFriendAsync } from "../../redux/reducers/userSlice";
 
 const AddFriends = ({navigation}) => {
 
@@ -20,6 +21,7 @@ const AddFriends = ({navigation}) => {
     const [selectedIndex, setSelectedIndex] = useState([]);
     const user = useSelector(selectUser);
     const [avatar, setAvatar] = useState(null);
+    const dispatch = useDispatch()
 
 
     const fetchUserInfo = async () => {
@@ -48,70 +50,88 @@ const AddFriends = ({navigation}) => {
         fetchUserInfo();
     }, []);
 
+    const handleAdd = (user, index) => {
+        selectedIndex(prev => {
+            const isInclude = selectedIndex.includes(index)
+            if (isInclude) {
+                return selectedIndex.filter(item => item !== index)
+            } else {
+                return [...prev, index]
+            }
+        })
+        try {
+            const data = {
+                user_id: user.id
+            }
+            dispatch(addFriendAsync(data))
+        } catch(e) {
+            console.log(e)
+        }
+    }
+
     return (
         <View>
-      <Stack 
-      backgroundColor={colors.background}
-      h="100%"
-      w="100%"
-      items="center"
-      paddingTop={35}
-      >
-      
-          <Flex w="80%" style={styles.searchHolder} direction="row">
-            <AIcon name="search1" style={styles.iconImg} color='B4BABC'/>
-            <TextInput
-              style={styles.searchInput}
-              placeholder='Search friends'
-              color='#B4BABC'
-            />
-          </Flex>
-        <ScrollView style={styles.listContainer}>
-            <Stack w="100%" spacing={20} >
-                {userList.map((user, index) => {
-                    return (
-                        <Box elevation ={3}
-                        backgroundColor="white"
-                        style={styles.cardContainer}
-                        w='100%'
-                        key={index}
-                        >
-                            <Flex 
-                            w="100%"
-                            items="center"
-                            direction="row"
-                            >
-                                <Avatar
-                                label={user.name}
-                                icon={props => <Icon name="account" {...props} />}
-                                image={avatar ? {uri: user.ava_url} : null}
-                                imageStyle={{borderRadius: 10}}
-                                />
-                            <Stack 
-                            style ={{marginLeft:17}}
-                            spacing={5}
-                            w="58%"
-                            >
-                                <Text style={styles.cardHeader}>
-                                    {user.name}
-                                </Text>
-                                <Text style={styles.infoContent}>
-                                    @{user.username}
-                                </Text>
-                                </Stack>
-                                <IconButton
-                                    icon={props => <FIcon name={selectedIndex.includes(index) ? 'check' : 'plus'} {...props} />}
-                                    color = "black"
-                                    style={{alignSelf: "center", padding: 20, backgroundColor: 'transparent', borderRadius:10, color: '#9ACDD0', marginRight: 20}}
-                                    onPress={() => handleAdd(user)}
-                                    />
-                            </Flex>
-                        </Box>
-                    )
-                })}
-            </Stack>
-        </ScrollView>
-      </Stack>
+            <Stack 
+            backgroundColor={colors.background}
+            h="100%"
+            w="100%"
+            items="center"
+            paddingTop={35}
+            >
+                <Flex w="80%" style={styles.searchHolder} direction="row">
+                    <AIcon name="search1" style={styles.iconImg} color='B4BABC'/>
+                    <TextInput
+                    style={styles.searchInput}
+                    placeholder='Search friends'
+                    color='#B4BABC'
+                    />
+                </Flex>
+                <ScrollView style={styles.listContainer}>
+                    <Stack w="100%" spacing={20} >
+                        {userList.map((user, index) => {
+                            return (
+                                <Box elevation ={3}
+                                backgroundColor="white"
+                                style={styles.cardContainer}
+                                w='100%'
+                                key={index}
+                                >
+                                    <Flex 
+                                    w="100%"
+                                    items="center"
+                                    direction="row"
+                                    >
+                                        <Avatar
+                                        label={user.name}
+                                        icon={props => <Icon name="account" {...props} />}
+                                        image={avatar ? {uri: user.ava_url} : null}
+                                        imageStyle={{borderRadius: 10}}
+                                        />
+                                    <Stack 
+                                    style ={{marginLeft:17}}
+                                    spacing={5}
+                                    w="58%"
+                                    >
+                                        <Text style={styles.cardHeader}>
+                                            {user.name}
+                                        </Text>
+                                        <Text style={styles.infoContent}>
+                                            @{user.username}
+                                        </Text>
+                                        </Stack>
+                                        <IconButton
+                                            icon={props => <FIcon name={selectedIndex.includes(index) ? 'check' : 'plus'} {...props} />}
+                                            color = "black"
+                                            style={{alignSelf: "center", padding: 20, backgroundColor: 'transparent', borderRadius:10, color: '#9ACDD0', marginRight: 20}}
+                                            onPress={() => handleAdd(user)}
+                                            />
+                                    </Flex>
+                                </Box>
+                            )
+                        })}
+                    </Stack>
+                </ScrollView>
+        </Stack>
     </View>
     )
 }
