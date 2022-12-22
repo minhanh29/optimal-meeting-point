@@ -11,6 +11,21 @@ const styles = StyleSheet.create({
 		width: Dimensions.get("window").width,
 		height: Dimensions.get("window").height,
 	},
+	topContainer: {
+		width: '100%',
+		position: 'absolute',
+		top: '8%',
+		left: "8%",
+		backgroundColor: 'transparent',
+	},
+	topTitle: {
+		fontFamily: "Montserrat-Bold",
+		fontSize: 40,
+		textDecorationLine: "underline",
+		textShadowColor: 'rgba(0, 0, 0, 0.75)',
+		textShadowOffset: {width: -1, height: 1},
+		textShadowRadius: 5
+	},
 	bottomContainer: {
 		width: '100%',
 		position: 'absolute',
