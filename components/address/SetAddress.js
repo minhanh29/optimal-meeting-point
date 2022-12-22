@@ -27,7 +27,6 @@ const SetAddress = () => {
     >
       <View style={{ ...styles.searchContainer, marginTop: Platform.OS == "ios" ? 27 : 18 }}>
         <GooglePlacesAutocomplete
-          style={{ flex: 1 }}
           placeholder='Search Location'
           keepResultsAfterBlur={true}
           onPress={(data, details) => {
@@ -45,7 +44,7 @@ const SetAddress = () => {
             const title = rowData.structured_formatting.main_text;
             const address = rowData.structured_formatting.secondary_text
             return (
-              <View style={{width: '100%'}}>
+              <View>
                 <HStack width='100%' spacing={15}>
                   <Box style={styles.iconContainer}>
                     <Icon name="location-sharp" size={24} style={styles.iconStyle} />

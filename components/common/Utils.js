@@ -6,6 +6,8 @@ export const geoToDict = (geopoint) => ({
 	longitude: geopoint.longitude,
 })
 
+
+// WOrk but return result that is not 100% correct, there is still very small error (LAT 21.0293916, "longitude": 105.8114705|"lat": 21.0295093, "lng": 105.8114684)
 export const getAddressFromGeopoint = async (geopoint) => {
 	if (!geopoint)
 		return ""

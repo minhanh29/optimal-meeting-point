@@ -20,7 +20,6 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   searchContainer: {
-    backgroundColor: 'white',
     borderRadius: 15,
     width: '95%',
     // shadowColor: 'black',
@@ -31,9 +30,9 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 8,
     borderRadius: 8,
-    height: Dimensions.get("window").height,
     marginLeft: 30,
     marginRight: 30,
+    height: '50%'
   },
 
   iconContainer:{
