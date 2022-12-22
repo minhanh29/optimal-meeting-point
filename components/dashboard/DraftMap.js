@@ -8,6 +8,7 @@ import Icon from "@expo/vector-icons/Feather";
 import MIcon from "@expo/vector-icons/MaterialCommunityIcons";
 import AIcon from "@expo/vector-icons/AntDesign";
 import FIcon from "@expo/vector-icons/Feather";
+import { MaterialIcons } from '@expo/vector-icons';
 import mapStyleJson from "./../../mapStyle.json";
 import styles from "./styles";
 import { useSelector } from "react-redux";
@@ -404,6 +405,26 @@ const Dashboard = ({ navigation }) => {
 					onPress={() => navigation.navigate("Friends")}
 				/>
 			</View>
+			{groupData ? <View
+				style={{
+					...styles.shadowBtn,
+					shadowOpacity: Platform.OS == "ios" ? 0.23 : 0.5
+				}}
+			>
+				<IconButton
+					icon={props => <MaterialIcons name="info-outline" {...props} />}
+					color="#9CC7CA"
+					style={{
+						alignSelf: "center",
+						padding: 25,
+						backgroundColor: "white",
+						borderRadius: 10,
+						margin: 12,
+						...styles.shadowBtn
+					}}
+					onPress={() => navigation.navigate("Friends")}
+				/>
+			</View>: null}
 		</View>
 	</View>
   );
