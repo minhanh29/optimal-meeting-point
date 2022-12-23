@@ -32,10 +32,12 @@ const CreateGroup = ({navigation}) => {
             const querySnapshot = await getDocs(collection(db, "user"));
             const result = []
             querySnapshot.forEach(doc => {
-                result.push({
-                    id: doc.id,
-                    ...doc.data()
-                })
+				if (doc.id !== user.user.id) {
+					result.push({
+						id: doc.id,
+						...doc.data()
+					})
+				}
             })
 
             const doc = querySnapshot.docs[0]
@@ -119,6 +121,7 @@ const CreateGroup = ({navigation}) => {
                 group_name: groupName.trim(),
                 location: '',
                 user_id: user.user.id,
+				memberIds: memberList.map(item => item.id)
             }
             dispatch(createGroupAsync(data))
 

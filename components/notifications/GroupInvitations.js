@@ -23,6 +23,7 @@ const GroupInvitations = () => {
 
 	const [selectAll, setSelectAll] = useState(false)
 	const [loaded, setLoaded] = useState(false)
+	const [processing, setProcessing] = useState(false)
 	const [groupDict, setGroupDict] = useState({})
 	const [userDict, setUserDict] = useState({})
 	const [data, setData] = useState([])
@@ -132,6 +133,7 @@ const GroupInvitations = () => {
 	}
 
 	const changeStatus = async (status) => {
+		setProcessing(true)
 		let dataClone = data.map(item => ({
 			id: item.id,
 			group_id: item.group_id
@@ -160,18 +162,35 @@ const GroupInvitations = () => {
 				}
 			} catch (e) {
 				showErrorMessage(e.message)
+				setProcessing(false)
 			}
 		}
 
 		setCheckedBoxes([])
+		setProcessing(false)
+		if (status === STATUS_ACCEPTED) {
+			Alert.alert(
+				"Join Success",
+				"You have joined the selected groups",
+				[{ text: "OK" }],
+				{ cancelable: true }
+			);
+		} else {
+			Alert.alert(
+				"Reject Success",
+				"You have rejected the selected invitations",
+				[{ text: "OK" }],
+				{ cancelable: true }
+			);
+		}
 	}
 
 	return (
 		<Stack h="100%" overflow="visible">
-			<Stack w="100%" spacing={10} marginTop={20} justify="between">
+			<Stack w="100%" maxH="77%" spacing={10} marginTop={20} justify="between">
 				<Spinner
-					visible={!loaded}
-					textContent='Loading...'
+					visible={!loaded || processing}
+					textContent={processing ? "Processing..." : 'Loading...'}
 					textStyle={{color: "white"}}
 					cancelable={true}
 				/>

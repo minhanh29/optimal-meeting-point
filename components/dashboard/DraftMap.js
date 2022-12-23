@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef, useMemo } from "react";
+import React, { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { View, Image, Alert } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import MapView, { Marker, Callout } from "react-native-maps";
@@ -8,11 +8,15 @@ import Icon from "@expo/vector-icons/Feather";
 import MIcon from "@expo/vector-icons/MaterialCommunityIcons";
 import AIcon from "@expo/vector-icons/AntDesign";
 import FIcon from "@expo/vector-icons/Feather";
+import { MaterialIcons } from '@expo/vector-icons';
 import mapStyleJson from "./../../mapStyle.json";
 import styles from "./styles";
 import { useSelector } from "react-redux";
 import { selectUser } from "../../redux/reducers/userSlice";
+import { selectGroup} from "../../redux/reducers/groupSlice";
+import { GOOGLE_MAPS_API_KEY } from '@env';
 
+import { getGroupName } from "../../firebaseConfig"
 import BottomSheet from "reanimated-bottom-sheet";
 import Animated from "react-native-reanimated";
 import { TouchableOpacity } from "react-native-gesture-handler";
@@ -21,7 +25,6 @@ const mapStyle = mapStyleJson["mapStyle"];
 
 const radius = 2 * 1000;  // 2km
 const placeType = "cafe"
-const googleAPIKey = "AIzaSyAXtp-vw6IoEEWX6aVYD-Ug-2Qkp6uT-jE"
 const locationList = [
 	{
 	  latitude: 10.729567,
@@ -143,8 +146,25 @@ const AvaMarker = ({ava_url, location}) => (
 
 const Dashboard = ({ navigation }) => {
 	const user = useSelector(selectUser)
+	const group = useSelector(selectGroup)
+	const [groupData, setGroupData] = useState(null)
 	const [middlePoint, setMiddlePoint] = useState(null)
 	const [suggestion, setSuggestion] = useState([])
+
+	useEffect(() => {
+		if (group.enterGroup) {
+			fetchGroupData()
+		}
+	}, [group.enterGroup, group.groupId])
+
+	const fetchGroupData = async () => {
+		try {
+			const group_data = await getGroupName(group.groupId)
+			setGroupData(group_data.data())
+		} catch (e) {
+			console.log(e.message)
+		}
+	}
 
 	const findMeetingPoints = () => {
 		if (locationList.length == 0) {
@@ -169,7 +189,7 @@ const Dashboard = ({ navigation }) => {
 
 		setMiddlePoint({longitude, latitude})
 
-		const url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + latitude + "," + longitude + "&radius=" + radius + "&type=" + placeType + "&key=" + googleAPIKey;
+		const url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + latitude + "," + longitude + "&radius=" + radius + "&type=" + placeType + "&key=" + GOOGLE_MAPS_API_KEY;
 		fetch(url)
 			.then(res => {
 				return res.json();
@@ -208,6 +228,7 @@ const Dashboard = ({ navigation }) => {
 			initialRegion={initRegion}
 			customMapStyle={mapStyle}
 		>
+
 			{/* {middlePoint ? */}
 			{/* <Marker */}
 			{/* 	coordinate={middlePoint} */}
@@ -252,6 +273,11 @@ const Dashboard = ({ navigation }) => {
 			callbackNode={fall}
 			enabledGestureInteraction={true}
 		/>
+		{groupData ?
+		<View style={styles.topContainer}>
+			<Text style={styles.topTitle}>{groupData.group_name}</Text>
+		</View> : null}
+
 		<View style={styles.bottomContainer}>
 			<View style={styles.bottomNav}>
 				<View
@@ -379,6 +405,26 @@ const Dashboard = ({ navigation }) => {
 					onPress={() => navigation.navigate("Friends")}
 				/>
 			</View>
+			{groupData ? <View
+				style={{
+					...styles.shadowBtn,
+					shadowOpacity: Platform.OS == "ios" ? 0.23 : 0.5
+				}}
+			>
+				<IconButton
+					icon={props => <MaterialIcons name="info-outline" {...props} />}
+					color="#9CC7CA"
+					style={{
+						alignSelf: "center",
+						padding: 25,
+						backgroundColor: "white",
+						borderRadius: 10,
+						margin: 12,
+						...styles.shadowBtn
+					}}
+					onPress={() => navigation.navigate("Friends")}
+				/>
+			</View>: null}
 		</View>
 	</View>
   );
