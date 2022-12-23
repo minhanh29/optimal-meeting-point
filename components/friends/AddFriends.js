@@ -134,7 +134,7 @@ const AddFriends = ({navigation}) => {
                                             icon={props => <FIcon name={selectedIndex.includes(index) ? 'check' : 'plus'} {...props} />}
                                             color = "black"
                                             style={{alignSelf: "center", padding: 20, backgroundColor: 'transparent', borderRadius:10, color: '#9ACDD0', marginRight: 20}}
-                                            onPress={() => handleAdd(user)}
+                                            onPress={() => handleAdd(user, index)}
                                             />
                                     </Flex>
                                 </Box>
