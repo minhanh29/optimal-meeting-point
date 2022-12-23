@@ -26,8 +26,11 @@ import {
 	getStorage,
 } from 'firebase/storage'
 
-
 import { initializeApp } from 'firebase/app';
+
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/auth';
+import 'firebase/compat/firestore';
 
 // Initialize Firebase
 const firebaseConfig = {
@@ -212,5 +215,6 @@ export {
 	downloadFile,
 	deleteFile,
 	deleteFileByUrl,
-	createGroupInvitation
+	createGroupInvitation,
+	firebase,
 }

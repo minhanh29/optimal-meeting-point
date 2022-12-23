@@ -133,7 +133,7 @@ const Dashboard = ({ navigation }) => {
 								fontWeight: "bold"
 							}}
 						>
-							User name
+							User's name
 						</Text>
 						<Text
 							style={{

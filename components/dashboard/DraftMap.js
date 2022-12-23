@@ -20,8 +20,16 @@ import { getGroupName } from "../../firebaseConfig"
 import BottomSheet from "reanimated-bottom-sheet";
 import Animated from "react-native-reanimated";
 import { TouchableOpacity } from "react-native-gesture-handler";
-
 const mapStyle = mapStyleJson["mapStyle"];
+
+import { db } from "../../firebaseConfig"
+import {
+	ref,
+	onValue,
+	push,
+	update,
+	remove
+} from 'firebase/database';
 
 const radius = 2 * 1000;  // 2km
 const placeType = "cafe"
@@ -80,8 +88,18 @@ const renderHeader = () => (
 const sheetRef = React.createRef();
 const fall = new Animated.Value(1);
 
-const AvaMarker = ({ava_url, location}) => (
-	<Marker coordinate={location} title={"user"}>
+const AvaMarker = ({ava_url, location}) => {
+	// const [users, setUsers] = useState([]);
+
+	// useEffect(() => {
+	// 	return onValue(ref(db, '/user'), querySnapShot => {
+	// 	  let data = querySnapShot.val() || {};
+	// 	  let users = {...data};
+	// 	  setTodos(users);
+	// 	});
+	// }, []);
+	return (
+		<Marker coordinate={location} title={"user"}>
 		<View
 			style={{
 				flexDirection: "row",
@@ -117,8 +135,8 @@ const AvaMarker = ({ava_url, location}) => (
 			<View
 				style={{
 					flexDirection: "column",
-					width: 100,
-					height: 50
+					width: 120,
+					height: 30,
 				}}
 			>
 				<Text
@@ -126,23 +144,25 @@ const AvaMarker = ({ava_url, location}) => (
 						marginLeft: 2,
 						marginBottom: 1,
 						color: "black",
-						fontWeight: "bold"
+						fontWeight: "bold",
+						alignSelf: "center",
 					}}
 				>
-					User name
+					User's name
 				</Text>
-				<Text
+				{/* <Text
 					style={{
 						marginLeft: 2,
 						color: "black"
 					}}
 				>
-					Description
-				</Text>
+					No need Description
+				</Text> */}
 			</View>
 		</Callout>
 	</Marker>
-)
+	)
+			}
 
 const Dashboard = ({ navigation }) => {
 	const user = useSelector(selectUser)
