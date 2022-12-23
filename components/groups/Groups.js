@@ -98,7 +98,16 @@ const Groups = ({ navigation }) => {
     }
   }
 
-  return (  
+	const handleEnter = (id) => {
+		console.log("Enter", id)
+		dispatch(changeEnterGroup({
+			enterGroup: true,
+			groupId: id
+		}))
+		navigation.navigate("Dashboard")
+	}
+
+  return (
       <Stack
         backgroundColor={colors.background}
         h="100%"
