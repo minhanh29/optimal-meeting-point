@@ -8,6 +8,7 @@ import {
 	createUser,
 	signOut,
     getUserInfo,
+    createFriendRequest
 } from "../../firebaseConfig"
 import { EmailAuthProvider, reauthenticateWithCredential, updatePassword } from "firebase/auth";
 
@@ -25,6 +26,14 @@ export const USER_LOGIN_PENDING = 5
 export const USER_CHANGING_SUCCESS = 6
 export const USER_CHANGING_FAILED = 7
 export const USER_CHANGING_PENDING = 8
+
+export const USER_ADD_PENDING = 9
+export const USER_ADD_SUCCESS = 10
+export const USER_ADD_FAILED = 11
+
+export const USER_REQUEST_PENDING = 12
+export const USER_REQUEST_REJECTED = 13
+export const USER_REQUEST_ACCEPTED = 14
 
 const authErrors = {
 	"auth/wrong-password": "The password is invalid or the user does not have a password.",
@@ -207,6 +216,20 @@ export const logInAsync = createAsyncThunk('user/logInAsync', async (data) => {
 
 export const logOutAsync = createAsyncThunk('user/logOutAsync', async () => {
     await signOut(auth)
+})
+
+// log in to firebase
+export const addFriendAsync = createAsyncThunk('user/addFriendAsync', async (data) => {
+
+     //send friend request
+     const friendIds = data.userIds
+     for (let i=0; i<friendIds.length; i++) {
+        await createFriendRequest(data.user_id, friendIds[i])
+     }
+
+     return {
+        ...data
+     }
 })
 
 const userSlice = createSlice({
