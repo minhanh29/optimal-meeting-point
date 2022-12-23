@@ -97,6 +97,14 @@ const createGroupInvitation = (group_id, sender_id, receiver_id) => {
 	})
 }
 
+const createFriendRequest = (sender_id, receiver_id) => {
+	return addDoc(collection(db, "friend-request"), {
+		receiver_id,
+		sender_id,
+		created_at: new Date();
+		status: 0,
+	})
+}
 
 // CLOUD STORAGE
 const uploadFile = async (folderName, imageUri, fileName) => {
@@ -212,5 +220,6 @@ export {
 	downloadFile,
 	deleteFile,
 	deleteFileByUrl,
-	createGroupInvitation
+	createGroupInvitation,
+	createFriendRequest
 }
