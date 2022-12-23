@@ -101,7 +101,7 @@ const createFriendRequest = (sender_id, receiver_id) => {
 	return addDoc(collection(db, "friend-request"), {
 		receiver_id,
 		sender_id,
-		created_at: new Date();
+		created_at: new Date(),
 		status: 0,
 	})
 }
