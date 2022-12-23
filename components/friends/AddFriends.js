@@ -1,7 +1,7 @@
 import { StyleSheet, ScrollView, View, Button, TextInput } from "react-native";
 import React, { useCallback, useMemo, useRef, useEffect } from "react";
 import { Avatar, Box, Stack, Icon, Text, Flex, Spacer, IconButton } from "@react-native-material/core";
-import { db } from "../../firebaseConfig"
+import { createFriendRequest, db } from "../../firebaseConfig"
 import { collection, getDocs } from "firebase/firestore";
 import { useDispatch, useSelector } from "react-redux";
 import { useTheme } from '@react-navigation/native';
@@ -50,7 +50,7 @@ const AddFriends = ({navigation}) => {
         fetchUserInfo();
     }, []);
 
-    const handleAdd = (user, index) => {
+    const handleAdd = async (user, index) => {
         selectedIndex(prev => {
             const isInclude = selectedIndex.includes(index)
             if (isInclude) {
@@ -59,15 +59,26 @@ const AddFriends = ({navigation}) => {
                 return [...prev, index]
             }
         })
+
+        setUserList (prev => {
+            const isInclude = userList.includes(user)
+            if (isInclude) {
+                return userList.filter(item => item !== user)
+            } else {
+                return [...prev, user]
+            }
+        })
         try {
             const data = {
-                user_id: user.id
+                user_id: user.user_id,
+                friendIds: userList.map(item => item.id)
             }
             dispatch(addFriendAsync(data))
-        } catch(e) {
+        } catch (e) {
             console.log(e)
         }
     }
+
 
     return (
         <View>
