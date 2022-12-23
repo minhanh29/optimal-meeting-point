@@ -21,6 +21,9 @@ const AddFriends = ({navigation}) => {
     const user = useSelector(selectUser);
     const [avatar, setAvatar] = useState(null);
 
+    const handleAdd = () => {
+        
+    }
 
     const fetchUserInfo = async () => {
         try {
