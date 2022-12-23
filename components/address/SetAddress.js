@@ -10,6 +10,8 @@ import Icon from "@expo/vector-icons/Ionicons";
 import FIcon from "@expo/vector-icons/Feather";
 import Config from "react-native-config";
 import { getAddressFromGeopoint, getGeoCodeFromAddress } from '../common/Utils'
+import { GOOGLE_MAPS_API_KEY } from '@env';
+
 
 const SetAddress = () => {
   const { colors } = useTheme();
@@ -59,7 +61,7 @@ const SetAddress = () => {
           }}
           query={{
             // key: Config.GOOGLE_MAPS_API_KEY,
-            key: "AIzaSyAmdFtD0mKY5OkanGXSU6hR_-el1hKSpL4",
+            key: GOOGLE_MAPS_API_KEY,
             language: 'en',
             components: 'country:vn'  // Limit to only Vietnam
           }}
