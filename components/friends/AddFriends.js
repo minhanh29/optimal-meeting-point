@@ -50,7 +50,7 @@ const AddFriends = ({navigation}) => {
         fetchUserInfo();
     }, []);
 
-    const handleAdd = async (user, index) => {
+    const handleAdd = (user, index) => {
         selectedIndex(prev => {
             const isInclude = selectedIndex.includes(index)
             if (isInclude) {
@@ -68,6 +68,12 @@ const AddFriends = ({navigation}) => {
                 return [...prev, user]
             }
         })
+
+        sendRequest()
+
+    }
+
+    const sendRequest = async () => {
         try {
             const data = {
                 user_id: user.user_id,
@@ -78,8 +84,6 @@ const AddFriends = ({navigation}) => {
             console.log(e)
         }
     }
-
-
     return (
         <View>
             <Stack 
