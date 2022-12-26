@@ -180,3 +180,70 @@ const styles = StyleSheet.create({
 });
 
 export default App;
+
+
+// import React from 'react';
+// import { StyleSheet, View, Text } from 'react-native';
+// import MapboxGL from '@rnmapbox/maps';
+// import MapboxPlacesAutocomplete from "react-native-mapbox-places-autocomplete";
+// import mapStyle from "./goong_map_web.json"
+
+// MapboxGL.setWellKnownTileServer(MapboxGL.TileServers.Mapbox)
+// MapboxGL.setAccessToken('sk.eyJ1Ijoib21wcm1pdCIsImEiOiJjbGM0amY0eTAwZ2pjM25tbzVja2JkMjNhIn0.LRLJBu7m5G3o-1CZPixi-Q');
+
+// const App = () => {
+// 	return (
+// 		<View style={styles.page}>
+// 			<MapboxPlacesAutocomplete
+// 				id="id"
+// 				placeholder="Origin"
+// 				accessToken="pk.eyJ1Ijoib21wcm1pdCIsImEiOiJjbGM0amFtYjIwZWU3M3ZybzlnYTh4aDJ2In0.eqGfah7gCQxT31ZylFQ6nA"
+// 				onPlaceSelect={(data) => {
+// 					console.log(data);
+// 				}}
+// 				countryId="vn"
+// 				inputStyle={styles.autocomplete}
+// 				containerStyle={styles.autocompleteContainer}
+// 			/>
+// 			<MapboxGL.MapView style={styles.map} />
+// 		</View>
+// 	);
+// }
+
+// export default App;
+
+// const styles = StyleSheet.create({
+// 	page: {
+// 		flex: 1,
+// 		justifyContent: "center",
+// 		alignItems: "center",
+// 	},
+// 	container: {
+// 		height: "100%",
+// 		width: "100%",
+// 	},
+// 	map: {
+// 		flex: 1,
+// 		height: "80%",
+// 		width: "100%",
+// 	},
+// 	autocomplete: {
+// 		width: 300,
+// 		height: 50,
+// 		backgroundColor: "white",
+// 		color: "black",
+// 		borderRadius: 15,
+// 		shadowOffset: {
+// 			width: 0,
+// 			height: 4,
+// 		},
+// 		shadowOpacity: 0.25,
+// 		shadowColor: "black",
+// 		padding: 15,
+// 		elevation: 4,
+// 	},
+// 	autocompleteContainer: {
+// 		width: 300,
+// 		height: 50,
+// 	},
+// });
