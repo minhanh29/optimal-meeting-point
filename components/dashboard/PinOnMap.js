@@ -76,7 +76,7 @@ const PinOnMap = ({ navigation }) => {
 	useEffect(() => {
         if(group.status === UPDATE_ADDRESS_REJECTED ){
             Alert.alert(
-                "Created Group",
+                "Update Location",
                 "Failed to update location",
                 [
                     {
@@ -88,7 +88,7 @@ const PinOnMap = ({ navigation }) => {
             dispatch(changeGroupStatus(GROUP_IDLE))
         }if(group.status === UPDATE_ADDRESS_SUCCESS){
             Alert.alert(
-                "Created Group",
+                "Update Location",
                 "Group location has been updated successfully",
                 [
                     {

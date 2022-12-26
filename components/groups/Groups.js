@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert } from 'react-native'
 import { Avatar, Box, Stack, Switch, Flex, Spacer, IconButton } from "@react-native-material/core";
 import React, { useEffect } from 'react'
 import { useTheme } from '@react-navigation/native';
@@ -12,7 +12,8 @@ import { db, getGroupName } from "../../firebaseConfig"
 import { useDispatch, useSelector } from 'react-redux';
 import { selectUser } from '../../redux/reducers/userSlice';
 import { useState } from 'react';
-import { deleteGroupAsync, selectGroup, changeEnterGroup } from '../../redux/reducers/groupSlice';
+import { deleteGroupAsync, selectGroup, changeEnterGroup, GROUP_DELETE_PENDING, GROUP_DELETE_REJECTED, GROUP_DELETE_SUCCESS, changeGroupStatus, GROUP_IDLE } from '../../redux/reducers/groupSlice';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 const Groups = ({ navigation }) => {
   const { colors } = useTheme();
@@ -25,58 +26,87 @@ const Groups = ({ navigation }) => {
 
   //Cannot see the group name after creating group
   const fetchGroupName = async (refList) => {
-    const groupDict = {...groupNameMap}
+    const groupDict = { ...groupNameMap }
     const groups = []
     try {
-      for(let i = 0; i< refList.length; i++){
+      for (let i = 0; i < refList.length; i++) {
         let data = refList[i]
-        if(data.group_id in groupDict){
+        if (data.group_id in groupDict) {
           groups.push(groupDict[data.group_id])
           continue
 
         }
         const res = await getGroupName(data.group_id)
 
-          groupDict[res.id] = {
-            id: data.id,
-			group_id: data.group_id,
-            ...res.data()
-          }
-          groups.push(groupDict[data.group_id])
+        groupDict[res.id] = {
+          id: data.id,
+          group_id: data.group_id,
+          ...res.data()
+        }
+        groups.push(groupDict[data.group_id])
       }
 
-	}catch (e) {
-		console.log(e.message)
-	}
+    } catch (e) {
+      console.log(e.message)
+    }
     setDataList(groups)
     setGroupNameMap(groupDict)
   }
 
-	useEffect(
-		() => onSnapshot(query(collection(db, "groupNuser"), where("user_id", "==", user.user.id)), (snapshot) => {
-			// Update to Redux
-			const refList = snapshot.docs.map((doc) => ({...doc.data(), id: doc.id}))
-			fetchGroupName(refList)
-		}
-		),
-		[]
-	);
+  useEffect(
+    () => onSnapshot(query(collection(db, "groupNuser"), where("user_id", "==", user.user.id)), (snapshot) => {
+      // Update to Redux
+      const refList = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
+      fetchGroupName(refList)
+    }
+    ),
+    []
+  );
+
+  useEffect(() => {
+    if (group.status === GROUP_DELETE_REJECTED) {
+      Alert.alert(
+        "Leave Group",
+        "Failed to leave group",
+        [
+          {
+            text: "OK",
+          },
+        ],
+        { cancelable: true }
+      )
+      dispatch(changeGroupStatus(GROUP_IDLE))
+    } if (group.status === GROUP_DELETE_SUCCESS) {
+      Alert.alert(
+        "Leave Group",
+        "Leave group successfully",
+        [
+          {
+            text: "OK",
+            //   onPress:() => navigation.goBack(),
+          },
+        ],
+        { cancelable: true }
+      )
+      dispatch(changeGroupStatus(GROUP_IDLE))
+    }
+  }, [group.status])
 
 
   //Left the group
   const handleDelete = (group_id) => {
-    console.log("ID",group_id)
+    console.log("ID", group_id)
     dispatch(deleteGroupAsync(group_id))
   }
 
-	const handleEnter = (id) => {
-		console.log("Enter", id)
-		dispatch(changeEnterGroup({
-			enterGroup: true,
-			groupId: id
-		}))
-		navigation.navigate("Dashboard")
-	}
+  const handleEnter = (id) => {
+    console.log("Enter", id)
+    dispatch(changeEnterGroup({
+      enterGroup: true,
+      groupId: id
+    }))
+    navigation.navigate("Dashboard")
+  }
 
   return (
     <View>
@@ -87,7 +117,13 @@ const Groups = ({ navigation }) => {
         items="center"
         paddingTop={35}
       >
-        <Flex direction='row' w='80%' style={styles.searchHolder}>
+        <Spinner
+          visible={group.status === GROUP_DELETE_PENDING}
+          textContent={'Loading...'}
+          textStyle={{ color: "white" }}
+          cancelable={true}
+        />
+        <Flex direction='row' w='80%' style={{ ...styles.searchHolder, marginTop: Platform.OS == "ios" ? 20 : 25 }}>
           <AIcon name="search1" style={styles.iconImg} color='B4BABC' />
           <TextInput
             style={styles.searchInput}
@@ -105,7 +141,7 @@ const Groups = ({ navigation }) => {
                 style={styles.groupCardContainer}
                 w='100%'
                 key={index}
-				onPress={() => handleEnter(data.group_id)}
+                onPress={() => handleEnter(data.group_id)}
               >
                 <Flex
                   w="100%"
