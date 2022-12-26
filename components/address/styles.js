@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
   },
 
   iconStyle: {
-    color:"#F6CF65",
+    color:"#EE6548",
     padding: 6,
     width: 36,
     height: 36,
@@ -57,6 +57,15 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     width: '100%',
   },
+  dropDownList:{
+    height: '50%',
+  },
+  bottomContainer:{
+    position: "absolute",
+    bottom: 10,
+    width: '90%',
+    alignItems: 'center',
+  }
 });
 
 export default styles;

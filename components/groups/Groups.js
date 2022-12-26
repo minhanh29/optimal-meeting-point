@@ -131,7 +131,7 @@ const Groups = ({ navigation }) => {
           color='#B4BABC'
         />
       </Flex>
-        <ScrollView style={{ ...styles.listContainer, marginTop: 10 }}>
+        <ScrollView style={{ ...styles.listContainer, marginTop: 15 }}>
           <Stack w='100%' spacing={20}>
             {dataList.map((data, index) => {
               return (

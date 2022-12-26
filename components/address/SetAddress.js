@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native'
+import { View, Text, TouchableOpacity } from 'react-native'
 import styles from './styles'
 import React from 'react'
 import { useState, useEffect } from 'react'
@@ -13,10 +13,10 @@ import { getAddressFromGeopoint, getGeoCodeFromAddress } from '../common/Utils'
 import { GOOGLE_MAPS_API_KEY } from '@env';
 
 
-const SetAddress = () => {
+const SetAddress = ({navigation}) => {
   const { colors } = useTheme();
   const [addressText, setAddressText] = useState({})
-  
+
   // console.log("KEY", Config.GOOGLE_MAPS_API_KEY)
 
   return (
@@ -37,7 +37,7 @@ const SetAddress = () => {
               address: details.formatted_address,
             })
           }}
-          minLength={2}
+         
           fetchDetails={true}
           // GooglePlacesDetailsQuery={{
           //   fields: ['formatted_address', 'geometry'],
@@ -46,8 +46,8 @@ const SetAddress = () => {
             const title = rowData.structured_formatting.main_text;
             const address = rowData.structured_formatting.secondary_text
             return (
-              <View>
-                <HStack width='100%' spacing={15}>
+              <View style={styles.dropDownList}>
+                <HStack width='100%' spacing={20}>
                   <Box style={styles.iconContainer}>
                     <Icon name="location-sharp" size={24} style={styles.iconStyle} />
                   </Box>
@@ -68,6 +68,27 @@ const SetAddress = () => {
           enablePoweredByContainer={false}
         />
 
+      </View>
+      <View style={styles.bottomContainer}>
+        <TouchableOpacity
+          style={{
+            width: "100%",
+            borderRadius: 15,
+            padding: 17,
+            backgroundColor: 'white'
+          }}
+          onPress={() => navigation.navigate("MapPin")}
+        >
+          <HStack display='flex' alignItems= 'center' spacing={20}>
+            <FIcon name="map" size={24} style={styles.iconStyle} />
+            <Text
+              style={styles.buttonTitle}
+              color="white"
+            >
+              Pin On Map
+            </Text>
+          </HStack>
+        </TouchableOpacity>
       </View>
     </Stack>
 

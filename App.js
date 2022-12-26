@@ -26,6 +26,7 @@ import { store } from "./redux/store";
 import { selectUser } from "./redux/reducers/userSlice";
 import AddNewMember from "./components/groups/AddNewMember";
 import GroupInfo from "./components/groups/GroupInfo";
+import PinOnMap from "./components/dashboard/PinOnMap";
 
 const StackNavigator = createStackNavigator()
 
@@ -157,6 +158,13 @@ const AppInner = () => {
 					component={GroupInfo}
 					options={{
 						title: "Group Info"
+					}}
+				/>
+				<StackNavigator.Screen
+					name="MapPin"
+					component={PinOnMap}
+					options={{
+						headerShown: false
 					}}
 				/>
 				<StackNavigator.Screen name="Notifications" component={Notifications} />

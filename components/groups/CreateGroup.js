@@ -75,7 +75,7 @@ const CreateGroup = ({navigation}) => {
                 [
                     {
                       text: "OK",
-                      onPress: () => navigation.navigate("Groups"),
+                      onPress:() => navigation.goBack(),
                     },
                 ],
                 { cancelable: true }
