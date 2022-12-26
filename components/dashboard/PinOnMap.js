@@ -67,12 +67,11 @@ const fall = new Animated.Value(1);
 const PinOnMap = ({ navigation }) => {
 	const user = useSelector(selectUser)
 	const group = useSelector(selectGroup)
-	console.log("STATUS",group.status)
+	console.log("STATUS",group.groupId)
 	const dispatch = useDispatch()
 	const { colors } = useTheme()
 	const [marker, setMarker] = useState(null)
 	const [addressText, setAddressText] = useState(null)
-	const groupID = '9w7XI8gywrSORgisCMIr'
 
 	useEffect(() => {
         if(group.status === UPDATE_ADDRESS_REJECTED ){
@@ -151,7 +150,7 @@ const PinOnMap = ({ navigation }) => {
 			address: new GeoPoint(marker.latitude, marker.longitude),
 		}
 		
-		const data = {groupId: groupID, newAddress}
+		const data = {groupId: group.groupId, newAddress}
 
 		dispatch(updateAddressAsync(data));
 	}
