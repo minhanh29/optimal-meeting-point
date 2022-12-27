@@ -87,6 +87,15 @@ const updateUser = (id, data) => {
 	return setDoc(doc(db, "user", id), data, { merge: true })
 };
 
+const createGroupInvitation = (group_id, sender_id, receiver_id) => {
+	return addDoc(collection(db, "group_invitation" ),{
+		group_id,
+		receiver_id,
+		sender_id,
+		created_at: new Date(),
+		status: 0,
+	})
+}
 
 
 // CLOUD STORAGE
@@ -184,6 +193,14 @@ const deleteFileByUrl = async (url) => {
 	return null
 }
 
+const updateAddress = (id, data) => {
+    return setDoc(doc(db, "group", id), {
+		...data
+	}, {
+		merge: true
+	});
+};
+
 // ============
 export {
 	createUserWithEmailAndPassword,
@@ -203,4 +220,6 @@ export {
 	downloadFile,
 	deleteFile,
 	deleteFileByUrl,
+	createGroupInvitation,
+	updateAddress,
 }

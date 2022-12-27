@@ -30,9 +30,10 @@ const styles = StyleSheet.create({
 		elevation: 4,
 	},
 	textInput: {
-		width: "100%",
+		width: "85%",
 		padding: 17,
 		backgroundColor: "transparent",
+		color: "black",
         borderColor: 'transparent',
 		fontFamily: "Montserrat",
         elevation: 0,
@@ -113,7 +114,8 @@ const styles = StyleSheet.create({
 		elevation: 8,
 	},
 	listContainer:{
-		width: '80%'
+		width: '80%',
+		height: '50%'
 	},
 })
 

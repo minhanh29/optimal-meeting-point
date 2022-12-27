@@ -1,8 +1,8 @@
 import React, { useState, useCallback, useRef } from "react";
 import { StyleSheet, View, Dimensions, Image } from "react-native";
 import {
-  IconButton,
-  Text,
+	IconButton,
+	Text,
 } from "@react-native-material/core";
 import SignUp from "./components/authentication/SignUp";
 import Login from "./components/authentication/Login";
@@ -24,6 +24,9 @@ import CreateGroup from "./components/groups/CreateGroup";
 import { Provider, useSelector } from "react-redux";
 import { store } from "./redux/store";
 import { selectUser } from "./redux/reducers/userSlice";
+import AddNewMember from "./components/groups/AddNewMember";
+import GroupInfo from "./components/groups/GroupInfo";
+import PinOnMap from "./components/dashboard/PinOnMap";
 
 const StackNavigator = createStackNavigator()
 
@@ -35,6 +38,7 @@ export const theme = {
 		backButton: "#B4D8D7",
 	},
 };
+
 
 const AppInner = () => {
 	const { isAuthenticated } = useSelector(selectUser)
@@ -140,7 +144,29 @@ const AppInner = () => {
 					component={Groups}
 					options={{
 						title: "Your Groups"
-					}} />
+					}} 
+				/>
+				<StackNavigator.Screen
+					name="AddNewMember"
+					component={AddNewMember}
+					options={{
+						title: "Add Member"
+					}}
+				/>
+				<StackNavigator.Screen
+					name="GroupInfo"
+					component={GroupInfo}
+					options={{
+						title: "Group Info"
+					}}
+				/>
+				<StackNavigator.Screen
+					name="MapPin"
+					component={PinOnMap}
+					options={{
+						headerShown: false
+					}}
+				/>
 				<StackNavigator.Screen name="Notifications" component={Notifications} />
 				<StackNavigator.Screen name="Friends" component={Friends} />
 				<StackNavigator.Screen name="Address" component={SetAddress} />

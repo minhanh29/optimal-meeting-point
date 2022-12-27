@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
 		color: "black"
 	},
 	cardContent: {
-		width: "90%",
+		width: "85%",
 		flex: 1,
 		fontFamily: "Montserrat",
 		fontSize: 10,
