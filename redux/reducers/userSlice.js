@@ -297,6 +297,17 @@ const userSlice = createSlice({
 			state.passwordInfoStatus = USER_CHANGING_FAILED
 			state.errorMessage = authErrors[action.error.code] ?  authErrors[action.error.code] : "Unknown Error!";
 		})
+        .addCase(addFriendAsync.pending, state=> {
+            state.status = USER_ADD_PENDING
+        })
+        .addCase(addFriendAsync.fulfilled, (state,action) => {
+            state.status= USER_ADD_SUCCESS
+            state.user = action.payload
+        })
+        .addCase(addFriendAsync.rejected, (state, action) => {
+            state.status=USER_ADD_FAILED
+            console.log("ACTION", action)
+        })
     }
 })
 
