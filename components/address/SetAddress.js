@@ -14,7 +14,7 @@ const SetAddress = () => {
   console.log("Ađress", addressText)
   const ref = useRef()
 
- 
+
 
   return (
     <Stack
@@ -45,14 +45,15 @@ const SetAddress = () => {
         //   const title = rowData.structured_formatting.main_text;
         //   const address = rowData.structured_formatting.secondary_text
         //   return(
-        //     <View> 
-        //        <Text>{title}</Text> 
-        //        <Text style={styles.locationAddress}>{address}</Text> 
+        //     <View>
+        //        <Text>{title}</Text>
+        //        <Text style={styles.locationAddress}>{address}</Text>
         //     </View>
         //   )
-        // }} 
+        // }}
         query={{
-          key: 'AIzaSyAXtp-vw6IoEEWX6aVYD-Ug-2Qkp6uT-jE',
+          // key: 'AIzaSyAXtp-vw6IoEEWX6aVYD-Ug-2Qkp6uT-jE',
+          key: 'AIzaSyAmdFtD0mKY5OkanGXSU6hR_-el1hKSpL4',
           language: 'en',
           components: 'country:vn'  // Limit to only Vietnam
         }}
@@ -61,7 +62,7 @@ const SetAddress = () => {
     </View>
     </Stack>
 
-    
+
   )
 }
 
