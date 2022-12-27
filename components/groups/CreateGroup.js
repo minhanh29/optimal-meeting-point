@@ -75,8 +75,6 @@ const CreateGroup = () => {
                 return [...prev, user]
             }
         })
-
-
     }
 
     //Done 50% add to group db, doing groupNuser db

@@ -4,7 +4,7 @@ import globalStyles from "../../styles"
 const styles = StyleSheet.create({
 	...globalStyles,
 	cardContainer: {
-		width: "80%",
+		width: "100%",
 		borderRadius: 15,
 		shadowOffset: {
 			width: 0,
@@ -13,6 +13,19 @@ const styles = StyleSheet.create({
 		shadowOpacity: 0.25,
 		shadowColor: "black",
 		padding: 17,
+		backgroundColor: "white",
+		elevation: 4,
+	},
+	groupCardContainer:{
+		width: "100%",
+		borderRadius: 15,
+		shadowOffset: {
+			width: 0,
+			height: 4,
+		},
+		shadowOpacity: 0.25,
+		shadowColor: "black",
+		padding: 12,
 		backgroundColor: "white",
 		elevation: 4,
 	},
@@ -47,7 +60,8 @@ const styles = StyleSheet.create({
 		shadowColor: "black",
 		padding: 17,
 		elevation: 4,
-		marginBottom: "15%"
+		marginBottom: "20%",
+		marginTop: "2%",
 	},
 	buttonTitle: {
 		fontFamily: "Montserrat-Bold",
@@ -75,6 +89,9 @@ const styles = StyleSheet.create({
         shadowOpacity: 0,
         borderBottomWidth: 0,
         borderRadius: 15,
+	},
+	listContainer:{
+		width: '80%'
 	},
 })
 

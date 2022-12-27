@@ -8,7 +8,7 @@ import { useTheme } from '@react-navigation/native';
 import AIcon from "@expo/vector-icons/AntDesign";
 // import Icon from "@expo/vector-icons/Ionicons";
 import FIcon from "@expo/vector-icons/Feather";
-import MIcon from "@expo/vector-icons/MaterialIcons"
+import MIcon from "@expo/vector-icons/MaterialIcons";
 import styles from "./styles";
 import { selectUser } from '../../redux/reducers/userSlice';
 import { useState } from "react";
@@ -18,6 +18,7 @@ const AddFriends = ({navigation}) => {
 
     const {colors} = useTheme();
     const [userList, setUserList] = useState([]);
+    const [friendList, setFriendList] = useState([])
     const [selectedIndex, setSelectedIndex] = useState([]);
     const user = useSelector(selectUser);
     const [avatar, setAvatar] = useState(null);
@@ -51,7 +52,7 @@ const AddFriends = ({navigation}) => {
     }, []);
 
     const handleAdd = (user, index) => {
-        selectedIndex(prev => {
+        setSelectedIndex(prev => {
             const isInclude = selectedIndex.includes(index)
             if (isInclude) {
                 return selectedIndex.filter(item => item !== index)
@@ -60,7 +61,7 @@ const AddFriends = ({navigation}) => {
             }
         })
 
-        setUserList (prev => {
+        setFriendList (prev => {
             const isInclude = userList.includes(user)
             if (isInclude) {
                 return userList.filter(item => item !== user)
@@ -77,7 +78,7 @@ const AddFriends = ({navigation}) => {
         try {
             const data = {
                 user_id: user.user_id,
-                friendIds: userList.map(item => item.id)
+                friendIds: friendList.map(item => item.id)
             }
             dispatch(addFriendAsync(data))
         } catch (e) {
@@ -91,61 +92,69 @@ const AddFriends = ({navigation}) => {
             h="100%"
             w="100%"
             items="center"
-            paddingTop={35}
+            paddingTop={40}
             >
-                <Flex w="80%" style={styles.searchHolder} direction="row">
-                    <AIcon name="search1" style={styles.iconImg} color='B4BABC'/>
-                    <TextInput
-                    style={styles.searchInput}
-                    placeholder='Search friends'
-                    color='#B4BABC'
-                    />
-                </Flex>
-                <ScrollView style={styles.listContainer}>
-                    <Stack w="100%" spacing={20} >
-                        {userList.map((user, index) => {
-                            return (
-                                <Box elevation ={3}
-                                backgroundColor="white"
-                                style={styles.cardContainer}
-                                w='100%'
-                                key={index}
-                                >
-                                    <Flex 
-                                    w="100%"
-                                    items="center"
-                                    direction="row"
+                <Stack h="100%"
+                    w="100%"
+                    items="center"
+                    spacing={20}>
+
+                    <Flex w="80%" style={styles.searchHolder} direction="row">
+                        <AIcon name="search1" style={styles.iconImg} color='B4BABC'/>
+                        <TextInput
+                        style={styles.searchInput}
+                        placeholder='Search friends'
+                        color='#B4BABC'
+                        />
+                    </Flex>
+                
+                    <ScrollView style={styles.listContainer}>
+                        <Stack w="100%" spacing={20} >
+                            {userList.map((user, index) => {
+                                return (
+                                    <Box elevation ={3}
+                                    backgroundColor="white"
+                                    style={styles.cardContainer}
+                                    w='100%'
+                                    key={index}
                                     >
-                                        <Avatar
-                                        label={user.name}
-                                        icon={props => <Icon name="account" {...props} />}
-                                        image={avatar ? {uri: user.ava_url} : null}
-                                        imageStyle={{borderRadius: 10}}
-                                        />
-                                    <Stack 
-                                    style ={{marginLeft:17}}
-                                    spacing={5}
-                                    w="58%"
-                                    >
-                                        <Text style={styles.cardHeader}>
-                                            {user.name}
-                                        </Text>
-                                        <Text style={styles.infoContent}>
-                                            @{user.username}
-                                        </Text>
-                                        </Stack>
-                                        <IconButton
-                                            icon={props => <FIcon name={selectedIndex.includes(index) ? 'check' : 'plus'} {...props} />}
-                                            color = "black"
-                                            style={{alignSelf: "center", padding: 20, backgroundColor: 'transparent', borderRadius:10, color: '#9ACDD0', marginRight: 20}}
-                                            onPress={() => handleAdd(user, index)}
+                                        <Flex 
+                                        w="100%"
+                                        items="center"
+                                        direction="row"
+                                        >
+                                            <Avatar
+                                            label={user.name}
+                                            icon={props => <Icon name="account" {...props} />}
+                                            image={avatar ? {uri: user.ava_url} : null}
+                                            imageStyle={{borderRadius: 10}}
                                             />
-                                    </Flex>
-                                </Box>
-                            )
-                        })}
-                    </Stack>
-                </ScrollView>
+                                        <Stack 
+                                        style ={{marginLeft:17}}
+                                        spacing={5}
+                                        w="58%"
+                                        >
+                                            <Text style={styles.cardHeader}>
+                                                {user.name}
+                                            </Text>
+                                            <Text style={styles.infoContent}>
+                                                @{user.username}
+                                            </Text>
+                                            </Stack>
+                                            <IconButton
+                                                icon={props => <FIcon name={selectedIndex.includes(index) ? 'check' : 'plus'} {...props} />}
+                                                color = "black"
+                                                style={{alignSelf: "center", padding: 20, backgroundColor: 'transparent', borderRadius:10, color: '#9ACDD0', marginRight: 20}}
+                                                onPress={() => handleAdd(user, index)}
+                                                />
+                                        </Flex>
+                                    </Box>
+                                )
+                            })}
+                        </Stack>
+                    </ScrollView>
+                </Stack>
+                
         </Stack>
     </View>
     )
