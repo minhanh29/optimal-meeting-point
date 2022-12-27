@@ -218,13 +218,13 @@ export const logOutAsync = createAsyncThunk('user/logOutAsync', async () => {
     await signOut(auth)
 })
 
-// log in to firebase
+
 export const addFriendAsync = createAsyncThunk('user/addFriendAsync', async (data) => {
     console.log(data)
      //send friend request
     const friendIds = data.userIds
     for (let i=0; i<friendIds.length; i++) {
-    await createFriendRequest(data.user_id, friendIds[i])
+        await createFriendRequest(data.user_id, friendIds[i])
     }
 
     return {
