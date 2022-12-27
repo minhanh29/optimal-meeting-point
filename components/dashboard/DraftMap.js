@@ -19,8 +19,8 @@ import mapStyleJson from "./../../mapStyle.json";
 import styles from "./styles";
 import { useSelector, useDispatch } from "react-redux";
 import { selectUser } from "../../redux/reducers/userSlice";
-import { selectGroup } from "../../redux/reducers/groupSlice";
-import { GOOGLE_MAPS_API_KEY } from "@env";
+import { selectGroup} from "../../redux/reducers/groupSlice";
+import { MAPBOX_PUBLIC_KEY } from '@env';
 
 import { getGroupName } from "../../firebaseConfig";
 import BottomSheet from "reanimated-bottom-sheet";
@@ -31,9 +31,11 @@ const mapStyle = mapStyleJson["mapStyle"];
 import { db } from "../../firebaseConfig";
 import { onSnapshot, doc, collection, query } from "firebase/firestore";
 import { ref, onValue, push, update, remove } from "firebase/database";
-
 const radius = 2 * 1000; // 2km
 const placeType = "cafe";
+const placeTypes = ["coffee", "food"]
+const NUM_SUGGESTION = 5
+
 const locationList = [
   {
     latitude: 10.729567,
@@ -194,68 +196,20 @@ const Dashboard = ({ navigation }) => {
       console.log(e.message);
     }
   };
+	const distance = (pt1, pt2) => {
+		return Math.pow(pt1.longitude - pt2.longitude, 2) + Math.pow(pt1.latitude - pt2.latitude, 2)
+	}
 
-  const findMeetingPoints = () => {
-    if (locationList.length == 0) {
-      Alert.alert(
-        "Error",
-        "There must be at least one user's location",
-        [{ text: "OK" }],
-        { cancelable: true }
-      );
-      return;
-    }
-
-    let longitude = 0;
-    let latitude = 0;
-    for (let i = 0; i < locationList.length; i++) {
-      latitude += locationList[i].latitude;
-      longitude += locationList[i].longitude;
-    }
-
-    longitude /= locationList.length;
-    latitude /= locationList.length;
-
-    setMiddlePoint({ longitude, latitude });
-
-    const url =
-      "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" +
-      latitude +
-      "," +
-      longitude +
-      "&radius=" +
-      radius +
-      "&type=" +
-      placeType +
-      "&key=" +
-      GOOGLE_MAPS_API_KEY;
-    fetch(url)
-      .then((res) => {
-        return res.json();
-      })
-      .then((res) => {
-        let places = [];
-        for (let i = 0; i < Math.min(res.results.length, 5); i++) {
-          let googlePlace = res.results[i];
-          let place = {};
-          let myLat = googlePlace.geometry.location.lat;
-          let myLong = googlePlace.geometry.location.lng;
-          let coordinate = {
-            latitude: myLat,
-            longitude: myLong,
-          };
-          place["placeTypes"] = googlePlace.types;
-          place["coordinate"] = coordinate;
-          place["placeId"] = googlePlace.place_id;
-          place["placeName"] = googlePlace.name;
-          places.push(place);
-        }
-
-        setSuggestion(places);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+	const findMeetingPoints = async () => {
+		if (locationList.length == 0) {
+			Alert.alert(
+				"Error",
+				"There must be at least one user's location",
+				[{ text: "OK" }],
+				{ cancelable: true }
+			);
+			return
+		}       
   };
 
   // console.log("User Info", user.user.address)
@@ -295,6 +249,34 @@ const Dashboard = ({ navigation }) => {
             </TouchableOpacity>
           </Marker>
         ))}
+			{/* {middlePoint ? */}
+			{/* <Marker */}
+			{/* 	coordinate={middlePoint} */}
+			{/* 	title={"RMIT"} */}
+			{/* 	description={"RMIT University"} */}
+			{/* > */}
+			{/* 	<TouchableOpacity onPress={() => sheetRef.current.snapTo(0)}> */}
+			{/* 		<Image */}
+			{/* 			style={styles.marker_icon} */}
+			{/* 			source={require("../../assets/location-dot.png")} */}
+			{/* 		></Image> */}
+			{/* 	</TouchableOpacity> */}
+			{/* </Marker>: null} */}
+			{suggestion.map((place, i) => (
+			<Marker
+				key={i}
+				coordinate={place.coordinate}
+				title={place.placeName}
+				description={place.placeName}
+			>
+				<TouchableOpacity onPress={() => sheetRef.current.snapTo(0)}>
+					<Image
+						style={styles.marker_icon}
+						source={require("../../assets/location-dot.png")}
+					></Image>
+				</TouchableOpacity>
+			</Marker>
+			))}
 
         {/* // User's location */}
         <AvaMarker
