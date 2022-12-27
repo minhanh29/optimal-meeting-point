@@ -7,7 +7,7 @@ import Icon from "@expo/vector-icons/Ionicons";
 import FIcon from "@expo/vector-icons/Feather";
 import MIcon from "@expo/vector-icons/MaterialIcons"
 import styles from "./styles"
-import { collection, getDocs, onSnapshot, query, where } from "firebase/firestore";
+import { collection, getDocs, onSnapshot, query, where, doc } from "firebase/firestore";
 import { db, getGroupName } from "../../firebaseConfig"
 import { useDispatch, useSelector } from 'react-redux';
 import { selectUser } from '../../redux/reducers/userSlice';
@@ -61,7 +61,6 @@ const Groups = ({ navigation }) => {
 		),
 		[]
 	);
-
 
   //Left the group
   const handleDelete = (group_id) => {
