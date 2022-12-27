@@ -19,8 +19,8 @@ import mapStyleJson from "./../../mapStyle.json";
 import styles from "./styles";
 import { useSelector, useDispatch } from "react-redux";
 import { selectUser } from "../../redux/reducers/userSlice";
-import { selectGroup} from "../../redux/reducers/groupSlice";
-import { MAPBOX_PUBLIC_KEY } from '@env';
+import { selectGroup } from "../../redux/reducers/groupSlice";
+import { MAPBOX_PUBLIC_KEY } from "@env";
 
 import { getGroupName } from "../../firebaseConfig";
 import BottomSheet from "reanimated-bottom-sheet";
@@ -33,8 +33,8 @@ import { onSnapshot, doc, collection, query } from "firebase/firestore";
 import { ref, onValue, push, update, remove } from "firebase/database";
 const radius = 2 * 1000; // 2km
 const placeType = "cafe";
-const placeTypes = ["coffee", "food"]
-const NUM_SUGGESTION = 5
+const placeTypes = ["coffee", "food"];
+const NUM_SUGGESTION = 5;
 
 const locationList = [
   {
@@ -91,87 +91,88 @@ const renderHeader = () => (
 const sheetRef = React.createRef();
 const fall = new Animated.Value(1);
 
-const AvaMarker = ({ ava_url, location }) => {
-  const [userList, setUserList] = useState(["empty"]);
+const AvaMarker = () => {
+  const [userList, setUserList] = useState();
 
   useEffect(
     () =>
-      onSnapshot(query(collection(db, "user")), (snapshot) => {
-        // Update to Redux
-        const refList = snapshot.docs.map((doc) => ({
-          ...doc.data(),
-          id: doc.id,
-        }));
-        setUserList(refList);
-      }),
+      onSnapshot(query(collection(db, "user")), (snapshot) => 
+        setUserList(snapshot.docs.map((doc) => doc.data()))
+      ),
     []
   );
 
   console.log("Data", userList);
+  console.log("Count Length", userList && userList.length);
+  // console.log("Check address", userList && userList[0].address);
 
   return (
-    <Marker coordinate={location} title={"user"}>
-      <View
-        style={{
-          flexDirection: "row",
-          backgroundColor: "#00bfff",
-          borderTopLeftRadius: 60,
-          borderTopRightRadius: 60,
-          borderBottomRightRadius: 0,
-          borderBottomLeftRadius: 60,
-          transform: [{ rotate: "45deg" }],
-          alignSelf: "flex-start",
-          height: 45,
-          width: 45,
-        }}
-      >
-        <Svg width={40} height={30}>
-          <Image
-            source={{ uri: ava_url }}
-            width={40}
-            height={30}
-            style={{
-              height: 40,
-              width: 40,
-              transform: [{ rotate: "-45deg" }],
-              borderRadius: 90,
-              position: "absolute",
-              left: 1.5, // 1.5
-              bottom: -42, // -32
+    <>
+      {userList &&
+        userList.map((user) => (
+          <Marker
+            coordinate={{
+              latitude: user.address.latitude,
+              longitude: user.address.longitude,
             }}
-          />
-        </Svg>
-      </View>
-      <Callout>
-        <View
-          style={{
-            flexDirection: "column",
-            width: 120,
-            height: 30,
-          }}
-        >
-          <Text
-            style={{
-              marginLeft: 2,
-              marginBottom: 1,
-              color: "black",
-              fontWeight: "bold",
-              alignSelf: "center",
-            }}
+            title={"user"}
           >
-            user's name
-          </Text>
-          {/* <Text
-					style={{
-						marginLeft: 2,
-						color: "black"
-					}}
-				>
-					No need Description
-				</Text> */}
-        </View>
-      </Callout>
-    </Marker>
+            <View></View>
+            <View
+              style={{
+                flexDirection: "row",
+                backgroundColor: "#00bfff",
+                borderTopLeftRadius: 60,
+                borderTopRightRadius: 60,
+                borderBottomRightRadius: 0,
+                borderBottomLeftRadius: 60,
+                transform: [{ rotate: "45deg" }],
+                alignSelf: "flex-start",
+                height: 45,
+                width: 45,
+              }}
+            >
+              <Svg width={40} height={30}>
+                <Image
+                  source={{ uri: user.ava_url }}
+                  width={40}
+                  height={30}
+                  style={{
+                    height: 40,
+                    width: 40,
+                    transform: [{ rotate: "-45deg" }],
+                    borderRadius: 90,
+                    position: "absolute",
+                    left: 1.5, // 1.5
+                    bottom: -42, // -32
+                  }}
+                />
+              </Svg>
+            </View>
+            <Callout>
+              <View
+                style={{
+                  flexDirection: "column",
+                  width: 120,
+                  height: 30,
+                }}
+              >
+                <Text
+                  style={{
+                    marginLeft: 2,
+                    marginBottom: 1,
+                    color: "black",
+                    fontWeight: "bold",
+                    alignSelf: "center",
+                  }}
+                >
+                  {user.username}
+                </Text>
+              </View>
+            </Callout>
+          </Marker>
+        ))}
+    </>
   );
 };
 
@@ -196,20 +197,23 @@ const Dashboard = ({ navigation }) => {
       console.log(e.message);
     }
   };
-	const distance = (pt1, pt2) => {
-		return Math.pow(pt1.longitude - pt2.longitude, 2) + Math.pow(pt1.latitude - pt2.latitude, 2)
-	}
+  const distance = (pt1, pt2) => {
+    return (
+      Math.pow(pt1.longitude - pt2.longitude, 2) +
+      Math.pow(pt1.latitude - pt2.latitude, 2)
+    );
+  };
 
-	const findMeetingPoints = async () => {
-		if (locationList.length == 0) {
-			Alert.alert(
-				"Error",
-				"There must be at least one user's location",
-				[{ text: "OK" }],
-				{ cancelable: true }
-			);
-			return
-		}       
+  const findMeetingPoints = async () => {
+    if (locationList.length == 0) {
+      Alert.alert(
+        "Error",
+        "There must be at least one user's location",
+        [{ text: "OK" }],
+        { cancelable: true }
+      );
+      return;
+    }
   };
 
   // console.log("User Info", user.user.address)
@@ -249,48 +253,37 @@ const Dashboard = ({ navigation }) => {
             </TouchableOpacity>
           </Marker>
         ))}
-			{/* {middlePoint ? */}
-			{/* <Marker */}
-			{/* 	coordinate={middlePoint} */}
-			{/* 	title={"RMIT"} */}
-			{/* 	description={"RMIT University"} */}
-			{/* > */}
-			{/* 	<TouchableOpacity onPress={() => sheetRef.current.snapTo(0)}> */}
-			{/* 		<Image */}
-			{/* 			style={styles.marker_icon} */}
-			{/* 			source={require("../../assets/location-dot.png")} */}
-			{/* 		></Image> */}
-			{/* 	</TouchableOpacity> */}
-			{/* </Marker>: null} */}
-			{suggestion.map((place, i) => (
-			<Marker
-				key={i}
-				coordinate={place.coordinate}
-				title={place.placeName}
-				description={place.placeName}
-			>
-				<TouchableOpacity onPress={() => sheetRef.current.snapTo(0)}>
-					<Image
-						style={styles.marker_icon}
-						source={require("../../assets/location-dot.png")}
-					></Image>
-				</TouchableOpacity>
-			</Marker>
-			))}
+        {/* {middlePoint ? */}
+        {/* <Marker */}
+        {/* 	coordinate={middlePoint} */}
+        {/* 	title={"RMIT"} */}
+        {/* 	description={"RMIT University"} */}
+        {/* > */}
+        {/* 	<TouchableOpacity onPress={() => sheetRef.current.snapTo(0)}> */}
+        {/* 		<Image */}
+        {/* 			style={styles.marker_icon} */}
+        {/* 			source={require("../../assets/location-dot.png")} */}
+        {/* 		></Image> */}
+        {/* 	</TouchableOpacity> */}
+        {/* </Marker>: null} */}
+        {suggestion.map((place, i) => (
+          <Marker
+            key={i}
+            coordinate={place.coordinate}
+            title={place.placeName}
+            description={place.placeName}
+          >
+            <TouchableOpacity onPress={() => sheetRef.current.snapTo(0)}>
+              <Image
+                style={styles.marker_icon}
+                source={require("../../assets/location-dot.png")}
+              ></Image>
+            </TouchableOpacity>
+          </Marker>
+        ))}
 
         {/* // User's location */}
-        <AvaMarker
-          ava_url="https://firebasestorage.googleapis.com/v0/b/optimal-meeting-point.appspot.com/o/avatar%2F1670923973578_9e26907c-bbcc-466c-bfef-be458126aadf.png?alt=media&token=7eae656e-8cff-4597-9c8d-70e627fe6f69"
-          location={locationList[0]}
-        />
-        <AvaMarker
-          ava_url="https://gamek.mediacdn.vn/zoom/220_160/133514250583805952/2022/6/12/hinata-naruto-capture-560x337-16550242117671411683058.jpg"
-          location={locationList[1]}
-        />
-        <AvaMarker
-          ava_url="https://cdn.popsww.com/blog/sites/2/2022/02/boruto-x-kawaki.jpg"
-          location={locationList[2]}
-        />
+        <AvaMarker />
       </MapView>
       <BottomSheet
         ref={sheetRef}
