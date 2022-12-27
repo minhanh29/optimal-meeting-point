@@ -10,7 +10,6 @@ import Icon from "@expo/vector-icons/Ionicons";
 import FIcon from "@expo/vector-icons/Feather";
 import Config from "react-native-config";
 import { getAddressFromGeopoint, getGeoCodeFromAddress } from '../common/Utils'
-import { GOOGLE_MAPS_API_KEY } from '@env';
 
 
 const SetAddress = ({ navigation }) => {
@@ -21,7 +20,7 @@ const SetAddress = ({ navigation }) => {
 
 
 
-
+  // console.log("KEY", Config.GOOGLE_MAPS_API_KEY)
 
   return (
     <Stack
@@ -31,41 +30,54 @@ const SetAddress = ({ navigation }) => {
       items="center"
       paddingTop={35}
     >
-    <View style={{...styles.searchContainer,marginTop: Platform.OS == "ios" ? 50 : 40 }}>
-      <GooglePlacesAutocomplete
-        style={{flex: 1}}
-        placeholder='Search Location'
-        keepResultsAfterBlur = {true}
-        onPress={(data, details) => {
-          console.log(details)
-          setAddressText({
-            location: details.geometry.location,
-            address: details.formatted_address,
-          })
-        }}
-        minLength={2}
-        fetchDetails={true}
-        // GooglePlacesDetailsQuery={{
-        //   fields: ['formatted_address', 'geometry'],
-        // }}
-        // renderRow={(rowData) => {
-        //   const title = rowData.structured_formatting.main_text;
-        //   const address = rowData.structured_formatting.secondary_text
-        //   return(
-        //     <View>
-        //        <Text>{title}</Text>
-        //        <Text style={styles.locationAddress}>{address}</Text>
-        //     </View>
-        //   )
-        // }}
-        query={{
-          // key: 'AIzaSyAXtp-vw6IoEEWX6aVYD-Ug-2Qkp6uT-jE',
-          key: 'AIzaSyAmdFtD0mKY5OkanGXSU6hR_-el1hKSpL4',
-          language: 'en',
-          components: 'country:vn'  // Limit to only Vietnam
-        }}
-      />
+      <Stack w="80%" items="start">
+        <TextInput
+          style={styles.textInput}
+          placeholder='Your group name (optional)'
+          color='#B4BABC'
+          onChangeText={(newText) => setSearchInput(newText)}
+        />
+      </Stack>
+      {/* <View style={{ ...styles.searchContainer, marginTop: Platform.OS == "ios" ? 27 : 18 }}>
+        <GooglePlacesAutocomplete
+          placeholder='Search Location'
+          keepResultsAfterBlur={true}
+          onPress={(data, details) => {
+            setAddressText({
+              location: details.geometry.location,
+              address: details.formatted_address,
+            })
+          }}
 
+          fetchDetails={true}
+          // GooglePlacesDetailsQuery={{
+          //   fields: ['formatted_address', 'geometry'],
+          // }}
+          renderRow={(rowData) => {
+            const title = rowData.structured_formatting.main_text;
+            const address = rowData.structured_formatting.secondary_text
+            return (
+              <View style={styles.dropDownList}>
+                <HStack width='100%' spacing={20}>
+                  <Box style={styles.iconContainer}>
+                    <Icon name="location-sharp" size={24} style={styles.iconStyle} />
+                  </Box>
+                  <VStack style={styles.textContainer}>
+                    <Text style={styles.titleText}>{title}</Text>
+                    <Text style={styles.locationAddress}>{address}</Text>
+                  </VStack>
+                </HStack>
+              </View>
+            )
+          }}
+          query={{
+            // key: Config.GOOGLE_MAPS_API_KEY,
+            key: GOOGLE_MAPS_API_KEY,
+            language: 'en',
+            components: 'country:vn'  // Limit to only Vietnam
+          }}
+          enablePoweredByContainer={false}
+        />
       </View> */}
       <View style={styles.bottomContainer}>
         <TouchableOpacity
