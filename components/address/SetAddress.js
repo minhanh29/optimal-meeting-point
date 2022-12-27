@@ -1,18 +1,25 @@
-import { View, Text } from 'react-native'
+import { View, Text, TouchableOpacity, TextInput } from 'react-native'
 import styles from './styles'
 import React from 'react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete'
 import { useTheme } from '@react-navigation/native';
-import { Stack } from '@react-native-material/core'
+import { Box, Flex, HStack, IconButton, Stack, VStack } from '@react-native-material/core'
 import { useRef } from 'react'
-import { useEffect } from 'react'
+import Icon from "@expo/vector-icons/Ionicons";
+import FIcon from "@expo/vector-icons/Feather";
+import Config from "react-native-config";
+import { getAddressFromGeopoint, getGeoCodeFromAddress } from '../common/Utils'
+import { GOOGLE_MAPS_API_KEY } from '@env';
 
-const SetAddress = () => {
+
+const SetAddress = ({ navigation }) => {
   const { colors } = useTheme();
   const [addressText, setAddressText] = useState({})
-  console.log("Ađress", addressText)
-  const ref = useRef()
+  const [searchInput, setSearchInput] = useState("")
+  console.log("Search Input", searchInput)
+
+
 
 
 
@@ -59,7 +66,28 @@ const SetAddress = () => {
         }}
       />
 
-    </View>
+      </View> */}
+      <View style={styles.bottomContainer}>
+        <TouchableOpacity
+          style={{
+            width: "100%",
+            borderRadius: 15,
+            padding: 17,
+            backgroundColor: 'white'
+          }}
+          onPress={() => navigation.navigate("MapPin")}
+        >
+          <HStack display='flex' alignItems='center' spacing={20}>
+            <FIcon name="map" size={24} style={styles.iconStyle} />
+            <Text
+              style={styles.buttonTitle}
+              color="white"
+            >
+              Pin On Map
+            </Text>
+          </HStack>
+        </TouchableOpacity>
+      </View>
     </Stack>
 
 

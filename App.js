@@ -6,7 +6,8 @@ import {
 } from "@react-native-material/core";
 import SignUp from "./components/authentication/SignUp";
 import Login from "./components/authentication/Login";
-import Dashboard from "./components/dashboard/Dashboard";
+// import Dashboard from "./components/dashboard/Dashboard";
+import Dashboard from "./components/dashboard/DraftMap";
 import Settings from "./components/settings/Settings";
 import ChangePassword from "./components/settings/ChangePassword";
 import UpdateProfile from "./components/settings/UpdateProfile";
@@ -25,6 +26,7 @@ import { store } from "./redux/store";
 import { selectUser } from "./redux/reducers/userSlice";
 import AddNewMember from "./components/groups/AddNewMember";
 import GroupInfo from "./components/groups/GroupInfo";
+import PinOnMap from "./components/dashboard/PinOnMap";
 
 const StackNavigator = createStackNavigator()
 
@@ -36,6 +38,7 @@ export const theme = {
 		backButton: "#B4D8D7",
 	},
 };
+
 
 const AppInner = () => {
 	const { isAuthenticated } = useSelector(selectUser)
@@ -155,6 +158,13 @@ const AppInner = () => {
 					component={GroupInfo}
 					options={{
 						title: "Group Info"
+					}}
+				/>
+				<StackNavigator.Screen
+					name="MapPin"
+					component={PinOnMap}
+					options={{
+						headerShown: false
 					}}
 				/>
 				<StackNavigator.Screen name="Notifications" component={Notifications} />

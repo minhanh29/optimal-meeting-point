@@ -87,6 +87,15 @@ const updateUser = (id, data) => {
 	return setDoc(doc(db, "user", id), data, { merge: true })
 };
 
+const createGroupInvitation = (group_id, sender_id, receiver_id) => {
+	return addDoc(collection(db, "group_invitation" ),{
+		group_id,
+		receiver_id,
+		sender_id,
+		created_at: new Date(),
+		status: 0,
+	})
+}
 
 
 // CLOUD STORAGE
@@ -108,7 +117,7 @@ const uploadFile = async (folderName, imageUri, fileName) => {
 		});
 
 		const timestamp = (new Date()).getTime()
-		const imageRef = ref(storage, `${folderName}/ ${timestamp}_${fileName}`)
+		const imageRef = ref(storage, `${folderName}/${timestamp}_${fileName}`)
         // await uploadBytes(imageRef, imageUri)
         await uploadBytes(imageRef, blob)
         const url = await getDownloadURL(imageRef)
@@ -151,19 +160,46 @@ const deleteFile = async (folderName,fileName) => {
     }
 }
 
+const getPathToStorage = (url) => {
+	const baseURL = 'https://firebasestorage.googleapis.com/v0/b/optimal-meeting-point.appspot.com/o/';
+	let imagePath = url.replace(baseURL,'');
+	const indexOfEndPath = imagePath.indexOf('?');
+	imagePath= imagePath.substring(0, indexOfEndPath);
+	imagePath = decodeURIComponent(imagePath);
+	return imagePath;
+}
+
 const deleteFileByUrl = async (url) => {
-    var fileRef = storage.refFromURL(url)
+    // var fileRef = storage.refFromURL(getPathToStorage(url))
+    var fileRef = ref(storage, getPathToStorage(url))
+    // var fileRef = refFromURL(storage, url)
 
     // Delete the file using the delete() method
-    return await fileRef.delete().then(() => {
+    // return await fileRef.delete().then(() => {
 
-        // File deleted successfully
-        // console.log("File Deleted")
-    }).catch(function (error) {
-        // Some Error occurred
-        console.log(error.mess)
-    });
+    //     // File deleted successfully
+    //     // console.log("File Deleted")
+    // }).catch(function (error) {
+    //     // Some Error occurred
+    //     console.log(error.mess)
+    // });
+    try {
+		await deleteObject(fileRef)
+    } catch(error){
+		console.log(error.message)
+		return error.message
+    }
+
+	return null
 }
+
+const updateAddress = (id, data) => {
+    return setDoc(doc(db, "group", id), {
+		...data
+	}, {
+		merge: true
+	});
+};
 
 // ============
 export {
@@ -184,4 +220,6 @@ export {
 	downloadFile,
 	deleteFile,
 	deleteFileByUrl,
+	createGroupInvitation,
+	updateAddress,
 }

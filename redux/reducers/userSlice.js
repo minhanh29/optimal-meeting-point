@@ -9,6 +9,7 @@ import {
 	signOut,
     getUserInfo,
 } from "../../firebaseConfig"
+import { EmailAuthProvider, reauthenticateWithCredential, updatePassword } from "firebase/auth";
 
 
 export const USER_IDLE = 0
@@ -20,6 +21,10 @@ export const USER_SIGNUP_PENDING = 3
 export const USER_LOGIN_SUCCESS = 3
 export const USER_LOGIN_FAILED = 4
 export const USER_LOGIN_PENDING = 5
+
+export const USER_CHANGING_SUCCESS = 6
+export const USER_CHANGING_FAILED = 7
+export const USER_CHANGING_PENDING = 8
 
 const authErrors = {
 	"auth/wrong-password": "The password is invalid or the user does not have a password.",
@@ -170,8 +175,16 @@ const initialState = {
     signUpStatus: USER_IDLE,
     status: USER_IDLE,  // login status
     errorMessage: "",
+	passwordInfoStatus: USER_IDLE,
 	isAuthenticated: false,
 }
+
+export const changePasswordAsync = createAsyncThunk('user/changePassword', async(data) => {
+	const user = auth.currentUser
+	const cred = EmailAuthProvider.credential(data.username + "@omp.com", data.currentPassword)
+	await reauthenticateWithCredential(user, cred)
+	await updatePassword(user, data.newPassword)
+})
 
 export const signUpAsync = createAsyncThunk('user/signUpAsync', async (data)=>{
     // create an account on firebase auth
@@ -214,6 +227,9 @@ const userSlice = createSlice({
 			state.errorMessage = action.payload
 			state.status = USER_LOGIN_FAILED
 		},
+		changePasswordStatus: (state, action) => {
+			state.passwordInfoStatus = action.payload
+		},
     },
     extraReducers: builder =>{
         builder
@@ -247,10 +263,21 @@ const userSlice = createSlice({
 			state.errorMessage = ""
 			state.isAuthenticated = false
         })
+		.addCase(changePasswordAsync.fulfilled, (state, action) => {
+			state.passwordInfoStatus = USER_CHANGING_SUCCESS
+		})
+		.addCase(changePasswordAsync.pending, (state, action) => {
+			state.passwordInfoStatus = USER_CHANGING_PENDING
+		})
+		.addCase(changePasswordAsync.rejected, (state, action) => {
+			console.log(action)
+			state.passwordInfoStatus = USER_CHANGING_FAILED
+			state.errorMessage = authErrors[action.error.code] ?  authErrors[action.error.code] : "Unknown Error!";
+		})
     }
 })
 
 export const selectUser = (state) => state.user
-export const {changeSignUpStatus, signUpFail, changeStatus, loginFail} = userSlice.actions
+export const {changeSignUpStatus, changePasswordStatus, signUpFail, changeStatus, loginFail} = userSlice.actions
 
 export default userSlice.reducer

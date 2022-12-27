@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import { FlatList, View, TouchableOpacity, Animated } from 'react-native'
+import { FlatList, View, TouchableOpacity, Animated, Alert } from 'react-native'
 import { Avatar, Box, Stack, Text, Switch, Flex, Spacer } from "@react-native-material/core";
 import { useTheme } from '@react-navigation/native';
 import { db } from "../../firebaseConfig"
-import { doc, setDoc, onSnapshot, query, collection, where, getDoc } from "firebase/firestore";
+import { doc, setDoc, addDoc, onSnapshot, query, collection, where, getDoc, GeoPoint } from "firebase/firestore";
 import { useDispatch, useSelector } from "react-redux"
 import {
     selectUser,
@@ -23,6 +23,7 @@ const GroupInvitations = () => {
 
 	const [selectAll, setSelectAll] = useState(false)
 	const [loaded, setLoaded] = useState(false)
+	const [processing, setProcessing] = useState(false)
 	const [groupDict, setGroupDict] = useState({})
 	const [userDict, setUserDict] = useState({})
 	const [data, setData] = useState([])
@@ -32,7 +33,7 @@ const GroupInvitations = () => {
 
 	useEffect(() => {
 		if (user.id !== "") {
-			onSnapshot(query(collection(db, "notif"), where("receiver_id", "==", user.id), where("status", "==", STATUS_PENDING)), (snapshot) => {
+			onSnapshot(query(collection(db, "group_invitation"), where("receiver_id", "==", user.id), where("status", "==", STATUS_PENDING)), (snapshot) => {
 				const refList = snapshot.docs.map(doc => ({
 					...doc.data(),
 					id: doc.id
@@ -57,7 +58,8 @@ const GroupInvitations = () => {
 					senderName: sData.name,
 					senderUsername: sData.username,
 					senderAva: sData.ava_url,
-					groupName: gData.group_name
+					groupName: gData.group_name,
+					...refList[i]
 				})
 			}
 		} catch (e) {
@@ -131,23 +133,64 @@ const GroupInvitations = () => {
 	}
 
 	const changeStatus = async (status) => {
+		setProcessing(true)
+		let dataClone = data.map(item => ({
+			id: item.id,
+			group_id: item.group_id
+		}))
 		for (let i = 0; i < checkedBoxes.length; i++) {
 			try {
-				await setDoc(doc(db, "notif", checkedBoxes[i]), {
+				// update invitation status
+				await setDoc(doc(db, "group_invitation", checkedBoxes[i]), {
 					status
 				}, { merge: true })
+
+				if (status === STATUS_ACCEPTED) {
+					for (let j = 0; j < dataClone.length; j++) {
+						if (dataClone[j].id !== checkedBoxes[i])
+							continue
+
+						// add user to group
+						await addDoc(collection(db, "groupNuser"), {
+							group_address: new GeoPoint(user.address.latitude, user.address.longitude),
+							group_id: dataClone[j].group_id,
+							role: "member",
+							user_id: user.id,
+						})
+						break
+					}
+				}
 			} catch (e) {
 				showErrorMessage(e.message)
+				setProcessing(false)
 			}
+		}
+
+		setCheckedBoxes([])
+		setProcessing(false)
+		if (status === STATUS_ACCEPTED) {
+			Alert.alert(
+				"Join Success",
+				"You have joined the selected groups",
+				[{ text: "OK" }],
+				{ cancelable: true }
+			);
+		} else {
+			Alert.alert(
+				"Reject Success",
+				"You have rejected the selected invitations",
+				[{ text: "OK" }],
+				{ cancelable: true }
+			);
 		}
 	}
 
 	return (
 		<Stack h="100%" overflow="visible">
-			<Stack w="100%" spacing={10} marginTop={20} justify="between">
+			<Stack w="100%" maxH="77%" spacing={10} marginTop={20} justify="between">
 				<Spinner
-					visible={!loaded}
-					textContent='Loading...'
+					visible={!loaded || processing}
+					textContent={processing ? "Processing..." : 'Loading...'}
 					textStyle={{color: "white"}}
 					cancelable={true}
 				/>
@@ -165,7 +208,7 @@ const GroupInvitations = () => {
 					data={data}
 					renderItem={({item}) => <Card
 						isChecked={checkedBoxes.includes(item.id)}
-						handleCheckbox={handleCheckbox}
+						handleCheckbox={() => handleCheckbox(item.id)}
 						id={item.id}
 						title={item.senderName}
 						content={`@${item.senderUsername} invites you to group ${item.groupName}`}
