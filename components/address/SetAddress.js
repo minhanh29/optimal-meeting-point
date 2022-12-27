@@ -17,7 +17,7 @@ const SetAddress = ({ navigation }) => {
   const { colors } = useTheme();
   const [addressText, setAddressText] = useState({})
   const [searchInput, setSearchInput] = useState("")
-  
+  console.log("Search Input", searchInput)
   
 
 

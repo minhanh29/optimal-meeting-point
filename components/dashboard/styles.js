@@ -52,7 +52,6 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     borderRadius: 8,
     justifyContent: "flex-end",
-    alignItems: 'right',
     flexDirection: 'row',
   },
   sideContainer: {
@@ -67,7 +66,7 @@ const styles = StyleSheet.create({
     padding: 5,
     width: '95%',
     backgroundColor:'white',
-    borderRadius: '50',
+    borderRadius: 50,
   },
   sidePinNav: {
     width: '100%',

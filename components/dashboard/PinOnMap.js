@@ -66,42 +66,43 @@ const fall = new Animated.Value(1);
 
 const PinOnMap = ({ navigation }) => {
 	const user = useSelector(selectUser)
-	console.log(user)
 	const group = useSelector(selectGroup)
-	console.log("STATUS",group.groupId)
 	const dispatch = useDispatch()
 	const { colors } = useTheme()
 	const [marker, setMarker] = useState(null)
+	console.log(marker)
 	const [addressText, setAddressText] = useState(null)
+	console.log("AddressText" ,addressText)
+
 
 	useEffect(() => {
-        if(group.status === UPDATE_ADDRESS_REJECTED ){
-            Alert.alert(
-                "Update Location",
-                "Failed to update location",
-                [
-                    {
-                      text: "OK",
-                    },
-                ],
-                { cancelable: true }
-            )
-            dispatch(changeGroupStatus(GROUP_IDLE))
-        }if(group.status === UPDATE_ADDRESS_SUCCESS){
-            Alert.alert(
-                "Update Location",
-                "Group location has been updated successfully",
-                [
-                    {
-                      text: "OK",
-                    //   onPress:() => navigation.goBack(),
-                    },
-                ],
-                { cancelable: true }
-            )
-            dispatch(changeGroupStatus(GROUP_IDLE))
-        }
-    },[group.status])
+		if (group.status === UPDATE_ADDRESS_REJECTED) {
+			Alert.alert(
+				"Update Location",
+				"Failed to update location",
+				[
+					{
+						text: "OK",
+					},
+				],
+				{ cancelable: true }
+			)
+			dispatch(changeGroupStatus(GROUP_IDLE))
+		} if (group.status === UPDATE_ADDRESS_SUCCESS) {
+			Alert.alert(
+				"Update Location",
+				"Group location has been updated successfully",
+				[
+					{
+						text: "OK",
+						//   onPress:() => navigation.goBack(),
+					},
+				],
+				{ cancelable: true }
+			)
+			dispatch(changeGroupStatus(GROUP_IDLE))
+		}
+	}, [group.status])
 
 
 	const getAddress = async (geopoint) => {
@@ -136,7 +137,9 @@ const PinOnMap = ({ navigation }) => {
 				if (item.country) {
 					address += item.country
 				}
+				console.log("Address trong function", address)
 				setAddressText(address)
+				
 			}
 		} catch (e) {
 			console.log("Error", e)
@@ -150,8 +153,8 @@ const PinOnMap = ({ navigation }) => {
 			location: addressText,
 			address: new GeoPoint(marker.latitude, marker.longitude),
 		}
-		
-		const data = {groupId: group.groupId, newAddress}
+
+		const data = { groupId: group.groupId, newAddress }
 
 		dispatch(updateAddressAsync(data));
 	}
@@ -163,11 +166,11 @@ const PinOnMap = ({ navigation }) => {
 	return (
 		<View style={styles.container}>
 			<Spinner
-                visible={group.status === UPDATE_ADDRESS_PENDING}
-                textContent={'Loading...'}
-                textStyle={{ color: "white" }}
-                cancelable={true}
-            /> 
+				visible={group.status === UPDATE_ADDRESS_PENDING}
+				textContent={'Loading...'}
+				textStyle={{ color: "white" }}
+				cancelable={true}
+			/>
 			<StatusBar style="dark" backgroundColor="white" />
 			<MapView
 				style={styles.map}
@@ -200,7 +203,7 @@ const PinOnMap = ({ navigation }) => {
 						>
 							<Svg width={40} height={30}>
 								<Image
-									source={{url: user.user.ava_url}}
+									source={{ url: user.user.ava_url }}
 									width={40}
 									height={30}
 									style={{

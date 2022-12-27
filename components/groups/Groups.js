@@ -123,7 +123,7 @@ const Groups = ({ navigation }) => {
           textStyle={{ color: "white" }}
           cancelable={true}
         />
-        <Flex direction='row' w='80%' style={{ ...styles.searchHolder, marginTop: Platform.OS == "ios" ? 20 : 25 }}>
+        <Flex direction='row' w='80%' style={{ ...styles.searchHolder, marginTop: Platform.OS == "ios" ? 15 : 20 }}>
           <AIcon name="search1" style={styles.iconImg} color='B4BABC' />
           <TextInput
             style={styles.searchInput}
