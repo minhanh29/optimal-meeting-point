@@ -1,58 +1,89 @@
 import { StyleSheet, Dimensions } from "react-native";
 
 const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		backgroundColor: "#fff",
-		alignItems: "center",
-		justifyContent: "center",
-	},
-	map: {
-		width: Dimensions.get("window").width,
-		height: Dimensions.get("window").height,
-	},
-	topContainer: {
-		width: '100%',
-		position: 'absolute',
-		top: '8%',
-		left: "8%",
-		backgroundColor: 'transparent',
-	},
-	topTitle: {
-		fontFamily: "Montserrat-Bold",
-		fontSize: 40,
-		textDecorationLine: "underline",
-		textShadowColor: 'rgba(0, 0, 0, 0.75)',
-		textShadowOffset: {width: -1, height: 1},
-		textShadowRadius: 5
-	},
-	bottomContainer: {
-		width: '100%',
-		position: 'absolute',
-		bottom: '5%',
-		backgroundColor: 'transparent',
-	},
-	bottomNav: {
-		width: '100%',
-		backgroundColor: "transparent",
-		borderRadius: 8,
-		justifyContent: 'center',
-		alignItems: 'center',
-		flexDirection: 'row',
-	},
-	sideContainer: {
-		position: 'absolute',
-		top: '8%',
-		right: 0,
-	},
-	shadowBtn: {
-		shadowColor: "#000",
-		shadowOffset: {
-			width: 0,
-			height: 7,
-		},
-		shadowOpacity: 0.50,
-		shadowRadius: 13.97,
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  map: {
+    width: Dimensions.get("window").width,
+    height: Dimensions.get("window").height,
+  },
+  topContainer: {
+    width: '100%',
+    position: 'absolute',
+    top: '8%',
+    left: "8%",
+    backgroundColor: 'transparent',
+  },
+  topTitle: {
+    fontFamily: "Montserrat-Bold",
+    fontSize: 40,
+    textDecorationLine: "underline",
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowOffset: { width: -1, height: 1 },
+    textShadowRadius: 5
+  },
+  bottomContainer: {
+    width: '100%',
+    position: 'absolute',
+    bottom: '5%',
+    backgroundColor: 'transparent',
+  },
+  bottomPinContainer: {
+    width: '100%',
+    position: 'absolute',
+    bottom: '5%',
+    backgroundColor: 'transparent',
+    right: 10,
+  },
+  bottomNav: {
+    width: '100%',
+    backgroundColor: "transparent",
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  bottomPinNav: {
+    width: '100%',
+    backgroundColor: "transparent",
+    borderRadius: 8,
+    justifyContent: "flex-end",
+    flexDirection: 'row',
+  },
+  sideContainer: {
+    position: 'absolute',
+    top: '8%',
+    right: 0,
+  },
+  sidePinContainer: {
+    position: 'absolute',
+    top: '8%',
+    // left: 0,
+    padding: 5,
+    width: '95%',
+    backgroundColor:'white',
+    borderRadius: 50,
+  },
+  sidePinNav: {
+    width: '100%',
+    backgroundColor: "transparent",
+    borderRadius: 8,
+    justifyContent: "flex-start",
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  shadowBtn: {
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 7,
+    },
+    shadowOpacity: 0.50,
+    shadowRadius: 13.97,
 
     elevation: 20,
   },
@@ -152,6 +183,16 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "white",
   },
+  pinHeaderText: {
+		fontFamily: "Montserrat-Bold",
+		fontSize: 13,
+		textAlign: 'center',
+    textDecorationLine: 'underline',
+    // fontWeight: '900', 
+    // textShadowColor: 'rgba(0, 0, 0, 0.8)', 
+    // textShadowOffset: { width: 0, height: 0 },
+    // textShadowRadius: 2,
+	},
 });
 
 export default styles;

@@ -12,7 +12,8 @@ import {
     createGroup,
     createGroupandUser,
     deleteGroup,
-	createGroupInvitation
+	createGroupInvitation,
+    updateAddress
 } from "../../firebaseConfig"
 
 
@@ -27,6 +28,10 @@ export const GROUP_AND_USER_SUCCESS = 7
 export const GROUP_DELETE_PENDING = 8
 export const GROUP_DELETE_REJECTED = 9
 export const GROUP_DELETE_SUCCESS = 10
+export const UPDATE_ADDRESS_PENDING = 11
+export const UPDATE_ADDRESS_REJECTED = 12
+export const UPDATE_ADDRESS_SUCCESS = 13
+
 
 
 const initialState = {
@@ -69,6 +74,10 @@ export const deleteGroupAsync = createAsyncThunk('group/deleteGroupAsync', async
     return data
 })
 
+export const updateAddressAsync = createAsyncThunk('group/updateAddressAsync', async(data) => {
+    await updateAddress(data.groupId, data.newAddress)
+})
+
 
 const groupSlice = createSlice({
     name: 'group',
@@ -107,6 +116,16 @@ const groupSlice = createSlice({
             // const index = state.lecturers.findIndex(lec => lec.id === id)
             // state.lecturers.splice(index, 1)
             state.status = GROUP_DELETE_SUCCESS
+        })
+        .addCase(updateAddressAsync.pending, state =>{
+            state.status = UPDATE_ADDRESS_PENDING
+        })
+        .addCase(updateAddressAsync.fulfilled, (state,action) => {
+            state.status = UPDATE_ADDRESS_SUCCESS
+        })
+        .addCase(updateAddressAsync.rejected, (state, action) => {
+            state.status = UPDATE_ADDRESS_REJECTED
+            console.log("ACTION",action)
         })
     }
 })
