@@ -14,7 +14,7 @@ import styles from "./styles";
 import { useSelector } from "react-redux";
 import { selectUser } from "../../redux/reducers/userSlice";
 import { selectGroup} from "../../redux/reducers/groupSlice";
-import { GOOGLE_MAPS_API_KEY } from '@env';
+import { MAPBOX_PUBLIC_KEY } from '@env';
 
 import { getGroupName } from "../../firebaseConfig"
 import BottomSheet from "reanimated-bottom-sheet";
@@ -23,8 +23,8 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 
 const mapStyle = mapStyleJson["mapStyle"];
 
-const radius = 2 * 1000;  // 2km
-const placeType = "cafe"
+const placeTypes = ["coffee", "food"]
+const NUM_SUGGESTION = 5
 const locationList = [
 	{
 	  latitude: 10.729567,
@@ -166,7 +166,11 @@ const Dashboard = ({ navigation }) => {
 		}
 	}
 
-	const findMeetingPoints = () => {
+	const distance = (pt1, pt2) => {
+		return Math.pow(pt1.longitude - pt2.longitude, 2) + Math.pow(pt1.latitude - pt2.latitude, 2)
+	}
+
+	const findMeetingPoints = async () => {
 		if (locationList.length == 0) {
 			Alert.alert(
 				"Error",
@@ -189,34 +193,37 @@ const Dashboard = ({ navigation }) => {
 
 		setMiddlePoint({longitude, latitude})
 
-		const url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + latitude + "," + longitude + "&radius=" + radius + "&type=" + placeType + "&key=" + GOOGLE_MAPS_API_KEY;
-		fetch(url)
-			.then(res => {
-				return res.json();
-			})
-			.then(res => {
-				let places = [];
-				for (let i = 0; i < Math.min(res.results.length, 5); i++) {
-					let googlePlace = res.results[i];
+		// const url = "https://api.mapbox.com/geocoding/v5/mapbox.places/coffee.json?bbox=" + minLon + "," + minLat +  "," + maxLon + "," + maxLat +"&access_token=" + MAPBOX_PUBLIC_KEY
+
+		// const url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + latitude + "," + longitude + "&radius=" + radius + "&type=" + placeType + "&key=" + GOOGLE_MAPS_API_KEY;
+		try {
+			let places = [];
+			for (let k = 0; k < placeTypes.length; k++) {
+				let url = "https://api.mapbox.com/geocoding/v5/mapbox.places/" + placeTypes[k] +".json?proximity=" + longitude + "," + latitude + "&access_token=" + MAPBOX_PUBLIC_KEY
+				let res = await fetch(url)
+				res = await res.json()
+
+				for (let i = 0; i < res.features.length; i++) {
+					let myPlace = res.features[i];
 					let place = {};
-					let myLat = googlePlace.geometry.location.lat;
-					let myLong = googlePlace.geometry.location.lng;
 					let coordinate = {
-						latitude: myLat,
-						longitude: myLong
+						latitude: myPlace.center[1],
+						longitude: myPlace.center[0]
 					};
-					place["placeTypes"] = googlePlace.types;
 					place["coordinate"] = coordinate;
-					place["placeId"] = googlePlace.place_id;
-					place["placeName"] = googlePlace.name;
+					place["placeName"] = myPlace.text;
 					places.push(place);
 				}
 
-				setSuggestion(places);
-			})
-			.catch(error => {
-				console.log(error);
-			});
+			}
+
+			let pivot = { latitude, longitude }
+			places.sort((a, b) => distance(a.coordinate, pivot) - distance(b.coordinate, pivot))
+
+			setSuggestion(places.slice(0, Math.min(places.length, NUM_SUGGESTION)));
+		} catch (e) {
+			console.log(e.message)
+		}
 	}
 
 	// console.log("User Info", user.user.address)
@@ -232,8 +239,8 @@ const Dashboard = ({ navigation }) => {
 			{/* {middlePoint ? */}
 			{/* <Marker */}
 			{/* 	coordinate={middlePoint} */}
-			{/* 	// title={"RMIT"} */}
-			{/* 	// description={"RMIT University"} */}
+			{/* 	title={"RMIT"} */}
+			{/* 	description={"RMIT University"} */}
 			{/* > */}
 			{/* 	<TouchableOpacity onPress={() => sheetRef.current.snapTo(0)}> */}
 			{/* 		<Image */}
@@ -246,8 +253,8 @@ const Dashboard = ({ navigation }) => {
 			<Marker
 				key={i}
 				coordinate={place.coordinate}
-				// title={"RMIT"}
-				// description={"RMIT University"}
+				title={place.placeName}
+				description={place.placeName}
 			>
 				<TouchableOpacity onPress={() => sheetRef.current.snapTo(0)}>
 					<Image
