@@ -223,6 +223,7 @@ export const addFriendAsync = createAsyncThunk('user/addFriendAsync', async (dat
 
      //send friend request
      const friendIds = data.userIds
+     console.log('Data', data)
      for (let i=0; i<friendIds.length; i++) {
         await createFriendRequest(data.user_id, friendIds[i])
      }
