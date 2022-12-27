@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity } from 'react-native'
+import { View, Text, TouchableOpacity, TextInput } from 'react-native'
 import styles from './styles'
 import React from 'react'
 import { useState, useEffect } from 'react'
@@ -13,9 +13,13 @@ import { getAddressFromGeopoint, getGeoCodeFromAddress } from '../common/Utils'
 import { GOOGLE_MAPS_API_KEY } from '@env';
 
 
-const SetAddress = ({navigation}) => {
+const SetAddress = ({ navigation }) => {
   const { colors } = useTheme();
   const [addressText, setAddressText] = useState({})
+  const [searchInput, setSearchInput] = useState("")
+  
+  
+
 
   // console.log("KEY", Config.GOOGLE_MAPS_API_KEY)
 
@@ -27,7 +31,15 @@ const SetAddress = ({navigation}) => {
       items="center"
       paddingTop={35}
     >
-      <View style={{ ...styles.searchContainer, marginTop: Platform.OS == "ios" ? 27 : 18 }}>
+      <Stack w="80%" items="start">
+        <TextInput
+          style={styles.textInput}
+          placeholder='Your group name (optional)'
+          color='#B4BABC'
+          onChangeText={(newText) => setSearchInput(newText)}
+        />
+      </Stack>
+      {/* <View style={{ ...styles.searchContainer, marginTop: Platform.OS == "ios" ? 27 : 18 }}>
         <GooglePlacesAutocomplete
           placeholder='Search Location'
           keepResultsAfterBlur={true}
@@ -68,7 +80,7 @@ const SetAddress = ({navigation}) => {
           enablePoweredByContainer={false}
         />
 
-      </View>
+      </View> */}
       <View style={styles.bottomContainer}>
         <TouchableOpacity
           style={{
@@ -79,7 +91,7 @@ const SetAddress = ({navigation}) => {
           }}
           onPress={() => navigation.navigate("MapPin")}
         >
-          <HStack display='flex' alignItems= 'center' spacing={20}>
+          <HStack display='flex' alignItems='center' spacing={20}>
             <FIcon name="map" size={24} style={styles.iconStyle} />
             <Text
               style={styles.buttonTitle}

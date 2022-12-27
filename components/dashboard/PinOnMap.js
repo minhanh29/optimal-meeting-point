@@ -66,6 +66,7 @@ const fall = new Animated.Value(1);
 
 const PinOnMap = ({ navigation }) => {
 	const user = useSelector(selectUser)
+	console.log(user)
 	const group = useSelector(selectGroup)
 	console.log("STATUS",group.groupId)
 	const dispatch = useDispatch()
@@ -199,7 +200,7 @@ const PinOnMap = ({ navigation }) => {
 						>
 							<Svg width={40} height={30}>
 								<Image
-									source={require("../../images/avatar.jpeg")}
+									source={{url: user.user.ava_url}}
 									width={40}
 									height={30}
 									style={{
