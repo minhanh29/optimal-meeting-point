@@ -23,10 +23,12 @@ const FriendRequests = () => {
 	const { colors } = useTheme();
 
 	const [selectAll, setSelectAll] = useState(false)
+	const [processing, setProcessing] = useState(false)
 	const [loaded, setLoaded] = useState(false)
 	const [data, setData] = useState([])
 	const [checkedBoxes, setCheckedBoxes] = useState([])
 	const [userDict, setUserDict] = useState({})
+	// const [friendDict, setFriendDict] = useState({})
 
 	const {user} = useSelector(selectUser)
 
@@ -107,13 +109,14 @@ const FriendRequests = () => {
 	}
 
 	const changeStatus = async (status) => {
+		setProcessing(true)
 		let dataClone = data.map(item => ({
 			id: item.id
 		}))
 		for (let i = 0; i<checkedBoxes.length; i++) {
 			try {
 				//update request status
-				await setDoc(doc(db, "friend_requet", checkedBoxes[i]), {
+				await setDoc(doc(db, "friend_request", checkedBoxes[i]), {
 					status
 				}, {merge: true})
 
@@ -123,22 +126,35 @@ const FriendRequests = () => {
 						continue
 
 						//add friend
-						// await addDoc(collection(db, ""))
+						await addDoc(collection(db, "friend"), {
+							person1_id: dataClone[j].id,
+							person2_id: user.id,
+						})
 						break
 					}
 				}
 			} catch (e) {
 				showErrorMessage(e.message)
+				setProcessing(false)
 			}
 		}
 		setCheckedBoxes([])
+		setProcessing(false)
+		if (status == STATUS_ACCEPTED) {
+			Alert.alert(
+				"Accept Success",
+				"You have became friend",
+				[{ text: "OK"}],
+				{cancelable:true}
+			)
+		}
 	}
 	return (
 		<Stack h="100%" overflow="visible">
 			<Stack w="100%" spacing={10} marginTop={20} justify="between">
 				<Spinner
 					visible={!loaded}
-					textContent='Loading...'
+					textContent={processing ? 'Processing...':'Loading...'}
 					textStyle={{color: "white"}}
 					cancelable={true}
 				/>
