@@ -220,17 +220,16 @@ export const logOutAsync = createAsyncThunk('user/logOutAsync', async () => {
 
 // log in to firebase
 export const addFriendAsync = createAsyncThunk('user/addFriendAsync', async (data) => {
-
+    console.log(data)
      //send friend request
-     const friendIds = data.userIds
-     console.log('Data', data)
-     for (let i=0; i<friendIds.length; i++) {
-        await createFriendRequest(data.user_id, friendIds[i])
-     }
+    const friendIds = data.userIds
+    for (let i=0; i<friendIds.length; i++) {
+    await createFriendRequest(data.user_id, friendIds[i])
+    }
 
-     return {
-        ...data
-     }
+    return {
+    ...data
+    }
 })
 
 const userSlice = createSlice({
