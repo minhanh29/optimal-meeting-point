@@ -17,33 +17,55 @@ import { MAPBOX_PUBLIC_KEY } from '@env';
 const SetAddress = ({ navigation }) => {
   const { colors } = useTheme();
   
-  const [searchInput, setSearchInput] = useState("")
+  // const [searchInput, setSearchInput] = useState("")
   const [suggestionList, setSuggestionList] = useState([])
+  const [timeInput, setTimeInput] = useState(0)
+  
 
 
-  useEffect(() => {
-    searchInput && fetchData()
-  }, [searchInput])
+  // useEffect(() => {
+  //   if(searchInput.length !=0 && searchInput.length % 5 == 0){
+  //     fetchData()
+  //   }
+  // }, [searchInput])
 
-  const fetchData = async () => {
-    try {
-      let suggestion_list = []
-      let url = "https://rsapi.goong.io/Place/AutoComplete?api_key=" + MAPBOX_PUBLIC_KEY + "&input=" + searchInput;
-      let res = await fetch(url)
-      res = await res.json()
-      res.predictions.map((location) => {
-        suggestion_list.push(location.description)
-      })
-      setSuggestionList(suggestion_list)
-    } catch (e) {
-      console.log(e.message)
+
+
+  const fetchData = async (data) => {
+    console.log("Data", data)
+    if(timeInput){
+      setTimeInput(clearTimeout(timeInput))
     }
-  }
+    if(data.trim() == ""){
+      setSuggestionList([])
+      return
+    }
+    setTimeInput(setTimeout(async () => {
+      try {
+        let suggestion_list = []
+        let url = "https://rsapi.goong.io/Place/AutoComplete?api_key=" + MAPBOX_PUBLIC_KEY + "&input=" + data;
+        let res = await fetch(url)
+        res = await res.json()
+        if(res == null){
+          setSuggestionList([])
+          return
+        }
+        res.predictions.map((location) => {
+          suggestion_list.push(location.description)
+        })
+        setSuggestionList(suggestion_list)
+      } catch (e) {
+        console.log(e.message)
+      }
+    }, 300))
+    }
+    
 
   const updateInput = (content) => {
     console.log("Content", content);
-    setSearchInput(content);
+    // setSearchInput(content);
   }
+
 
 
 
@@ -63,7 +85,7 @@ const SetAddress = ({ navigation }) => {
             style={styles.searchInput}
             placeholder='Search Location'
             color='#B4BABC'
-            onChangeText={(newText) => setSearchInput(newText)}
+            onChangeText={(newText) => fetchData(newText)}
           />
         </HStack>
         {suggestionList.length != 0 ?
@@ -75,7 +97,6 @@ const SetAddress = ({ navigation }) => {
                     elevation={3}
                     backgroundColor="white"
                     onPress={() => updateInput(item)}
-                    value={searchInput}
                     w='100%'
                     key={index}
                   >
@@ -130,9 +151,3 @@ const SetAddress = ({ navigation }) => {
 export default SetAddress
 
 
-// <Stack w='100%'>
-//           {suggestionList && suggestionList.map((item, index) => {
-//             <Text>{item}Ư</Text>
-//           })
-//           }
-//         </Stack>

@@ -21,6 +21,7 @@ import * as Location from 'expo-location';
 import { useEffect } from "react";
 import { GROUP_IDLE, selectGroup, updateAddressAsync, UPDATE_ADDRESS_PENDING, UPDATE_ADDRESS_REJECTED, UPDATE_ADDRESS_SUCCESS, changeGroupStatus } from "../../redux/reducers/groupSlice";
 import Spinner from 'react-native-loading-spinner-overlay';
+import { MAPBOX_PUBLIC_KEY } from '@env';
 
 const mapStyle = mapStyleJson["mapStyle"];
 
@@ -66,7 +67,7 @@ const fall = new Animated.Value(1);
 
 const PinOnMap = ({ navigation }) => {
 	const user = useSelector(selectUser)
-	console.log(user.user.ava_url)
+	
 	const group = useSelector(selectGroup)
 	const dispatch = useDispatch()
 	const { colors } = useTheme()
@@ -106,49 +107,6 @@ const PinOnMap = ({ navigation }) => {
 	}, [group.status])
 
 
-	const getAddress = async (geopoint) => {
-		if (!geopoint)
-			return ""
-		try {
-			const { latitude, longitude } = geopoint;
-			let response = await Location.reverseGeocodeAsync({
-				latitude, longitude
-			});
-
-
-
-			for (let item of response) {
-				let address = ""
-				if (item.streetNumber) {
-					address += item.streetNumber + ", "
-				}
-
-				if (item.street) {
-					address += item.street + ", "
-				}
-
-				if (item.subregion) {
-					address += item.subregion + ", "
-				}
-
-				if (item.region) {
-					address += item.region + ", "
-				}
-
-				if (item.country) {
-					address += item.country
-				}
-				console.log("Address trong function", address)
-				setAddressText(address)
-				
-			}
-		} catch (e) {
-			console.log("Error", e)
-		}
-
-		return ""
-	};
-
 	const updateGroupAddress = () => {
 		const newAddress = {
 			location: addressText,
@@ -160,6 +118,18 @@ const PinOnMap = ({ navigation }) => {
 		dispatch(updateAddressAsync(data));
 	}
 
+	const fetchData= async(data) =>{
+		console.log("DATA", data)
+		const {latitude, longitude} = data
+		try{
+			let  url =  "https://rsapi.goong.io/Geocode?latlng="+ latitude + ",%20"+ longitude + "&api_key=" + MAPBOX_PUBLIC_KEY
+			let res = await fetch(url)
+			res = await res.json()
+			setAddressText(res.results[0].formatted_address)
+		}catch(e){
+
+		}
+	}
 
 
 
@@ -180,7 +150,7 @@ const PinOnMap = ({ navigation }) => {
 				provider={PROVIDER_GOOGLE}
 				onPress={(event) => {
 					setMarker(event.nativeEvent.coordinate)
-					getAddress(event.nativeEvent.coordinate)
+					fetchData(event.nativeEvent.coordinate)
 				}}
 			>
 				{marker &&
