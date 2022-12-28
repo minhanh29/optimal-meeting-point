@@ -102,15 +102,14 @@ const sheetRef = React.createRef();
 const fall = new Animated.Value(1);
 
 const AvaMarker = ({ groupID, setLocationList }) => {
-  const [allUsers, setAllUsers] = useState([]);
   const [userList, setUserList] = useState([]);
   const [userIDList, setUserIDList] = useState([]);
 
-  const fetchUsers = async () => {
+  const fetchUsers = async (userIDs) => {
     const users = [];
     const q = query(
       collection(db, "user"),
-      where(documentId(), "in", userIDList)
+      where(documentId(), "in", userIDs)
     );
     const snap = await getDocs(q);
 
@@ -132,7 +131,6 @@ const AvaMarker = ({ groupID, setLocationList }) => {
     try {
       for (let i = 0; i < groupInfo.length; i++) {
         let data = groupInfo[i];
-        console.log("data ", i, " ", data);
         userIDs.push(data.user_id);
         locations.push(data.group_address);
       }
@@ -142,7 +140,7 @@ const AvaMarker = ({ groupID, setLocationList }) => {
     setUserIDList(userIDs);
     setLocationList(locations);
     console.log("check locations", locations);
-    fetchUsers(); // get users info with matching ids
+    fetchUsers(userIDs); // get users info with matching ids
   };
 
   useEffect(() => {
@@ -286,8 +284,60 @@ const Dashboard = ({ navigation }) => {
       );
       return;
     }
-  };
 
+    let longitude = 0;
+    let latitude = 0;
+    for (let i = 0; i < locationList.length; i++) {
+      latitude += locationList[i].latitude;
+      longitude += locationList[i].longitude;
+    }
+
+    longitude /= locationList.length;
+    latitude /= locationList.length;
+
+    setMiddlePoint({ longitude, latitude });
+
+    // const url = "https://api.mapbox.com/geocoding/v5/mapbox.places/coffee.json?bbox=" + minLon + "," + minLat +  "," + maxLon + "," + maxLat +"&access_token=" + MAPBOX_PUBLIC_KEY
+
+    // const url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + latitude + "," + longitude + "&radius=" + radius + "&type=" + placeType + "&key=" + GOOGLE_MAPS_API_KEY;
+    try {
+      let places = [];
+      for (let k = 0; k < placeTypes.length; k++) {
+        let url =
+          "https://api.mapbox.com/geocoding/v5/mapbox.places/" +
+          placeTypes[k] +
+          ".json?proximity=" +
+          longitude +
+          "," +
+          latitude +
+          "&access_token=" +
+          MAPBOX_PUBLIC_KEY;
+        let res = await fetch(url);
+        res = await res.json();
+
+        for (let i = 0; i < res.features.length; i++) {
+          let myPlace = res.features[i];
+          let place = {};
+          let coordinate = {
+            latitude: myPlace.center[1],
+            longitude: myPlace.center[0],
+          };
+          place["coordinate"] = coordinate;
+          place["placeName"] = myPlace.text;
+          places.push(place);
+        }
+      }
+
+      let pivot = { latitude, longitude };
+      places.sort(
+        (a, b) => distance(a.coordinate, pivot) - distance(b.coordinate, pivot)
+      );
+
+      setSuggestion(places.slice(0, Math.min(places.length, NUM_SUGGESTION)));
+    } catch (e) {
+      console.log(e.message);
+    }
+  };
   // console.log("User Info", user.user.address)
   return (
     <View style={styles.container}>
