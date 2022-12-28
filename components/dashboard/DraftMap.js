@@ -132,7 +132,9 @@ const AvaMarker = ({ groupID, setLocationList }) => {
       for (let i = 0; i < groupInfo.length; i++) {
         let data = groupInfo[i];
         userIDs.push(data.user_id);
-        locations.push(data.group_address);
+        if (typeof(data.group_address) !== "string") {
+          locations.push(data.group_address);
+        }
       }
     } catch (error) {
       console.log(error.message);
