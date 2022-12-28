@@ -18,7 +18,6 @@ const AddFriends = ({navigation}) => {
 
     const {colors} = useTheme();
     const [userList, setUserList] = useState([]);
-    const [friendList, setFriendList] = useState([])
     const [selectedIndex, setSelectedIndex] = useState([]);
     const user = useSelector(selectUser);
     const [avatar, setAvatar] = useState(null);
@@ -51,7 +50,7 @@ const AddFriends = ({navigation}) => {
         fetchUserInfo();
     }, []);
 
-    const handleAdd = (user, index) => {
+    const handleAdd = (receiver, index) => {
         
         setSelectedIndex(prev => {
             const isInclude = selectedIndex.includes(index)
@@ -62,20 +61,11 @@ const AddFriends = ({navigation}) => {
             }
         })
 
-        setFriendList (prev => {
-            const isInclude = userList.includes(user)
-            if (isInclude) {
-                return userList.filter(item => item !== user)
-            } else {
-                return [...prev, user]
-            }
-        })
-        console.log(friendList)
         // sendRequest()
         try {
             const data = {
-                user_id: user.id,
-                friendIds: friendList.map(item => item.id)
+                user_id: user.user.id,
+                receiver_id: receiver.id
             }
             console.log(data)
             dispatch(addFriendAsync(data))
@@ -83,6 +73,11 @@ const AddFriends = ({navigation}) => {
             console.log(e)
         }
     }
+
+    // const sendRequest = async () => {
+        
+    // }
+
     return (
         <View>
             <Stack 
