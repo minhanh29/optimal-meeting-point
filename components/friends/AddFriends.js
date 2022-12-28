@@ -70,11 +70,7 @@ const AddFriends = ({navigation}) => {
             }
         })
 
-        sendRequest()
-
-    }
-
-    const sendRequest = async () => {
+        // sendRequest()
         try {
             const data = {
                 user_id: user.user_id,
@@ -84,7 +80,20 @@ const AddFriends = ({navigation}) => {
         } catch (e) {
             console.log(e)
         }
+
     }
+
+    // const sendRequest = async () => {
+    //     try {
+    //         const data = {
+    //             user_id: user.user_id,
+    //             friendIds: friendList.map(item => item.id)
+    //         }
+    //         dispatch(addFriendAsync(data))
+    //     } catch (e) {
+    //         console.log(e)
+    //     }
+    // }
     return (
         <View>
             <Stack 
