@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { View, Image, Alert } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import MapView, { Marker, Callout } from "react-native-maps";
+import MapView, { Marker, Callout, PROVIDER_GOOGLE } from "react-native-maps";
 import Svg from "react-native-svg";
 import { IconButton, Text } from "@react-native-material/core";
 import Icon from "@expo/vector-icons/Feather";
@@ -234,6 +234,7 @@ const Dashboard = ({ navigation }) => {
 			style={styles.map}
 			initialRegion={initRegion}
 			customMapStyle={mapStyle}
+			provider={PROVIDER_GOOGLE}
 		>
 
 			{/* {middlePoint ? */}
@@ -429,7 +430,7 @@ const Dashboard = ({ navigation }) => {
 						margin: 12,
 						...styles.shadowBtn
 					}}
-					onPress={() => navigation.navigate("Friends")}
+					onPress={() => navigation.navigate("GroupInfo")}
 				/>
 			</View>: null}
 		</View>
