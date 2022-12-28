@@ -70,27 +70,12 @@ const AddFriends = ({navigation}) => {
                 return [...prev, user]
             }
         })
-
-        sendRequest()
-        
-        // try {
-        //     const data = {
-        //         user_id: user.user.id,
-        //         friendIds: user.id
-        //     }
-        //     console.log(data)
-        //     dispatch(addFriendAsync(data))
-        // } catch (e) {
-        //     console.log(e)
-        // }
-
-    }
-
-    const sendRequest = async () => {
+        console.log(friendList)
+        // sendRequest()
         try {
             const data = {
-                user_id: user.user.id,
-                friendIds: user.id
+                user_id: user.id,
+                friendIds: friendList.map(item => item.id)
             }
             console.log(data)
             dispatch(addFriendAsync(data))
