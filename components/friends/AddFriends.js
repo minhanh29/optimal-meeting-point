@@ -52,6 +52,7 @@ const AddFriends = ({navigation}) => {
     }, []);
 
     const handleAdd = (user, index) => {
+        
         setSelectedIndex(prev => {
             const isInclude = selectedIndex.includes(index)
             if (isInclude) {
@@ -69,11 +70,11 @@ const AddFriends = ({navigation}) => {
                 return [...prev, user]
             }
         })
-
+        console.log(friendList)
         // sendRequest()
         try {
             const data = {
-                user_id: user.user_id,
+                user_id: user.id,
                 friendIds: friendList.map(item => item.id)
             }
             dispatch(addFriendAsync(data))
