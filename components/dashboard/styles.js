@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
     // left: 0,
     padding: 5,
     width: '95%',
-    backgroundColor:'white',
+    backgroundColor: 'white',
     borderRadius: 50,
   },
   sidePinNav: {
@@ -184,15 +184,27 @@ const styles = StyleSheet.create({
     color: "white",
   },
   pinHeaderText: {
-		fontFamily: "Montserrat-Bold",
-		fontSize: 13,
-		textAlign: 'center',
+    fontFamily: "Montserrat-Bold",
+    fontSize: 13,
+    textAlign: 'center',
     textDecorationLine: 'underline',
     // fontWeight: '900', 
     // textShadowColor: 'rgba(0, 0, 0, 0.8)', 
     // textShadowOffset: { width: 0, height: 0 },
     // textShadowRadius: 2,
-	},
+  },
+  searchInput: {
+    width: "80%",
+    paddingTop: 14,
+    paddingBottom: 14,
+    backgroundColor: "white",
+    borderColor: 'transparent',
+    fontFamily: "Montserrat",
+    elevation: 0,
+    shadowOpacity: 0,
+    borderBottomWidth: 0,
+    borderRadius: 15,
+  },
 });
 
 export default styles;

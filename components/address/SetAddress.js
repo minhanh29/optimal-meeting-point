@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, TextInput } from 'react-native'
+import { View, Text, TouchableOpacity, TextInput, ScrollView } from 'react-native'
 import styles from './styles'
 import React from 'react'
 import { useState, useEffect } from 'react'
@@ -8,20 +8,45 @@ import { Box, Flex, HStack, IconButton, Stack, VStack } from '@react-native-mate
 import { useRef } from 'react'
 import Icon from "@expo/vector-icons/Ionicons";
 import FIcon from "@expo/vector-icons/Feather";
+import AIcon from "@expo/vector-icons/AntDesign";
 import Config from "react-native-config";
 import { getAddressFromGeopoint, getGeoCodeFromAddress } from '../common/Utils'
-import { GOOGLE_MAPS_API_KEY } from '@env';
+import { MAPBOX_PUBLIC_KEY } from '@env';
 
 
 const SetAddress = ({ navigation }) => {
   const { colors } = useTheme();
-  const [addressText, setAddressText] = useState({})
-  const [searchInput, setSearchInput] = useState("")
-  console.log("Search Input", searchInput)
   
+  const [searchInput, setSearchInput] = useState("")
+  const [suggestionList, setSuggestionList] = useState([])
 
 
-  // console.log("KEY", Config.GOOGLE_MAPS_API_KEY)
+  useEffect(() => {
+    searchInput && fetchData()
+  }, [searchInput])
+
+  const fetchData = async () => {
+    try {
+      let suggestion_list = []
+      let url = "https://rsapi.goong.io/Place/AutoComplete?api_key=" + MAPBOX_PUBLIC_KEY + "&input=" + searchInput;
+      let res = await fetch(url)
+      res = await res.json()
+      res.predictions.map((location) => {
+        suggestion_list.push(location.description)
+      })
+      setSuggestionList(suggestion_list)
+    } catch (e) {
+      console.log(e.message)
+    }
+  }
+
+  const updateInput = (content) => {
+    console.log("Content", content);
+    setSearchInput(content);
+  }
+
+
+
 
   return (
     <Stack
@@ -31,56 +56,50 @@ const SetAddress = ({ navigation }) => {
       items="center"
       paddingTop={35}
     >
-      <Stack w="80%" items="start">
-        <TextInput
-          style={styles.textInput}
-          placeholder='Your group name (optional)'
-          color='#B4BABC'
-          onChangeText={(newText) => setSearchInput(newText)}
-        />
-      </Stack>
-      {/* <View style={{ ...styles.searchContainer, marginTop: Platform.OS == "ios" ? 27 : 18 }}>
-        <GooglePlacesAutocomplete
-          placeholder='Search Location'
-          keepResultsAfterBlur={true}
-          onPress={(data, details) => {
-            setAddressText({
-              location: details.geometry.location,
-              address: details.formatted_address,
-            })
-          }}
-         
-          fetchDetails={true}
-          // GooglePlacesDetailsQuery={{
-          //   fields: ['formatted_address', 'geometry'],
-          // }}
-          renderRow={(rowData) => {
-            const title = rowData.structured_formatting.main_text;
-            const address = rowData.structured_formatting.secondary_text
-            return (
-              <View style={styles.dropDownList}>
-                <HStack width='100%' spacing={20}>
-                  <Box style={styles.iconContainer}>
-                    <Icon name="location-sharp" size={24} style={styles.iconStyle} />
-                  </Box>
-                  <VStack style={styles.textContainer}>
-                    <Text style={styles.titleText}>{title}</Text>
-                    <Text style={styles.locationAddress}>{address}</Text>
-                  </VStack>
-                </HStack>
-              </View>
-            )
-          }}
-          query={{
-            // key: Config.GOOGLE_MAPS_API_KEY,
-            key: GOOGLE_MAPS_API_KEY,
-            language: 'en',
-            components: 'country:vn'  // Limit to only Vietnam
-          }}
-          enablePoweredByContainer={false}
-        />
+      <Stack w="90%" items="start">
+        <HStack direction='row' w='100%' spacing={20} style={{ ...styles.searchHolder, marginTop: Platform.OS == "ios" ? 15 : 20 }}>
+          <AIcon name="search1" size={24} style={styles.iconImg} color='B4BABC' />
+          <TextInput
+            style={styles.searchInput}
+            placeholder='Search Location'
+            color='#B4BABC'
+            onChangeText={(newText) => setSearchInput(newText)}
+          />
+        </HStack>
+        {suggestionList.length != 0 ?
+          <ScrollView style={{ ...styles.listContainer }}>
+            <Stack w='100%' spacing={30} backgroundColor='white' padding={20}>
+              {suggestionList.map((item, index) => {
+                return (
+                  <TouchableOpacity
+                    elevation={3}
+                    backgroundColor="white"
+                    onPress={() => updateInput(item)}
+                    value={searchInput}
+                    w='100%'
+                    key={index}
+                  >
+                    <HStack
+                      w="100%"
+                      items="center"
+                      spacing={10}
+                    >
+                      <Box style={styles.iconContainer}>
+                        <Icon name="location-sharp" size={24} style={styles.iconStyle} />
+                      </Box>
+                      <Text style={styles.locationContent} >
+                        {item}
+                      </Text>
+                    </HStack>
+                  </TouchableOpacity>
+                )
+              })}
+            </Stack>
+          </ScrollView>
+          : <Stack></Stack> 
+      }
 
-      </View> */}
+      </Stack>
       <View style={styles.bottomContainer}>
         <TouchableOpacity
           style={{
@@ -109,3 +128,11 @@ const SetAddress = ({ navigation }) => {
 }
 
 export default SetAddress
+
+
+// <Stack w='100%'>
+//           {suggestionList && suggestionList.map((item, index) => {
+//             <Text>{item}Ư</Text>
+//           })
+//           }
+//         </Stack>

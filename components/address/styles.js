@@ -35,10 +35,10 @@ const styles = StyleSheet.create({
     height: '50%'
   },
 
-  iconContainer:{
+  iconContainer: {
     width: 40,
     height: 40,
-    borderRadius: 40/2,
+    borderRadius: 40 / 2,
     display: 'flex',
     justifyContent: 'center',
     alignContent: 'center',
@@ -47,24 +47,55 @@ const styles = StyleSheet.create({
   },
 
   iconStyle: {
-    color:"#EE6548",
+    color: "#EE6548",
     padding: 6,
     width: 36,
     height: 36,
-    borderRadius: 36/2,
+    borderRadius: 36 / 2,
   },
-  titleText:{
+  titleText: {
     fontWeight: "bold",
     width: '100%',
   },
-  dropDownList:{
+  dropDownList: {
     height: '50%',
   },
-  bottomContainer:{
+  bottomContainer: {
     position: "absolute",
     bottom: 10,
     width: '90%',
     alignItems: 'center',
+  },
+  listContainer: {
+    width: '100%',
+   
+  },
+  cardContainer: {
+    width: "100%",
+    borderRadius: 15,
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.25,
+    shadowColor: "black",
+    padding: 17,
+    backgroundColor: "white",
+    elevation: 4,
+  },
+  locationContent:{
+    width: '85%',
+  },
+  searchHolder:{
+    backgroundColor: 'white',
+    borderTopLeftRadius: 15,
+    borderTopRightRadius: 15,
+    width: '100%',
+    alignItems:'center',
+    padding: 10,
+},
+  iconImg:{
+    marginLeft: 15,
   }
 });
 

@@ -66,6 +66,7 @@ const fall = new Animated.Value(1);
 
 const PinOnMap = ({ navigation }) => {
 	const user = useSelector(selectUser)
+	console.log(user.user.ava_url)
 	const group = useSelector(selectGroup)
 	const dispatch = useDispatch()
 	const { colors } = useTheme()
