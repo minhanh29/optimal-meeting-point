@@ -11,7 +11,7 @@ import FIcon from "@expo/vector-icons/Feather";
 import AIcon from "@expo/vector-icons/AntDesign";
 import Config from "react-native-config";
 import { getAddressFromGeopoint, getGeoCodeFromAddress } from '../common/Utils'
-import { MAPBOX_PUBLIC_KEY } from '@env';
+import { GOONG_PUBLIC_KEY } from '@env';
 
 
 const SetAddress = ({ navigation }) => {
@@ -43,7 +43,7 @@ const SetAddress = ({ navigation }) => {
     setTimeInput(setTimeout(async () => {
       try {
         let suggestion_list = []
-        let url = "https://rsapi.goong.io/Place/AutoComplete?api_key=" + MAPBOX_PUBLIC_KEY + "&input=" + data;
+        let url = "https://rsapi.goong.io/Place/AutoComplete?api_key=" + GOONG_PUBLIC_KEY + "&input=" + data;
         let res = await fetch(url)
         res = await res.json()
         if(res == null){
