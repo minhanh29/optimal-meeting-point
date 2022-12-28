@@ -14,7 +14,7 @@ const collectionIndex = algoliaClient.initIndex("group");
 
 
 async function saveDocumentInAlgolia(record) {
-	await collectionIndex.saveObject(record);
+	return await collectionIndex.saveObject(record);
 }
 
 async function updateDocumentInAlgolia(change) {
@@ -99,19 +99,43 @@ exports.groupWriteListener = functions.region('asia-northeast1').firestore
 
 exports.groupUpdateFromGroupListener = functions.region('asia-northeast1').firestore
 	.document("group/{docID}")
-	.onUpdate((change, context) =>{
-		updateDocumentInAlgolia(change)
-			.then(res => console.log("Group info from group is updated to algolia", res))
-			.catch(e => console.log("Algolia Update Error", e.message))
+	.onUpdate((snap, context) =>{
+		console.log(snap.after.id)
+
+		db.collection("groupNuser").where("group_id", "==", snap.after.id).get().then((data) => {
+			data.docs.forEach((doc) => {
+				const record = {
+					objectID: doc.id,
+					group_id: doc.data().group_id,
+					user_id: doc.data().user_id,
+					group_name: snap.after.data().group_name,
+				}
+				console.log(record.group_name)
+				saveDocumentInAlgolia(record)
+				.then(res => console.log("Group info from group is updated to algolia", res))
+				.catch(e => console.log("Algolia Update Error", e.message))
+			})
+		})
 	})
 
-exports.groupUpdateFromGroupNuserListener = functions.region('asia-northeast1').firestore
-	.document("groupNuser/{docID}")
-	.onUpdate((change, context) =>{
-		updateDocumentInAlgolia(change)
-			.then(res => console.log("Group info from group is updated to algolia", res))
-			.catch(e => console.log("Algolia Update Error", e.message))
-	})
+// exports.groupUpdateFromGroupNuserListener = functions.region('asia-northeast1').firestore
+// 	.document("groupNuser/{docID}")
+// 	.onUpdate((snap, context) =>{
+// 		const group_id = snap.data().group_id.trim()
+
+// 		db.collection("group").doc(group_id).get().then((group_data) => {
+// 			const record = {
+// 				objectID: snap.id,
+// 				group_id: snap.data().group_id,
+// 				user_id: snap.data().user_id,
+// 				group_name: group_data.data().group_name,
+// 			}
+// 			console.log(group_data.data())
+// 			updateDocumentInAlgolia(record)
+// 			.then(res => console.log("Group is added to algolia", res))
+// 			.catch(e => console.log("Algolia Add Error", e.message))
+// 		})
+// 	})
 
 exports.groupDeleteListener = functions.region('asia-northeast1').firestore
 	.document("groupNuser/{docID}")

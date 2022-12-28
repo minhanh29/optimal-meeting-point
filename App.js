@@ -28,7 +28,8 @@ import algoliasearch from "algoliasearch";
 
 const StackNavigator = createStackNavigator()
 
-export const searchClient = algoliasearch('5AP6LAGAFX', '206ce14e2cab0c6554bf9c78418497e4')
+export const searchClient = algoliasearch('SLMR245D6L', 'aef99302f1a8bb42a9e9104a0c9cdaec')
+
 
 export const theme = {
 	colors: {
@@ -38,6 +39,7 @@ export const theme = {
 		backButton: "#B4D8D7",
 	},
 };
+
 
 const AppInner = () => {
 	const { isAuthenticated } = useSelector(selectUser)

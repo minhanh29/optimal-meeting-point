@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef, useMemo } from "react";
+import React, { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { View, Image, Alert } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import MapView, { Marker, Callout } from "react-native-maps";
@@ -8,20 +8,23 @@ import Icon from "@expo/vector-icons/Feather";
 import MIcon from "@expo/vector-icons/MaterialCommunityIcons";
 import AIcon from "@expo/vector-icons/AntDesign";
 import FIcon from "@expo/vector-icons/Feather";
+import { MaterialIcons } from '@expo/vector-icons';
 import mapStyleJson from "./../../mapStyle.json";
 import styles from "./styles";
 import { useSelector } from "react-redux";
 import { selectUser } from "../../redux/reducers/userSlice";
+import { selectGroup} from "../../redux/reducers/groupSlice";
+import { MAPBOX_PUBLIC_KEY } from '@env';
 
+import { getGroupName } from "../../firebaseConfig"
 import BottomSheet from "reanimated-bottom-sheet";
 import Animated from "react-native-reanimated";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
 const mapStyle = mapStyleJson["mapStyle"];
 
-const radius = 2 * 1000;  // 2km
-const placeType = "cafe"
-const googleAPIKey = "AIzaSyAXtp-vw6IoEEWX6aVYD-Ug-2Qkp6uT-jE"
+const placeTypes = ["coffee", "food"]
+const NUM_SUGGESTION = 5
 const locationList = [
 	{
 	  latitude: 10.729567,
@@ -143,10 +146,31 @@ const AvaMarker = ({ava_url, location}) => (
 
 const Dashboard = ({ navigation }) => {
 	const user = useSelector(selectUser)
+	const group = useSelector(selectGroup)
+	const [groupData, setGroupData] = useState(null)
 	const [middlePoint, setMiddlePoint] = useState(null)
 	const [suggestion, setSuggestion] = useState([])
 
-	const findMeetingPoints = () => {
+	useEffect(() => {
+		if (group.enterGroup) {
+			fetchGroupData()
+		}
+	}, [group.enterGroup, group.groupId])
+
+	const fetchGroupData = async () => {
+		try {
+			const group_data = await getGroupName(group.groupId)
+			setGroupData(group_data.data())
+		} catch (e) {
+			console.log(e.message)
+		}
+	}
+
+	const distance = (pt1, pt2) => {
+		return Math.pow(pt1.longitude - pt2.longitude, 2) + Math.pow(pt1.latitude - pt2.latitude, 2)
+	}
+
+	const findMeetingPoints = async () => {
 		if (locationList.length == 0) {
 			Alert.alert(
 				"Error",
@@ -169,34 +193,37 @@ const Dashboard = ({ navigation }) => {
 
 		setMiddlePoint({longitude, latitude})
 
-		const url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + latitude + "," + longitude + "&radius=" + radius + "&type=" + placeType + "&key=" + googleAPIKey;
-		fetch(url)
-			.then(res => {
-				return res.json();
-			})
-			.then(res => {
-				let places = [];
-				for (let i = 0; i < Math.min(res.results.length, 5); i++) {
-					let googlePlace = res.results[i];
+		// const url = "https://api.mapbox.com/geocoding/v5/mapbox.places/coffee.json?bbox=" + minLon + "," + minLat +  "," + maxLon + "," + maxLat +"&access_token=" + MAPBOX_PUBLIC_KEY
+
+		// const url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + latitude + "," + longitude + "&radius=" + radius + "&type=" + placeType + "&key=" + GOOGLE_MAPS_API_KEY;
+		try {
+			let places = [];
+			for (let k = 0; k < placeTypes.length; k++) {
+				let url = "https://api.mapbox.com/geocoding/v5/mapbox.places/" + placeTypes[k] +".json?proximity=" + longitude + "," + latitude + "&access_token=" + MAPBOX_PUBLIC_KEY
+				let res = await fetch(url)
+				res = await res.json()
+
+				for (let i = 0; i < res.features.length; i++) {
+					let myPlace = res.features[i];
 					let place = {};
-					let myLat = googlePlace.geometry.location.lat;
-					let myLong = googlePlace.geometry.location.lng;
 					let coordinate = {
-						latitude: myLat,
-						longitude: myLong
+						latitude: myPlace.center[1],
+						longitude: myPlace.center[0]
 					};
-					place["placeTypes"] = googlePlace.types;
 					place["coordinate"] = coordinate;
-					place["placeId"] = googlePlace.place_id;
-					place["placeName"] = googlePlace.name;
+					place["placeName"] = myPlace.text;
 					places.push(place);
 				}
 
-				setSuggestion(places);
-			})
-			.catch(error => {
-				console.log(error);
-			});
+			}
+
+			let pivot = { latitude, longitude }
+			places.sort((a, b) => distance(a.coordinate, pivot) - distance(b.coordinate, pivot))
+
+			setSuggestion(places.slice(0, Math.min(places.length, NUM_SUGGESTION)));
+		} catch (e) {
+			console.log(e.message)
+		}
 	}
 
 	// console.log("User Info", user.user.address)
@@ -208,11 +235,12 @@ const Dashboard = ({ navigation }) => {
 			initialRegion={initRegion}
 			customMapStyle={mapStyle}
 		>
+
 			{/* {middlePoint ? */}
 			{/* <Marker */}
 			{/* 	coordinate={middlePoint} */}
-			{/* 	// title={"RMIT"} */}
-			{/* 	// description={"RMIT University"} */}
+			{/* 	title={"RMIT"} */}
+			{/* 	description={"RMIT University"} */}
 			{/* > */}
 			{/* 	<TouchableOpacity onPress={() => sheetRef.current.snapTo(0)}> */}
 			{/* 		<Image */}
@@ -225,8 +253,8 @@ const Dashboard = ({ navigation }) => {
 			<Marker
 				key={i}
 				coordinate={place.coordinate}
-				// title={"RMIT"}
-				// description={"RMIT University"}
+				title={place.placeName}
+				description={place.placeName}
 			>
 				<TouchableOpacity onPress={() => sheetRef.current.snapTo(0)}>
 					<Image
@@ -252,6 +280,11 @@ const Dashboard = ({ navigation }) => {
 			callbackNode={fall}
 			enabledGestureInteraction={true}
 		/>
+		{groupData ?
+		<View style={styles.topContainer}>
+			<Text style={styles.topTitle}>{groupData.group_name}</Text>
+		</View> : null}
+
 		<View style={styles.bottomContainer}>
 			<View style={styles.bottomNav}>
 				<View
@@ -379,6 +412,26 @@ const Dashboard = ({ navigation }) => {
 					onPress={() => navigation.navigate("Friends")}
 				/>
 			</View>
+			{groupData ? <View
+				style={{
+					...styles.shadowBtn,
+					shadowOpacity: Platform.OS == "ios" ? 0.23 : 0.5
+				}}
+			>
+				<IconButton
+					icon={props => <MaterialIcons name="info-outline" {...props} />}
+					color="#9CC7CA"
+					style={{
+						alignSelf: "center",
+						padding: 25,
+						backgroundColor: "white",
+						borderRadius: 10,
+						margin: 12,
+						...styles.shadowBtn
+					}}
+					onPress={() => navigation.navigate("Friends")}
+				/>
+			</View>: null}
 		</View>
 	</View>
   );

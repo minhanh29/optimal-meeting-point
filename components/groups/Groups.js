@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TextInput } from 'react-native'
+import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native'
 import { Avatar, Box, Stack, Switch, Flex, Spacer, IconButton } from "@react-native-material/core";
 import React, { useEffect } from 'react'
 import { useTheme } from '@react-navigation/native';
@@ -12,7 +12,12 @@ import { db, getGroupName } from "../../firebaseConfig"
 import { useDispatch, useSelector } from 'react-redux';
 import { selectUser } from '../../redux/reducers/userSlice';
 import { useState } from 'react';
-import { deleteGroupAsync, selectGroup } from '../../redux/reducers/groupSlice';
+import { deleteGroupAsync, selectGroup, changeEnterGroup } from '../../redux/reducers/groupSlice';
+import { InstantSearch } from "react-instantsearch-native";
+import { searchClient } from "../../App";
+import SearchBox from "../search/SearchBox";
+import InfiniteHits from "../search/InfiniteHits";
+
 const Groups = ({ navigation }) => {
   const { colors } = useTheme();
   const user = useSelector(selectUser)
@@ -22,14 +27,25 @@ const Groups = ({ navigation }) => {
   const group = useSelector(selectGroup);
   console.log("Data", dataList)
 
+  // const index = algoliaClient.initIndex("group");
+  // index.setSettings({
+  //   attributesForFaceting: [
+  //     'user_id',
+  //     'filterOnly(' + user.user.id + ")"
+  //   ]
+  // }).then(() => {
+  //   // done
+  // });
+
+
   //Cannot see the group name after creating group
   const fetchGroupName = async (refList) => {
     const groupDict = {...groupNameMap}
     const groups = []
     try {
       for(let i = 0; i< refList.length; i++){
-        data = refList[i]
-        if(!data.group_id in groupDict){
+        let data = refList[i]
+        if(data.group_id in groupDict){
           groups.push(groupDict[data.group_id])
           continue
 
@@ -38,29 +54,28 @@ const Groups = ({ navigation }) => {
 
           groupDict[res.id] = {
             id: data.id,
+			group_id: data.group_id,
             ...res.data()
           }
           groups.push(groupDict[data.group_id])
       }
 
-      }catch (e) { }
+	}catch (e) {
+		console.log(e.message)
+	}
     setDataList(groups)
     setGroupNameMap(groupDict)
   }
 
-  useEffect(
-    () => onSnapshot(query(collection(db, "groupNuser"), where("user_id", "==", user.user.id)), (snapshot) => {
-        // Update to Redux
-        const refList = snapshot.docs.map((doc) => ({...doc.data(), id: doc.id}))
-        fetchGroupName(refList)
-    }
-    ),
-    []
-);
-
-  useEffect(() => {
-    // fetchGroupName()
-  },[])
+	useEffect(
+		() => onSnapshot(query(collection(db, "groupNuser"), where("user_id", "==", user.user.id)), (snapshot) => {
+			// Update to Redux
+			const refList = snapshot.docs.map((doc) => ({...doc.data(), id: doc.id}))
+			fetchGroupName(refList)
+		}
+		),
+		[]
+	);
 
 
   //Left the group
@@ -69,7 +84,18 @@ const Groups = ({ navigation }) => {
     dispatch(deleteGroupAsync(group_id))
   }
 
+	const handleEnter = (id) => {
+		console.log("Enter", id)
+		dispatch(changeEnterGroup({
+			enterGroup: true,
+			groupId: id
+		}))
+		navigation.navigate("Dashboard")
+	}
+
   return (
+    <InstantSearch searchClient={searchClient} indexName="group">
+
     <View>
       <Stack
         backgroundColor={colors.background}
@@ -78,24 +104,20 @@ const Groups = ({ navigation }) => {
         items="center"
         paddingTop={35}
       >
-        <Flex direction='row' w='80%' style={styles.searchHolder}>
-          <AIcon name="search1" style={styles.iconImg} color='B4BABC' />
-          <TextInput
-            style={styles.searchInput}
-            placeholder='Search group'
-            color='#B4BABC'
-          />
-        </Flex>
+            <SearchBox searchBoxName= "Search group" />
+            {/* {showHits ? <InfiniteHits/> : null} */}
+            <InfiniteHits/>
 
         <Stack w='80%' spacing={20} marginTop={20}>
           {dataList.map((data, index) => {
             return (
-              <Box
+              <TouchableOpacity
                 elevation={4}
                 backgroundColor="white"
                 style={styles.groupCardContainer}
                 w='100%'
                 key={index}
+				onPress={() => handleEnter(data.group_id)}
               >
                 <Flex
                   w="100%"
@@ -122,7 +144,7 @@ const Groups = ({ navigation }) => {
                     onPress={() => handleDelete(data.id)}
                   />
                 </Flex>
-              </Box>
+              </TouchableOpacity>
             )
           })}
         </Stack>
@@ -142,6 +164,8 @@ const Groups = ({ navigation }) => {
         </Stack>
       </Stack>
     </View>
+    </InstantSearch>
+
   )
 }
 
