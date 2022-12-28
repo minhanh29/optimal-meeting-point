@@ -52,6 +52,7 @@ const AddFriends = ({navigation}) => {
     }, []);
 
     const handleAdd = (user, index) => {
+        
         setSelectedIndex(prev => {
             const isInclude = selectedIndex.includes(index)
             if (isInclude) {
@@ -70,30 +71,33 @@ const AddFriends = ({navigation}) => {
             }
         })
 
-        // sendRequest()
+        sendRequest()
+        
+        // try {
+        //     const data = {
+        //         user_id: user.user.id,
+        //         friendIds: user.id
+        //     }
+        //     console.log(data)
+        //     dispatch(addFriendAsync(data))
+        // } catch (e) {
+        //     console.log(e)
+        // }
+
+    }
+
+    const sendRequest = async () => {
         try {
             const data = {
-                user_id: user.user_id,
-                friendIds: friendList.map(item => item.id)
+                user_id: user.user.id,
+                friendIds: user.id
             }
+            console.log(data)
             dispatch(addFriendAsync(data))
         } catch (e) {
             console.log(e)
         }
-
     }
-
-    // const sendRequest = async () => {
-    //     try {
-    //         const data = {
-    //             user_id: user.user_id,
-    //             friendIds: friendList.map(item => item.id)
-    //         }
-    //         dispatch(addFriendAsync(data))
-    //     } catch (e) {
-    //         console.log(e)
-    //     }
-    // }
     return (
         <View>
             <Stack 
