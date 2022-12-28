@@ -4,6 +4,7 @@ import React, {
   useCallback,
   useRef,
   useMemo,
+  cloneElement,
 } from "react";
 import { View, Image, Alert } from "react-native";
 import { StatusBar } from "expo-status-bar";
@@ -32,12 +33,14 @@ import { db } from "../../firebaseConfig";
 import {
   onSnapshot,
   doc,
+  getDocs,
   collection,
   query,
   where,
   documentId,
 } from "firebase/firestore";
 import { ref, onValue, push, update, remove } from "firebase/database";
+import { connectStorageEmulator } from "firebase/storage";
 const radius = 2 * 1000; // 2km
 const placeType = "cafe";
 const placeTypes = ["coffee", "food"];
@@ -103,41 +106,43 @@ const AvaMarker = ({ groupID, setLocationList }) => {
   const [userList, setUserList] = useState([]);
   const [userIDList, setUserIDList] = useState([]);
 
+  const fetchUsers = async () => {
+    const users = [];
+    const q = query(
+      collection(db, "user"),
+      where(documentId(), "in", userIDList)
+    );
+    const snap = await getDocs(q);
+
+    if (snap) {
+      snap.forEach(async (doc) => {
+        users.push({
+          id: doc.id,
+          ...doc.data(),
+        });
+      });
+    }
+    console.log("users in fetchUsers", users.length, " ", users);
+    setUserList(users);
+  };
+
   const fetchGroupInfo = async (groupInfo) => {
     const userIDs = [];
+    const locations = [];
     try {
       for (let i = 0; i < groupInfo.length; i++) {
         let data = groupInfo[i];
+        console.log("data ", i, " ", data);
         userIDs.push(data.user_id);
+        locations.push(data.group_address);
       }
     } catch (error) {
       console.log(error.message);
     }
     setUserIDList(userIDs);
-    // console.log("userIDs", userIDs);
-    fetchUserInfo();
-  };
-
-  const fetchUserInfo = async () => {
-    const users = [];
-    const locations = [];
-    try {
-      for (let i = 0; i < allUsers.length; i++) {
-        let data = allUsers[i];
-        for (let j = 0; j < userIDList.length; j++) {
-          if (userIDList[j] == data.id) {
-            users.push(data);
-            locations.push(data.address);
-          }
-        }
-      }
-    } catch (error) {
-      console.log(error.message);
-    }
-    setUserList(users);
     setLocationList(locations);
-    console.log("User List", userList);
-    console.log("Location List", locations);
+    console.log("check locations", locations);
+    fetchUsers(); // get users info with matching ids
   };
 
   useEffect(() => {
@@ -155,18 +160,18 @@ const AvaMarker = ({ groupID, setLocationList }) => {
     return () => unsubcribe();
   }, [groupID]);
 
-  useEffect(
-    () =>
-      onSnapshot(query(collection(db, "user")), (snapshot) => {
-        const userInfo = snapshot.docs.map((doc) => ({
-          ...doc.data(),
-          id: doc.id,
-        }));
-        // console.log("User Info in UE", userInfo);
-        setAllUsers(userInfo);
-      }),
-    []
-  );
+  // useEffect(
+  //   () =>
+  //     onSnapshot(query(collection(db, "user")), (snapshot) => {
+  //       const userInfo = snapshot.docs.map((doc) => ({
+  //         ...doc.data(),
+  //         id: doc.id,
+  //       }));
+  //       // console.log("User Info in UE", userInfo);
+  //       setAllUsers(userInfo);
+  //     }),
+  //   []
+  // );
 
   // console.log("Data", userList && userList);
   console.log("Count Length", userList && userList.length);
