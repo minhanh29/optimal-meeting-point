@@ -29,7 +29,14 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 const mapStyle = mapStyleJson["mapStyle"];
 
 import { db } from "../../firebaseConfig";
-import { onSnapshot, doc, collection, query } from "firebase/firestore";
+import {
+  onSnapshot,
+  doc,
+  collection,
+  query,
+  where,
+  documentId,
+} from "firebase/firestore";
 import { ref, onValue, push, update, remove } from "firebase/database";
 const radius = 2 * 1000; // 2km
 const placeType = "cafe";
@@ -91,19 +98,70 @@ const renderHeader = () => (
 const sheetRef = React.createRef();
 const fall = new Animated.Value(1);
 
-const AvaMarker = () => {
+const AvaMarker = ({ groupID, setLocationList }) => {
   const [userList, setUserList] = useState();
+  const [userIDList, setUserIDList] = useState("");
+
+  const fetchGroupInfo = async (groupInfo) => {
+    const userIDs = [];
+    try {
+      for (let i = 0; i < groupInfo.length; i++) {
+        let data = groupInfo[i];
+        userIDs.push(data.user_id);
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+    setUserIDList(userIDs);
+    // console.log("userIDs", userIDs);
+  };
+
+  const fetchUserInfo = async (userInfo) => {
+    const users = [];
+    try {
+      for (let i = 0; i < userInfo.length; i++) {
+        let data = userInfo[i];
+        for (let j = 0; j < userIDList.length; j++) {
+          if (userIDList[j] == data.id) {
+            users.push(data);
+          }
+        }
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+    setUserList(users);
+    console.log("userList", userList);
+  };
 
   useEffect(
     () =>
-      onSnapshot(query(collection(db, "user")), (snapshot) => 
-        setUserList(snapshot.docs.map((doc) => doc.data()))
+      onSnapshot(
+        query(collection(db, "groupNuser"), where("group_id", "==", groupID)),
+        (snapshot) => {
+          const groupInfo = snapshot.docs.map((doc) => doc.data());
+          // console.log("Group Info in UE", groupInfo);
+          fetchGroupInfo(groupInfo);
+        }
       ),
     []
   );
 
-  console.log("Data", userList);
-  console.log("Count Length", userList && userList.length);
+  useEffect(
+    () =>
+      onSnapshot(query(collection(db, "user")), (snapshot) => {
+        const userInfo = snapshot.docs.map((doc) => ({
+          ...doc.data(),
+          id: doc.id,
+        }));
+        // console.log("User Info in UE", userInfo);
+        fetchUserInfo(userInfo);
+      }),
+    []
+  );
+
+  // console.log("Data", userList && userList);
+  // console.log("Count Length", userList && userList.length);
   // console.log("Check address", userList && userList[0].address);
 
   return (
@@ -182,6 +240,7 @@ const Dashboard = ({ navigation }) => {
   const [groupData, setGroupData] = useState(null);
   const [middlePoint, setMiddlePoint] = useState(null);
   const [suggestion, setSuggestion] = useState([]);
+  const [locationList, setLocationList] = useState(null);
 
   useEffect(() => {
     if (group.enterGroup) {
@@ -283,7 +342,12 @@ const Dashboard = ({ navigation }) => {
         ))}
 
         {/* // User's location */}
-        <AvaMarker />
+        {group.enterGroup ? (
+          <AvaMarker
+            groupID={group.groupId}
+            setLocationList={setLocationList}
+          />
+        ) : null}
       </MapView>
       <BottomSheet
         ref={sheetRef}
