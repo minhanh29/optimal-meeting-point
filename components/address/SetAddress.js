@@ -16,61 +16,66 @@ import { GOONG_PUBLIC_KEY } from '@env';
 
 const SetAddress = ({ navigation }) => {
   const { colors } = useTheme();
-  
+
   // const [searchInput, setSearchInput] = useState("")
   const [suggestionList, setSuggestionList] = useState([])
   const [timeInput, setTimeInput] = useState(0)
   const [defaultValue, setDefaultValue] = useState("")
-
-
-  // useEffect(() => {
-  //   if(searchInput.length !=0 && searchInput.length % 5 == 0){
-  //     fetchData()
-  //   }
-  // }, [searchInput])
-
+  const [geoLocation, setGeoLocation] = useState(null)
+  console.log("GEO", geoLocation)
 
 
   const fetchData = async (data) => {
     setDefaultValue(data)
     console.log("Data", data)
-    if(timeInput){
+    if (timeInput) {
       setTimeInput(clearTimeout(timeInput))
     }
-    if(data.trim() == ""){
+    if (data.trim() == "") {
       setSuggestionList([])
-      
+
       return
     }
     setTimeInput(setTimeout(async () => {
       try {
-        
+
         let suggestion_list = []
         let url = "https://rsapi.goong.io/Place/AutoComplete?api_key=" + GOONG_PUBLIC_KEY + "&input=" + data;
         let res = await fetch(url)
         res = await res.json()
-        if(res == null){
+        if (res == null) {
           setSuggestionList([])
           return
         }
         res.predictions.map((location) => {
-          suggestion_list.push(location.description)
+          const location_details = {
+            place_id: location.place_id,
+            description: location.description
+          }
+          suggestion_list.push(location_details)
         })
         setSuggestionList(suggestion_list)
       } catch (e) {
         console.log(e.message)
       }
     }, 300))
-    }
-    
-
-  const updateInput = (content) => {
-    setDefaultValue(content)
   }
 
-
-
-
+  //Geocode
+  const updateInput = async(content) => {
+    setDefaultValue(content.description)
+    try {
+      let url = "https://rsapi.goong.io/Place/Detail?place_id=" + content.place_id + "&api_key=" + GOONG_PUBLIC_KEY
+      let res = await fetch(url)
+      res = await res.json()
+      setGeoLocation({
+        address: res.result.geometry.location,
+        location: content.description
+      })
+    } catch (e) {
+      console.log(e.message)
+    }
+  }
 
   return (
     <Stack
@@ -88,7 +93,7 @@ const SetAddress = ({ navigation }) => {
             placeholder='Search Location'
             color='#B4BABC'
             onChangeText={(newText) => fetchData(newText)}
-            value = {defaultValue}
+            value={defaultValue}
           />
         </HStack>
         {suggestionList.length != 0 ?
@@ -112,7 +117,7 @@ const SetAddress = ({ navigation }) => {
                         <Icon name="location-sharp" size={24} style={styles.iconStyle} />
                       </Box>
                       <Text style={styles.locationContent} >
-                        {item}
+                        {item.description}
                       </Text>
                     </HStack>
                   </TouchableOpacity>
@@ -120,8 +125,8 @@ const SetAddress = ({ navigation }) => {
               })}
             </Stack>
           </ScrollView>
-          : <Stack></Stack> 
-      }
+          : <Stack></Stack>
+        }
 
       </Stack>
       <View style={styles.bottomContainer}>
