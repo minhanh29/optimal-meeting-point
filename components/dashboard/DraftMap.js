@@ -99,8 +99,9 @@ const sheetRef = React.createRef();
 const fall = new Animated.Value(1);
 
 const AvaMarker = ({ groupID, setLocationList }) => {
-  const [userList, setUserList] = useState();
-  const [userIDList, setUserIDList] = useState("");
+  const [allUsers, setAllUsers] = useState([]);
+  const [userList, setUserList] = useState([]);
+  const [userIDList, setUserIDList] = useState([]);
 
   const fetchGroupInfo = async (groupInfo) => {
     const userIDs = [];
@@ -114,16 +115,19 @@ const AvaMarker = ({ groupID, setLocationList }) => {
     }
     setUserIDList(userIDs);
     // console.log("userIDs", userIDs);
+    fetchUserInfo();
   };
 
-  const fetchUserInfo = async (userInfo) => {
+  const fetchUserInfo = async () => {
     const users = [];
+    const locations = [];
     try {
-      for (let i = 0; i < userInfo.length; i++) {
-        let data = userInfo[i];
+      for (let i = 0; i < allUsers.length; i++) {
+        let data = allUsers[i];
         for (let j = 0; j < userIDList.length; j++) {
           if (userIDList[j] == data.id) {
             users.push(data);
+            locations.push(data.address);
           }
         }
       }
@@ -131,21 +135,25 @@ const AvaMarker = ({ groupID, setLocationList }) => {
       console.log(error.message);
     }
     setUserList(users);
-    console.log("userList", userList);
+    setLocationList(locations);
+    console.log("User List", userList);
+    console.log("Location List", locations);
   };
 
-  useEffect(
-    () =>
-      onSnapshot(
-        query(collection(db, "groupNuser"), where("group_id", "==", groupID)),
-        (snapshot) => {
-          const groupInfo = snapshot.docs.map((doc) => doc.data());
-          // console.log("Group Info in UE", groupInfo);
-          fetchGroupInfo(groupInfo);
-        }
-      ),
-    []
-  );
+  useEffect(() => {
+    const unsubcribe = onSnapshot(
+      query(collection(db, "groupNuser"), where("group_id", "==", groupID)),
+      (snapshot) => {
+        const groupInfo = snapshot.docs.map((doc) => doc.data());
+        console.log(
+          "Group Info in UE",
+          snapshot.docs.map((doc) => doc.id)
+        );
+        fetchGroupInfo(groupInfo);
+      }
+    );
+    return () => unsubcribe();
+  }, [groupID]);
 
   useEffect(
     () =>
@@ -155,13 +163,13 @@ const AvaMarker = ({ groupID, setLocationList }) => {
           id: doc.id,
         }));
         // console.log("User Info in UE", userInfo);
-        fetchUserInfo(userInfo);
+        setAllUsers(userInfo);
       }),
     []
   );
 
   // console.log("Data", userList && userList);
-  // console.log("Count Length", userList && userList.length);
+  console.log("Count Length", userList && userList.length);
   // console.log("Check address", userList && userList[0].address);
 
   return (
