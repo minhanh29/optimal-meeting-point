@@ -222,9 +222,9 @@ export const logOutAsync = createAsyncThunk('user/logOutAsync', async () => {
 export const addFriendAsync = createAsyncThunk('user/addFriendAsync', async (data) => {
     console.log(data)
      //send friend request
-    const friendIds = data.userIds
+    const friendIds = data.id
     for (let i=0; i<friendIds.length; i++) {
-        await createFriendRequest(data.user_id, friendIds[i])
+        await createFriendRequest(data.user_id, friendIds)
     }
 
     return {
