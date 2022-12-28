@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     width: '100%',
-   
+
   },
   cardContainer: {
     width: "100%",
@@ -83,20 +83,32 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     elevation: 4,
   },
-  locationContent:{
+  locationContent: {
     width: '85%',
   },
-  searchHolder:{
+  searchHolder: {
     backgroundColor: 'white',
     borderTopLeftRadius: 15,
     borderTopRightRadius: 15,
     width: '100%',
-    alignItems:'center',
+    alignItems: 'center',
     padding: 10,
-},
-  iconImg:{
+  },
+  iconImg: {
     marginLeft: 15,
-  }
+  },
+  searchInput: {
+    width: "80%",
+    paddingTop: 14,
+    paddingBottom: 14,
+    backgroundColor: "white",
+    borderColor: 'transparent',
+    fontFamily: "Montserrat",
+    elevation: 0,
+    shadowOpacity: 0,
+    borderBottomWidth: 0,
+    borderRadius: 15,
+  },
 });
 
 export default styles;

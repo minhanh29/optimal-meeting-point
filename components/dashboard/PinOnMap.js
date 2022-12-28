@@ -228,24 +228,29 @@ const PinOnMap = ({ navigation }) => {
 						<View
 							style={{
 								...styles.shadowBtn,
-								shadowOpacity: Platform.OS == "ios" ? 0.25 : 0.5
+								shadowOpacity: Platform.OS == "ios" ? 0.25 : 0.5,
+								width: '100%',
+								backgroundColor: 'white'
+							
 							}}
 						>
 							<TouchableOpacity
 								style={{
 									alignSelf: "center",
 									overflow: "hidden",
-									padding: 10,
+									padding: 15,
 									backgroundColor: "white",
 									borderRadius: 10,
 									margin: 16,
-									...styles.shadowBtn,
-									backgroundColor: colors.mainColor2
+									backgroundColor: colors.mainColor2,
+									width: '90%',
+									
 								}}
 								onPress={updateGroupAddress}
 							>
 								<Text
 									color='white'
+									style={styles.buttonTitle}
 								>
 									Confirm
 								</Text>

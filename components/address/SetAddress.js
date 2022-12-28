@@ -20,7 +20,7 @@ const SetAddress = ({ navigation }) => {
   // const [searchInput, setSearchInput] = useState("")
   const [suggestionList, setSuggestionList] = useState([])
   const [timeInput, setTimeInput] = useState(0)
-  
+  const [defaultValue, setDefaultValue] = useState("")
 
 
   // useEffect(() => {
@@ -32,16 +32,19 @@ const SetAddress = ({ navigation }) => {
 
 
   const fetchData = async (data) => {
+    setDefaultValue(data)
     console.log("Data", data)
     if(timeInput){
       setTimeInput(clearTimeout(timeInput))
     }
     if(data.trim() == ""){
       setSuggestionList([])
+      
       return
     }
     setTimeInput(setTimeout(async () => {
       try {
+        
         let suggestion_list = []
         let url = "https://rsapi.goong.io/Place/AutoComplete?api_key=" + GOONG_PUBLIC_KEY + "&input=" + data;
         let res = await fetch(url)
@@ -62,8 +65,7 @@ const SetAddress = ({ navigation }) => {
     
 
   const updateInput = (content) => {
-    console.log("Content", content);
-    // setSearchInput(content);
+    setDefaultValue(content)
   }
 
 
@@ -86,6 +88,7 @@ const SetAddress = ({ navigation }) => {
             placeholder='Search Location'
             color='#B4BABC'
             onChangeText={(newText) => fetchData(newText)}
+            value = {defaultValue}
           />
         </HStack>
         {suggestionList.length != 0 ?
