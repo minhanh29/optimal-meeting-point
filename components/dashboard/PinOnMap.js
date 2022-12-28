@@ -21,7 +21,7 @@ import * as Location from 'expo-location';
 import { useEffect } from "react";
 import { GROUP_IDLE, selectGroup, updateAddressAsync, UPDATE_ADDRESS_PENDING, UPDATE_ADDRESS_REJECTED, UPDATE_ADDRESS_SUCCESS, changeGroupStatus } from "../../redux/reducers/groupSlice";
 import Spinner from 'react-native-loading-spinner-overlay';
-import { MAPBOX_PUBLIC_KEY } from '@env';
+import { GOONG_PUBLIC_KEY } from '@env';
 
 const mapStyle = mapStyleJson["mapStyle"];
 
@@ -67,7 +67,7 @@ const fall = new Animated.Value(1);
 
 const PinOnMap = ({ navigation }) => {
 	const user = useSelector(selectUser)
-	
+
 	const group = useSelector(selectGroup)
 	const dispatch = useDispatch()
 	const { colors } = useTheme()
@@ -122,7 +122,7 @@ const PinOnMap = ({ navigation }) => {
 		console.log("DATA", data)
 		const {latitude, longitude} = data
 		try{
-			let  url =  "https://rsapi.goong.io/Geocode?latlng="+ latitude + ",%20"+ longitude + "&api_key=" + MAPBOX_PUBLIC_KEY
+			let  url =  "https://rsapi.goong.io/Geocode?latlng="+ latitude + ",%20"+ longitude + "&api_key=" + GOONG_PUBLIC_KEY
 			let res = await fetch(url)
 			res = await res.json()
 			setAddressText(res.results[0].formatted_address)
