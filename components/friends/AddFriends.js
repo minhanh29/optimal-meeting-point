@@ -80,11 +80,11 @@ const AddFriends = ({navigation}) => {
             setUserList(temp => {
                 for (let i = 0; i<= userList.length; i++) {
                     if (user.user.id == friendList.id[i].person1_id || user.user.id == requestList.id[i].sender_id) {
-                        const isIncludeFriend = userList.includes(friendList.id[i].person2_id)
-                        const isIncludeRequest = userList.includes(requestList.id[i].receiver_id)
+                        const isIncludeFriend = userList.includes(friendList[i].id.person2_id)
+                        const isIncludeRequest = userList.includes(requestList[i].id.receiver_id)
                         if (isIncludeFriend || isIncludeRequest) {
-                            return userList.filter(item => item !== friendList.id[i].person2_id &&
-                                 item !== user.user.id && item !== requestList.id[i].receiver_id)
+                            return userList.filter(item => item !== friendList[i].id.person2_id &&
+                                 item !== user.user.id && item !== requestList[i].id.receiver_id)
                         } else {
                             return [...temp]
                         }
