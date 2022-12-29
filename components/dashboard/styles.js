@@ -35,9 +35,8 @@ const styles = StyleSheet.create({
   bottomPinContainer: {
     width: '100%',
     position: 'absolute',
-    bottom: '5%',
+    bottom: '0%',
     backgroundColor: 'transparent',
-    right: 10,
   },
   bottomNav: {
     width: '100%',
@@ -205,6 +204,11 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0,
     borderRadius: 15,
   },
+  buttonTitle: {
+		fontFamily: "Montserrat-Bold",
+		fontSize: 15,
+		textAlign: 'center',
+	},
 });
 
 export default styles;

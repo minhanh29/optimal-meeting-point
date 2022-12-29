@@ -24,7 +24,7 @@ const Groups = ({ navigation }) => {
   const group = useSelector(selectGroup);
   console.log("Data", dataList)
 
-  //Cannot see the group name after creating group
+  
   const fetchGroupName = async (refList) => {
     const groupDict = { ...groupNameMap }
     const groups = []

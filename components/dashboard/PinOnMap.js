@@ -72,9 +72,8 @@ const PinOnMap = ({ navigation }) => {
 	const dispatch = useDispatch()
 	const { colors } = useTheme()
 	const [marker, setMarker] = useState(null)
-	console.log(marker)
 	const [addressText, setAddressText] = useState(null)
-	console.log("AddressText" ,addressText)
+	console.log("AddressText", addressText)
 
 
 	useEffect(() => {
@@ -118,15 +117,15 @@ const PinOnMap = ({ navigation }) => {
 		dispatch(updateAddressAsync(data));
 	}
 
-	const fetchData= async(data) =>{
+	const fetchData = async (data) => {
 		console.log("DATA", data)
-		const {latitude, longitude} = data
-		try{
-			let  url =  "https://rsapi.goong.io/Geocode?latlng="+ latitude + ",%20"+ longitude + "&api_key=" + GOONG_PUBLIC_KEY
+		const { latitude, longitude } = data
+		try {
+			let url = "https://rsapi.goong.io/Geocode?latlng=" + latitude + ",%20" + longitude + "&api_key=" + GOONG_PUBLIC_KEY
 			let res = await fetch(url)
 			res = await res.json()
 			setAddressText(res.results[0].formatted_address)
-		}catch(e){
+		} catch (e) {
 
 		}
 	}
@@ -158,6 +157,7 @@ const PinOnMap = ({ navigation }) => {
 						coordinate={marker}
 
 					>
+
 						<View
 							style={{
 								flexDirection: "row",
@@ -172,9 +172,9 @@ const PinOnMap = ({ navigation }) => {
 								width: 45
 							}}
 						>
-							<Svg width={40} height={30}>
+						<Svg width={40} height={30}>
 								<Image
-									source={{ url: user.user.ava_url }}
+									source={{ uri: user.user.ava_url }}
 									width={40}
 									height={30}
 									style={{
@@ -228,24 +228,29 @@ const PinOnMap = ({ navigation }) => {
 						<View
 							style={{
 								...styles.shadowBtn,
-								shadowOpacity: Platform.OS == "ios" ? 0.25 : 0.5
+								shadowOpacity: Platform.OS == "ios" ? 0.25 : 0.5,
+								width: '100%',
+								backgroundColor: 'white'
+
 							}}
 						>
 							<TouchableOpacity
 								style={{
 									alignSelf: "center",
 									overflow: "hidden",
-									padding: 10,
+									padding: 15,
 									backgroundColor: "white",
 									borderRadius: 10,
 									margin: 16,
-									...styles.shadowBtn,
-									backgroundColor: colors.mainColor2
+									backgroundColor: colors.mainColor2,
+									width: '90%',
+
 								}}
 								onPress={updateGroupAddress}
 							>
 								<Text
 									color='white'
+									style={styles.buttonTitle}
 								>
 									Confirm
 								</Text>
