@@ -18,14 +18,14 @@ const Friends = ({navigation}) => {
 
   return (
     <View>
-      <Stack 
+      <Stack
       backgroundColor={colors.background}
       h="100%"
       w="100%"
       items="center"
       paddingTop={35}
       >
-      
+
           <Flex w="70%" style={styles.searchHolder} direction="row">
             <AIcon name="search1" style={styles.iconImg} color='B4BABC'/>
             <TextInput
@@ -33,7 +33,7 @@ const Friends = ({navigation}) => {
               placeholder='Search friends'
               color='#B4BABC'
             />
-            <IconButton 
+            <IconButton
             icon={props => <AIcon name="adduser" {...props} style={styles.iconImg} color='B4BABC' />}
             onPress={() => navigation.navigate("AddFriends")}
             />
@@ -42,7 +42,7 @@ const Friends = ({navigation}) => {
 
       </Stack>
     </View>
-    
+
   );
 };
 

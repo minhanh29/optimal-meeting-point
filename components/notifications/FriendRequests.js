@@ -39,7 +39,7 @@ const FriendRequests = () => {
 					...doc.data(),
 					id: doc.id
 				}))
-				
+
 				fetchData(refList)
 			})
 		} else {
@@ -53,7 +53,7 @@ const FriendRequests = () => {
 			const userData = await fetchUserData(refList)
 			for (let i = 0; i < refList.length; i++) {
 				let sData = userData[refList[i].sender_id]
-				
+
 				result.push({
 					id: refList[i].id,
 					senderName: sData.name,
@@ -71,7 +71,7 @@ const FriendRequests = () => {
 
 	const fetchUserData = async (refList) => {
 		const userData = {...userDict}
-		
+
 		for (let i=0; i<refList.length; i++) {
 			try {
 				let id = refList[i].sender_id
@@ -115,7 +115,8 @@ const FriendRequests = () => {
 	const changeStatus = async (status) => {
 		setProcessing(true)
 		let dataClone = data.map(item => ({
-			id: item.id
+			id: item.id,
+			sender_id: item.sender_id
 		}))
 
 		for (let i = 0; i<checkedBoxes.length; i++) {
@@ -132,12 +133,12 @@ const FriendRequests = () => {
 
 						//add friend 1
 						await addDoc(collection(db, "friend"), {
-							person1_id: dataClone[j].id,
+							person1_id: dataClone[j].sender_id,
 							person2_id: user.id,
 						})
 						await addDoc(collection(db, "friend"), {
 							person1_id: user.id,
-							person2_id: dataClone[j].id,
+							person2_id: dataClone[j].sender_id,
 						})
 						break
 					}
@@ -145,6 +146,7 @@ const FriendRequests = () => {
 			} catch (e) {
 				showErrorMessage(e.message)
 				setProcessing(false)
+				console.log(e.message)
 			}
 		}
 		setCheckedBoxes([])
@@ -158,7 +160,7 @@ const FriendRequests = () => {
 			)
 		}
 	}
-	
+
 	return (
 		<Stack h="100%" overflow="visible">
 			<Stack w="100%" spacing={10} marginTop={20} justify="between">

@@ -17,14 +17,14 @@ import Spinner from 'react-native-loading-spinner-overlay';
 
 const Groups = ({ navigation }) => {
   const { colors } = useTheme();
-  const user = useSelector(selectUser)
-  const [dataList, setDataList] = useState([])
-  const [groupNameMap, setGroupNameMap] = useState({})
-  const dispatch = useDispatch()
+  const user = useSelector(selectUser);
+  const [dataList, setDataList] = useState([]);
+  const [groupNameMap, setGroupNameMap] = useState({});
+  const dispatch = useDispatch();
   const group = useSelector(selectGroup);
-  console.log("Data", dataList)
+  console.log("Data", dataList);
 
-  //Cannot see the group name after creating group
+
   const fetchGroupName = async (refList) => {
     const groupDict = { ...groupNameMap }
     const groups = []
@@ -37,21 +37,23 @@ const Groups = ({ navigation }) => {
 
         }
         const res = await getGroupName(data.group_id)
+		// count group members
+		const memData = await getDocs(query(collection(db, "groupNuser"), where("group_id", "==", data.group_id)))
 
         groupDict[res.id] = {
           id: data.id,
           group_id: data.group_id,
+			count: memData.docs.length,
           ...res.data()
         }
         groups.push(groupDict[data.group_id])
       }
-
     } catch (e) {
-      console.log(e.message)
+      console.log(e.message);
     }
-    setDataList(groups)
-    setGroupNameMap(groupDict)
-  }
+    setDataList(groups);
+    setGroupNameMap(groupDict);
+  };
 
   useEffect(
     () => onSnapshot(query(collection(db, "groupNuser"), where("user_id", "==", user.user.id)), (snapshot) => {
@@ -127,19 +129,19 @@ const Groups = ({ navigation }) => {
           <AIcon name="search1" style={styles.iconImg} color='B4BABC' />
           <TextInput
             style={styles.searchInput}
-            placeholder='Search group'
-            color='#B4BABC'
+            placeholder="Search group"
+            color="#B4BABC"
           />
         </Flex>
 
-        <Stack w='80%' spacing={20} marginTop={20}>
+        <Stack w="80%" spacing={20} marginTop={20}>
           {dataList.map((data, index) => {
             return (
               <TouchableOpacity
                 elevation={4}
                 backgroundColor="white"
                 style={styles.groupCardContainer}
-                w='100%'
+                w="100%"
                 key={index}
                 onPress={() => handleEnter(data.group_id)}
               >
@@ -157,32 +159,50 @@ const Groups = ({ navigation }) => {
                       {data.group_name}
                     </Text>
                     <Text style={styles.infoContent} >
-                      3 members
+						{data.count} {data.count == 1 ? "member": "members"}
                     </Text>
                   </Stack>
 
                   <IconButton
-                    icon={props => <Icon name={'exit-outline'} {...props} />}
+                    icon={(props) => <Icon name={"exit-outline"} {...props} />}
                     color="#EE6548"
-                    style={{ alignSelf: "center", padding: 20, backgroundColor: 'transparent', borderRadius: 10, color: '#9ACDD0', marginRight: 20 }}
+                    style={{
+                      alignSelf: "center",
+                      padding: 20,
+                      backgroundColor: "transparent",
+                      borderRadius: 10,
+                      color: "#9ACDD0",
+                      marginRight: 20,
+                    }}
                     onPress={() => handleDelete(data.id)}
                   />
                 </Flex>
               </TouchableOpacity>
-            )
+            );
           })}
         </Stack>
         <Spacer />
-        <Stack w='80%' items="center">
+        <Stack w="80%" items="center">
           <View style={styles.bottomContainer}>
-            <View style={{ ...styles.shadowBtn, shadowOpacity: Platform.OS == "ios" ? 0.23 : 0.5 }}>
+            <View
+              style={{
+                ...styles.shadowBtn,
+                shadowOpacity: Platform.OS == "ios" ? 0.23 : 0.5,
+              }}
+            >
               <IconButton
-                style={{ alignSelf: "center", overflow: 'hidden', padding: 25, backgroundColor: 'white', borderRadius: 10, marginBottom: 16, }}
-                icon={props => <MIcon name="group-add" {...props} />}
+                style={{
+                  alignSelf: "center",
+                  overflow: "hidden",
+                  padding: 25,
+                  backgroundColor: "white",
+                  borderRadius: 10,
+                  marginBottom: 16,
+                }}
+                icon={(props) => <MIcon name="group-add" {...props} />}
                 color="#9CC7CA"
                 onPress={() => navigation.navigate("CreateGroup")}
-              >
-              </IconButton>
+              ></IconButton>
             </View>
           </View>
         </Stack>

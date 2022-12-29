@@ -2,7 +2,7 @@ import { StyleSheet, ScrollView, View, Button, TextInput } from "react-native";
 import React, { useCallback, useMemo, useRef, useEffect } from "react";
 import { Avatar, Box, Stack, Icon, Text, Flex, Spacer, IconButton } from "@react-native-material/core";
 import { createFriendRequest, db } from "../../firebaseConfig"
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { useDispatch, useSelector } from "react-redux";
 import { useTheme } from '@react-navigation/native';
 import AIcon from "@expo/vector-icons/AntDesign";
@@ -60,10 +60,15 @@ const AddFriends = ({navigation}) => {
 
     const fetchUserInfo = async () => {
         try {
+            const friendSnapshot = await getDocs(query(collection(db, "friend"), where("person1_id", "==", user.user.id)));
+			const friendSet = new Set(friendSnapshot.docs.map(doc => doc.data().person2_id))
+			console.log("Friend", friendSet)
+
             const querySnapshot = await getDocs(collection(db, "user"));
             const result = []
             querySnapshot.forEach(doc => {
-                if (doc.id !== user.user.id ) {
+				console.log(doc.id, doc.data().name)
+                if (doc.id !== user.user.id && !friendSet.has(doc.id)) {
                     result.push({
                         id: doc.id,
                         ...doc.data()
@@ -77,7 +82,7 @@ const AddFriends = ({navigation}) => {
             // setUsername(data.username)
             setAvatar(data.ava_url)
             setUserList(result)
-            
+
         } catch (e) {
             console.log(e)
         }
@@ -117,7 +122,7 @@ const AddFriends = ({navigation}) => {
 
     return (
         <View>
-            <Stack 
+            <Stack
             backgroundColor={colors.background}
             h="100%"
             w="100%"
@@ -137,7 +142,7 @@ const AddFriends = ({navigation}) => {
                         color='#B4BABC'
                         />
                     </Flex>
-                
+
                     <ScrollView style={styles.listContainer}>
                         <Stack w="100%" spacing={20} >
                             {userList.map((user, index) => {
@@ -148,7 +153,7 @@ const AddFriends = ({navigation}) => {
                                     w='100%'
                                     key={index}
                                     >
-                                        <Flex 
+                                        <Flex
                                         w="100%"
                                         items="center"
                                         direction="row"
@@ -159,7 +164,7 @@ const AddFriends = ({navigation}) => {
                                             image={avatar ? {uri: user.ava_url} : null}
                                             imageStyle={{borderRadius: 10}}
                                             />
-                                        <Stack 
+                                        <Stack
                                         style ={{marginLeft:17}}
                                         spacing={5}
                                         w="58%"
@@ -184,7 +189,7 @@ const AddFriends = ({navigation}) => {
                         </Stack>
                     </ScrollView>
                 </Stack>
-                
+
         </Stack>
     </View>
     )

@@ -207,6 +207,12 @@ const Dashboard = ({ navigation }) => {
 								margin: 16,
 								...styles.shadowBtn
 							}}
+<<<<<<< HEAD
+						>
+							User's name
+						</Text>
+						<Text
+=======
 							onPress={() => navigation.navigate("Groups")}
 						/>
 					</View>
@@ -219,6 +225,7 @@ const Dashboard = ({ navigation }) => {
 						<IconButton
 							icon={props => <AIcon name="search1" {...props} />}
 							color="#C2C2C2"
+>>>>>>> 89229b1574a5eb0eb3ce74eef13ee156d33b8317
 							style={{
 								alignSelf: "center",
 								padding: 25,

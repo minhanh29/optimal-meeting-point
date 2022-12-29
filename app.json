@@ -20,6 +20,9 @@
     "ios": {
       "supportsTablet": true,
       "googleServicesFile": "./GoogleService-Info.plist",
+      "config": {
+        "googleMapsApiKey": "AIzaSyAXtp-vw6IoEEWX6aVYD-Ug-2Qkp6uT-jE"
+      },
       "bundleIdentifier": "com.omp"
     },
     "android": {
@@ -31,7 +34,12 @@
       },
       "permissions": [
         "android.permission.RECORD_AUDIO"
-      ]
+      ],
+      "config": {
+		  "googleMaps": {
+			  "apiKey": "AIzaSyAXtp-vw6IoEEWX6aVYD-Ug-2Qkp6uT-jE"
+		  }
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -41,19 +49,6 @@
         "expo-image-picker",
         {
           "photosPermission": "The app accesses your photos to let you share them with your friends."
-        }
-      ],
-      [
-        "@rnmapbox/maps",
-        {
-          "RNMapboxMapsImpl": "maplibre"
-        }
-      ],
-      [
-        "@rnmapbox/maps",
-        {
-          "RNMapboxMapsImpl": "mapbox",
-          "RNMapboxMapsDownloadToken": "sk.eyJ1Ijoib21wcm1pdCIsImEiOiJjbGM0amY0eTAwZ2pjM25tbzVja2JkMjNhIn0.LRLJBu7m5G3o-1CZPixi-Q"
         }
       ]
     ],
