@@ -14,7 +14,8 @@ import styles from "./styles";
 import { useSelector } from "react-redux";
 import { selectUser } from "../../redux/reducers/userSlice";
 import { selectGroup} from "../../redux/reducers/groupSlice";
-import { MAPBOX_PUBLIC_KEY } from '@env';
+// import { MAPBOX_PUBLIC_KEY } from '@env';
+import { MAPBOX_PUBLIC_KEY } from '../../key';
 
 import { getGroupName } from "../../firebaseConfig"
 import BottomSheet from "reanimated-bottom-sheet";
@@ -260,7 +261,7 @@ const Dashboard = ({ navigation }) => {
 				<TouchableOpacity onPress={() => sheetRef.current.snapTo(0)}>
 					<Image
 						style={styles.marker_icon}
-						source={require("../../assets/location-dot.png")}
+						source={{ uri: "https://firebasestorage.googleapis.com/v0/b/optimal-meeting-point.appspot.com/o/location-dot.png?alt=media&token=8cedb920-bd3e-43f4-a3ac-bfa2ceece093" }}
 					></Image>
 				</TouchableOpacity>
 			</Marker>

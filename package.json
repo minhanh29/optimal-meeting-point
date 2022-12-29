@@ -31,7 +31,6 @@
     "react-google-places-autocomplete": "^3.4.0",
     "react-native": "0.70.5",
     "react-native-config": "^1.4.11",
-    "react-native-dotenv": "^3.4.6",
     "react-native-gesture-handler": "^2.8.0",
     "react-native-google-places-autocomplete": "^2.5.1",
     "react-native-loading-spinner-overlay": "^3.0.1",
