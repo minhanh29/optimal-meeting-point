@@ -207,6 +207,14 @@ const deleteFileByUrl = async (url) => {
 	return null
 }
 
+const updateAddress = (id, data) => {
+    return setDoc(doc(db, "group", id), {
+		...data
+	}, {
+		merge: true
+	});
+};
+
 // ============
 export {
 	createUserWithEmailAndPassword,
@@ -227,5 +235,6 @@ export {
 	deleteFile,
 	deleteFileByUrl,
 	createGroupInvitation,
-	createFriendRequest
+	updateAddress,
+	createFriendRequest,
 }
