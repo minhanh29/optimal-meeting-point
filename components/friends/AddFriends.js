@@ -38,7 +38,6 @@ const AddFriends = ({navigation}) => {
                 })
             })
             setFriendList(result)
-            console
         } catch (e) {
             console.log(e)
         }
@@ -77,22 +76,26 @@ const AddFriends = ({navigation}) => {
             // setUsername(data.username)
             setAvatar(data.ava_url)
             setUserList(result)
-            setUserList(temp => {
-                for (let i = 0; i<= userList.length; i++) {
-                    if (user.user.id == friendList.id[i].person1_id || user.user.id == requestList.id[i].sender_id) {
-                        const isIncludeFriend = userList.includes(friendList[i].id.person2_id)
-                        const isIncludeRequest = userList.includes(requestList[i].id.receiver_id)
-                        if (isIncludeFriend || isIncludeRequest) {
-                            return userList.filter(item => item !== friendList[i].id.person2_id &&
-                                 item !== user.user.id && item !== requestList[i].id.receiver_id)
-                        } else {
-                            return [...temp]
-                        }
-                    } else {
-                        continue
-                    }
-                }
-            })
+            // console.log(userList)
+            // setUserList(temp => {
+            //     for (let i = 0; i<= userList.length; i++) {
+            //         if (user.user.id == friendList.person1_id || user.user.id == requestList.sender_id) {
+            //             const isIncludeFriend = userList.includes(friendList.person2_id)
+            //             const isIncludeRequest = userList.includes(requestList.receiver_id)
+            //             if (isIncludeFriend || isIncludeRequest) {
+            //                 return userList.filter(item => item !== friendList.person2_id &&
+            //                      item !== user.user.id && item !== requestList.receiver_id)
+            //             } else {
+            //                 return [...temp]
+            //             }
+            //         } else {
+            //             continue
+            //         }
+            //     }
+            // })
+            console.log(friendList)
+
+            
         } catch (e) {
             console.log(e)
         }
