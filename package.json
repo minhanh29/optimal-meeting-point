@@ -8,6 +8,7 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@expo-google-fonts/open-sans": "^0.2.2",
     "@expo/webpack-config": "^0.17.2",
     "@gorhom/bottom-sheet": "^4",
     "@react-native-community/checkbox": "^0.5.14",
@@ -19,9 +20,11 @@
     "@rnmapbox/maps": "^10.0.0-beta.62",
     "base-64": "^1.0.0",
     "expo": "~47.0.9",
+    "expo-app-loading": "^2.1.1",
     "expo-build-properties": "^0.4.1",
     "expo-checkbox": "^2.2.2",
     "expo-dev-client": "~2.0.1",
+    "expo-file-system": "~15.1.1",
     "expo-font": "^11.0.1",
     "expo-image-picker": "^14.0.2",
     "expo-location": "^15.0.1",

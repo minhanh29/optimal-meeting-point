@@ -76,7 +76,7 @@ const Dashboard = ({ navigation }) => {
 				provider={PROVIDER_GOOGLE}
 				onPress={(event) => setMarker(event.nativeEvent.coordinate)}
 			>
-				{marker && 
+				{marker &&
 				<Marker
 					coordinate={marker}
 				></Marker>
@@ -89,7 +89,7 @@ const Dashboard = ({ navigation }) => {
 					<TouchableOpacity onPress={() => sheetRef.current.snapTo(0)}>
 						<Image
 							style={styles.marker_icon}
-							source={require("../../assets/location-dot.png")}
+							source={{ uri: "https://firebasestorage.googleapis.com/v0/b/optimal-meeting-point.appspot.com/o/location-dot.png?alt=media&token=8cedb920-bd3e-43f4-a3ac-bfa2ceece093" }}
 						></Image>
 					</TouchableOpacity>
 				</Marker>

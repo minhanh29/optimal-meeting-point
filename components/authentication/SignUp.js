@@ -20,7 +20,7 @@ import {
 } from "../../redux/reducers/userSlice"
 import { useFonts } from "expo-font";
 import { useDispatch, useSelector } from "react-redux"
-import logo from "./../../images/logo.png"
+// import logo from "./../../images/logo.png"
 import Spinner from 'react-native-loading-spinner-overlay';
 
 const SignUp = ({ navigation }) => {
@@ -78,7 +78,7 @@ const SignUp = ({ navigation }) => {
 				cancelable={true}
 			/>
             <View style={styles.logo}>
-                <Image style={{height: 100, width:100}} source={logo} resizeMode="contain" />
+				<Image style={{height: 100, width:100}} source={{uri : "https://firebasestorage.googleapis.com/v0/b/optimal-meeting-point.appspot.com/o/logo.png?alt=media&token=be4d379b-2075-4f89-af92-0ab134a593a5" }} resizeMode="contain" />
                 <Text style={{
                     color:'#9CC7CA',
                     fontFamily:'jsMath-cmbx10',

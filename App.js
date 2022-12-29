@@ -13,7 +13,7 @@ import ChangePassword from "./components/settings/ChangePassword";
 import UpdateProfile from "./components/settings/UpdateProfile";
 import Groups from "./components/groups/Groups";
 import Notifications from "./components/notifications/Notifications";
-import { useFonts } from 'expo-font';
+// import { useFonts } from 'expo-font';
 import 'react-native-gesture-handler';
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -28,6 +28,9 @@ import { selectUser } from "./redux/reducers/userSlice";
 import AddNewMember from "./components/groups/AddNewMember";
 import GroupInfo from "./components/groups/GroupInfo";
 import PinOnMap from "./components/dashboard/PinOnMap";
+
+import useFonts from "./useFonts"
+import AppLoading from 'expo-app-loading'; // This is must
 
 const StackNavigator = createStackNavigator()
 
@@ -44,14 +47,29 @@ export const theme = {
 const AppInner = () => {
 	const { isAuthenticated } = useSelector(selectUser)
 
-	const [fontsLoaded] = useFonts({
-		Montserrat: require("./assets/fonts/Montserrat-Regular.ttf"),
-		"Montserrat-Italic": require("./assets/fonts/Montserrat-Italic-VariableFont_wght.ttf"),
-		"Montserrat-Bold": require("./assets/fonts/Montserrat-Bold.ttf"),
-		"jsMath-cmbx10": require("./assets/fonts/jsMath-cmbx10.ttf"),
-	});
+	// const [fontsLoaded] = useFonts({
+	// 	Montserrat: require("./assets/fonts/Montserrat-Regular.ttf"),
+	// 	"Montserrat-Italic": require("./assets/fonts/Montserrat-Italic-VariableFont_wght.ttf"),
+	// 	"Montserrat-Bold": require("./assets/fonts/Montserrat-Bold.ttf"),
+	// 	"jsMath-cmbx10": require("./assets/fonts/jsMath-cmbx10.ttf"),
+	// });
 
-	if (!fontsLoaded) return null;
+	// if (!fontsLoaded) return null;
+	const [IsReady, SetIsReady] = useState(false);
+
+	const LoadFontsAndRestoreToken = async () => {
+		await useFonts();
+	};
+
+	if (!IsReady) {
+		return (
+			<AppLoading
+				startAsync={LoadFontsAndRestoreToken}
+				onFinish={() => SetIsReady(true)}
+				onError={() => {}}
+			/>
+		);
+	}
 
 	return (
 		<NavigationContainer theme={theme}>
@@ -145,7 +163,7 @@ const AppInner = () => {
 					component={Groups}
 					options={{
 						title: "Your Groups"
-					}} 
+					}}
 				/>
 				<StackNavigator.Screen
 					name="AddNewMember"
