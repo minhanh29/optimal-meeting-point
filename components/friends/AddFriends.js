@@ -76,6 +76,7 @@ const AddFriends = ({navigation}) => {
             // setUsername(data.username)
             setAvatar(data.ava_url)
             setUserList(result)
+<<<<<<< HEAD
             // console.log(userList)
             // setUserList(temp => {
             //     for (let i = 0; i<= userList.length; i++) {
@@ -96,6 +97,22 @@ const AddFriends = ({navigation}) => {
             console.log(friendList)
 
             
+=======
+            setUserList(temp => {
+                if (user.user.id == friendList.person1_id || user.user.id == requestList.sender_id) {
+                    const isIncludeFriend = userList.includes(friendList.person2_id)
+                    const isIncludeRequest = userList.includes(requestList.receiver_id)
+                    if (isIncludeFriend || isIncludeRequest) {
+                        return userList.filter(item => item !== friendList.person2_id &&
+                                item !== user.user.id && item !== requestList.receiver_id)
+                    } else {
+                        return [...temp]
+                    }
+                } else {
+                    return [...temp]
+                }
+            })
+>>>>>>> b77c65a1564c21f2df75a65f0b79fc7c9046b8e4
         } catch (e) {
             console.log(e)
         }
