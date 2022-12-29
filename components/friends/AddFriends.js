@@ -68,6 +68,7 @@ const AddFriends = ({navigation}) => {
                 receiver_id: receiver.id
             }
             console.log(data)
+            console.log(user.id)
             dispatch(addFriendAsync(data))
         } catch (e) {
             console.log(e)
