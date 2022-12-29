@@ -106,8 +106,6 @@ const CreateGroup = ({navigation}) => {
                 return [...prev, user]
             }
         })
-
-
     }
 
 

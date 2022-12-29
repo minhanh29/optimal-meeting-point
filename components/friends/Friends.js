@@ -1,23 +1,50 @@
-import { StyleSheet, Text, View, Button } from "react-native";
+import { StyleSheet, View, Button, TextInput } from "react-native";
 import React, { useCallback, useMemo, useRef } from "react";
+import { Avatar, Box, Stack, Icon, Text, Flex, Spacer, IconButton } from "@react-native-material/core";
+import { db } from "../../firebaseConfig"
+import { collection, getDocs } from "firebase/firestore";
+import { useDispatch, useSelector } from "react-redux";
+import { useTheme } from '@react-navigation/native';
+import AIcon from "@expo/vector-icons/AntDesign";
+// import Icon from "@expo/vector-icons/Ionicons";
+import FIcon from "@expo/vector-icons/Feather";
+import MIcon from "@expo/vector-icons/MaterialIcons"
 import styles from "./styles";
-import Friend from "./Friend";
+import { selectUser } from "../../redux/reducers/userSlice";
 
-const Friends = () => {
+const Friends = ({navigation}) => {
+  const { colors } = useTheme();
+  const user = useSelector(selectUser);
+
   return (
-    <View style={styles.container}>
-      <View style={styles.friendsWrapper}>
-        {/* <Text style={styles.title}>Friends List</Text> */}
-        <View style={styles.items}>
-          <Friend text={"Hoang Anh"} />
-          <Friend text={"Bao Han"} />
-          <Friend text={"Hula"} />
-          <Friend text={"Minh Anh"} />
-          <Friend text={"Ai Quynh"} />
-        </View>
-      </View>
+    <View>
+      <Stack
+      backgroundColor={colors.background}
+      h="100%"
+      w="100%"
+      items="center"
+      paddingTop={35}
+      >
+
+          <Flex w="70%" style={styles.searchHolder} direction="row">
+            <AIcon name="search1" style={styles.iconImg} color='B4BABC'/>
+            <TextInput
+              style={styles.searchInput}
+              placeholder='Search friends'
+              color='#B4BABC'
+            />
+            <IconButton
+            icon={props => <AIcon name="adduser" {...props} style={styles.iconImg} color='B4BABC' />}
+            onPress={() => navigation.navigate("AddFriends")}
+            />
+
+          </Flex>
+
+      </Stack>
     </View>
+
   );
 };
 
 export default Friends;
+

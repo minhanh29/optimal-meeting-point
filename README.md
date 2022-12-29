@@ -46,3 +46,16 @@ git pull origin main
 git push origin [your_brand_name]
 ```
 6. Go to GitHub and create a **pull request** to the **main** branch
+
+## Setup Goong Map
+1. Follow this one https://github.com/rnmapbox/maps/blob/main/plugin/install.md  
+2. Install JDK 11 https://www.oracle.com/java/technologies/javase/jdk11-archive-downloads.html  
+3. Set **ANDROID_HOME** variable
+```
+ANDROID_HOME=C:\Users\<username>\AppData\Local\Android\Sdk
+PATH=%ANDROID_HOME%\tools;%ANDROID_HOME%\platform-tools
+```
+4. Generate native android code
+```
+npx expo run:android
+```
