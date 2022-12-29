@@ -13,16 +13,51 @@ import styles from "./styles";
 import { selectUser } from '../../redux/reducers/userSlice';
 import { useState } from "react";
 import { addFriendAsync } from "../../redux/reducers/userSlice";
+import { async } from "@firebase/util";
 
 const AddFriends = ({navigation}) => {
 
     const {colors} = useTheme();
     const [userList, setUserList] = useState([]);
+    const [friendList , setFriendList] = useState([]);
+    const [requestList, setRequestList] = useState([]);
     const [selectedIndex, setSelectedIndex] = useState([]);
     const user = useSelector(selectUser);
     const [avatar, setAvatar] = useState(null);
     const dispatch = useDispatch()
 
+
+    const fetchFriendInfo = async () => {
+        try {
+            const querySnapshot = await getDocs(collection(db, "friend"));
+            const result = []
+            querySnapshot.forEach(doc => {
+                result.push({
+                    id: doc.id,
+                    ...doc.data()
+                })
+            })
+            setFriendList(result)
+        } catch (e) {
+            console.log(e)
+        }
+    }
+
+    const fetchRequestInfo = async () => {
+        try {
+            const querySnapshot = await getDocs(collection(db, "friend_request"));
+            const result = []
+            querySnapshot.forEach(doc => {
+                result.push({
+                    id: doc.id,
+                    ...doc.data()
+                })
+            })
+            setRequestList(result)
+        } catch (e) {
+            console.log(e)
+        }
+    }
 
     const fetchUserInfo = async () => {
         try {
@@ -41,6 +76,22 @@ const AddFriends = ({navigation}) => {
             // setUsername(data.username)
             setAvatar(data.ava_url)
             setUserList(result)
+            setUserList(temp => {
+                for (let i = 0; i<= userList.length; i++) {
+                    if (user.user.id == friendList[i].person1_id || user.user.id == requestList[i].sender_id) {
+                        const isIncludeFriend = userList.includes(friendList[i].person2_id)
+                        const isIncludeRequest = userList.includes(requestList[i].receiver_id)
+                        if (isIncludeFriend || isIncludeRequest) {
+                            return userList.filter(item => item !== friendList[i].person2_id &&
+                                 item !== user.user.id && item !== requestList[i].receiver_id)
+                        } else {
+                            return [...temp]
+                        }
+                    } else {
+                        continue
+                    }
+                }
+            })
         } catch (e) {
             console.log(e)
         }
@@ -48,10 +99,13 @@ const AddFriends = ({navigation}) => {
 
     useEffect(() => {
         fetchUserInfo();
+        fetchFriendInfo();
+        fetchRequestInfo();
     }, []);
 
     const handleAdd = (receiver, index) => {
-        
+        user = useSelector(selectUser)
+
         setSelectedIndex(prev => {
             const isInclude = selectedIndex.includes(index)
             if (isInclude) {
@@ -75,9 +129,6 @@ const AddFriends = ({navigation}) => {
         }
     }
 
-    // const sendRequest = async () => {
-        
-    // }
 
     return (
         <View>
