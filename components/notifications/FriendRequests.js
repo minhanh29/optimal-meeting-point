@@ -34,7 +34,7 @@ const FriendRequests = () => {
 
 	useEffect(() => {
 		if (user.id !== "") {
-			onSnapshot(query(collection(db, "friend_request"), where("reciever_id", "==", user.id), where("status", "==", STATUS_PENDING)), (snapshot) => {
+			onSnapshot(query(collection(db, "friend_request"), where("receiver_id", "==", user.id), where("status", "==", STATUS_PENDING)), (snapshot) => {
 				const refList = snapshot.docs.map(doc => ({
 					...doc.data(),
 					id: doc.id
@@ -52,6 +52,7 @@ const FriendRequests = () => {
 			const userData = await fetchUserData(refList)
 			for (let i = 0; i < refList.length; i++) {
 				let sData = userData[refList[i].sender_id]
+				
 				result.push({
 					id: refList[i].id,
 					senderName: sData.name,
@@ -69,6 +70,7 @@ const FriendRequests = () => {
 
 	const fetchUserData = async (refList) => {
 		const userData = {...userDict}
+		
 		for (let i=0; i<refList.length; i++) {
 			try {
 				let id = refList[i].sender_id
@@ -83,6 +85,7 @@ const FriendRequests = () => {
 			}
 		}
 		setUserDict(userData)
+
 		return userData
 	}
 
@@ -113,6 +116,7 @@ const FriendRequests = () => {
 		let dataClone = data.map(item => ({
 			id: item.id
 		}))
+
 		for (let i = 0; i<checkedBoxes.length; i++) {
 			try {
 				//update request status
@@ -149,6 +153,7 @@ const FriendRequests = () => {
 			)
 		}
 	}
+	console.log(data)
 	return (
 		<Stack h="100%" overflow="visible">
 			<Stack w="100%" spacing={10} marginTop={20} justify="between">
