@@ -38,6 +38,7 @@ const AddFriends = ({navigation}) => {
                 })
             })
             setFriendList(result)
+            console
         } catch (e) {
             console.log(e)
         }
@@ -78,12 +79,12 @@ const AddFriends = ({navigation}) => {
             setUserList(result)
             setUserList(temp => {
                 for (let i = 0; i<= userList.length; i++) {
-                    if (user.user.id == friendList[i].person1_id || user.user.id == requestList[i].sender_id) {
-                        const isIncludeFriend = userList.includes(friendList[i].person2_id)
-                        const isIncludeRequest = userList.includes(requestList[i].receiver_id)
+                    if (user.user.id == friendList.id[i].person1_id || user.user.id == requestList.id[i].sender_id) {
+                        const isIncludeFriend = userList.includes(friendList.id[i].person2_id)
+                        const isIncludeRequest = userList.includes(requestList.id[i].receiver_id)
                         if (isIncludeFriend || isIncludeRequest) {
-                            return userList.filter(item => item !== friendList[i].person2_id &&
-                                 item !== user.user.id && item !== requestList[i].receiver_id)
+                            return userList.filter(item => item !== friendList.id[i].person2_id &&
+                                 item !== user.user.id && item !== requestList.id[i].receiver_id)
                         } else {
                             return [...temp]
                         }
