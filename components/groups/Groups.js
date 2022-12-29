@@ -1,84 +1,32 @@
-import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native'
-import { Avatar, Box, Stack, Switch, Flex, Spacer, IconButton } from "@react-native-material/core";
+import { Text, View, TouchableOpacity, Platform } from 'react-native'
+import { Stack, Flex, Spacer, IconButton } from "@react-native-material/core";
 import React, { useEffect } from 'react'
 import { useTheme } from '@react-navigation/native';
-import AIcon from "@expo/vector-icons/AntDesign";
 import Icon from "@expo/vector-icons/Ionicons";
-import FIcon from "@expo/vector-icons/Feather";
 import MIcon from "@expo/vector-icons/MaterialIcons"
 import styles from "./styles"
-import { collection, getDocs, onSnapshot, query, where } from "firebase/firestore";
-import { db, getGroupName } from "../../firebaseConfig"
 import { useDispatch, useSelector } from 'react-redux';
 import { selectUser } from '../../redux/reducers/userSlice';
-import { useState } from 'react';
-import { deleteGroupAsync, selectGroup, changeEnterGroup } from '../../redux/reducers/groupSlice';
-import { InstantSearch } from "react-instantsearch-native";
+import { deleteGroupAsync, changeEnterGroup } from '../../redux/reducers/groupSlice';
+import { InstantSearch, connectRefinementList, connectHits } from "react-instantsearch-native";
 import { searchClient } from "../../App";
 import SearchBox from "../search/SearchBox";
-import InfiniteHits from "../search/InfiniteHits";
 
-const Groups = ({ navigation }) => {
+const GroupFilter = connectRefinementList(({ items, refine, user_id }) => {
+
+	console.log("User ID", user_id)
+	useEffect( () => {
+		refine(user_id)
+	}, [user_id]);
+
+	return <View></View>
+})
+
+const GroupHits = connectHits(({hits, navigation}) => {
   const { colors } = useTheme();
-  const user = useSelector(selectUser)
-  const [dataList, setDataList] = useState([])
-  const [groupNameMap, setGroupNameMap] = useState({})
   const dispatch = useDispatch()
-  const group = useSelector(selectGroup);
-  console.log("Data", dataList)
+	console.log("Hits", hits)
 
-  // const index = algoliaClient.initIndex("group");
-  // index.setSettings({
-  //   attributesForFaceting: [
-  //     'user_id',
-  //     'filterOnly(' + user.user.id + ")"
-  //   ]
-  // }).then(() => {
-  //   // done
-  // });
-
-
-  //Cannot see the group name after creating group
-  const fetchGroupName = async (refList) => {
-    const groupDict = {...groupNameMap}
-    const groups = []
-    try {
-      for(let i = 0; i< refList.length; i++){
-        let data = refList[i]
-        if(data.group_id in groupDict){
-          groups.push(groupDict[data.group_id])
-          continue
-
-        }
-        const res = await getGroupName(data.group_id)
-
-          groupDict[res.id] = {
-            id: data.id,
-			group_id: data.group_id,
-            ...res.data()
-          }
-          groups.push(groupDict[data.group_id])
-      }
-
-	}catch (e) {
-		console.log(e.message)
-	}
-    setDataList(groups)
-    setGroupNameMap(groupDict)
-  }
-
-	useEffect(
-		() => onSnapshot(query(collection(db, "groupNuser"), where("user_id", "==", user.user.id)), (snapshot) => {
-			// Update to Redux
-			const refList = snapshot.docs.map((doc) => ({...doc.data(), id: doc.id}))
-			fetchGroupName(refList)
-		}
-		),
-		[]
-	);
-
-
-  //Left the group
   const handleDelete = (group_id) => {
     console.log("ID",group_id)
     dispatch(deleteGroupAsync(group_id))
@@ -93,10 +41,15 @@ const Groups = ({ navigation }) => {
 		navigation.navigate("Dashboard")
 	}
 
-  return (
-    <InstantSearch searchClient={searchClient} indexName="group">
+	const dataList = hits.map(item => ({
+		id: item.objectID,
+		group_id: item.group_id,
+		group_name: item.group_name,
+		user_id: item.user_id,
+	}))
 
-    <View>
+
+  return (
       <Stack
         backgroundColor={colors.background}
         h="100%"
@@ -104,10 +57,6 @@ const Groups = ({ navigation }) => {
         items="center"
         paddingTop={35}
       >
-            <SearchBox searchBoxName= "Search group" />
-            {/* {showHits ? <InfiniteHits/> : null} */}
-            <InfiniteHits/>
-
         <Stack w='80%' spacing={20} marginTop={20}>
           {dataList.map((data, index) => {
             return (
@@ -163,8 +112,21 @@ const Groups = ({ navigation }) => {
           </View>
         </Stack>
       </Stack>
+
+  )
+})
+
+const Groups = ({ navigation }) => {
+  const user = useSelector(selectUser)
+
+  return (
+    <View>
+		<InstantSearch searchClient={searchClient} indexName="group">
+            <SearchBox searchBoxName= "Search group" />
+			<GroupFilter user_id={user.user.id} attribute="user_id"/>
+			<GroupHits navigation={navigation} />
+		</InstantSearch>
     </View>
-    </InstantSearch>
 
   )
 }

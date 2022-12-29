@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import { StyleSheet, Text, FlatList, View} from 'react-native';
 import { Avatar, Stack, Box, Flex } from '@react-native-material/core';
 import PropTypes from 'prop-types';
@@ -8,7 +8,9 @@ import Icon from "@expo/vector-icons/Ionicons";
 
 
 const InfiniteHits = ({hits, hasMore, refineNext}) => {
-    console.log("hits", hits)
+
+	console.log("Hits", hits)
+
     return (
         <View>
 

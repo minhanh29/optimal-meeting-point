@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from "react";
-import { View, Image, Alert } from "react-native";
+import { View, Image, Alert, Platform } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import MapView, { Marker, Callout } from "react-native-maps";
 import Svg from "react-native-svg";
