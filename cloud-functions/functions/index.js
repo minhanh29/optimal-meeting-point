@@ -10,7 +10,7 @@ const db = admin.firestore();
 
 // Set up Algolia.
 const algoliaClient = algoliasearch(functions.config().algolia.appid, functions.config().algolia.apikey);
-const collectionIndex = algoliaClient.initIndex("group");
+const collectionIndex = algoliaClient.initIndex("friends");
 
 
 async function saveDocumentInAlgolia(record) {

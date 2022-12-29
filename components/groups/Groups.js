@@ -1,172 +1,122 @@
-import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native'
-import { Avatar, Box, Stack, Switch, Flex, Spacer, IconButton } from "@react-native-material/core";
+import { Text, View, TouchableOpacity, Platform, FlatList } from 'react-native'
+import { Stack, Flex, Spacer, IconButton } from "@react-native-material/core";
 import React, { useEffect } from 'react'
 import { useTheme } from '@react-navigation/native';
-import AIcon from "@expo/vector-icons/AntDesign";
 import Icon from "@expo/vector-icons/Ionicons";
-import FIcon from "@expo/vector-icons/Feather";
 import MIcon from "@expo/vector-icons/MaterialIcons"
 import styles from "./styles"
-import { collection, getDocs, onSnapshot, query, where } from "firebase/firestore";
-import { db, getGroupName } from "../../firebaseConfig"
 import { useDispatch, useSelector } from 'react-redux';
 import { selectUser } from '../../redux/reducers/userSlice';
-import { useState } from 'react';
-import { deleteGroupAsync, selectGroup, changeEnterGroup } from '../../redux/reducers/groupSlice';
-import { InstantSearch } from "react-instantsearch-native";
+import { deleteGroupAsync, changeEnterGroup } from '../../redux/reducers/groupSlice';
+import { InstantSearch, connectRefinementList, connectHits } from "react-instantsearch-native";
 import { searchClient } from "../../App";
 import SearchBox from "../search/SearchBox";
-import GroupHits from './GroupHits';
 
-const Groups = ({ navigation }) => {
+const GroupFilter = connectRefinementList(({ items, refine, user_id }) => {
+
+console.log("User ID", user_id)
+useEffect( () => {
+  refine(user_id)
+}, [user_id]);
+
+return <View></View>
+})
+
+const GroupHits = connectHits(({hits, navigation}) => {
   const { colors } = useTheme();
-  const user = useSelector(selectUser)
-  const [dataList, setDataList] = useState([])
-  const [groupNameMap, setGroupNameMap] = useState({})
   const dispatch = useDispatch()
-  const group = useSelector(selectGroup);
-  console.log("Data", dataList)
+  console.log("Hits", hits)
 
-  // const index = algoliaClient.initIndex("group");
-  // index.setSettings({
-  //   attributesForFaceting: [
-  //     'user_id',
-  //     'filterOnly(' + user.user.id + ")"
-  //   ]
-  // }).then(() => {
-  //   // done
-  // });
-
-
-  //Cannot see the group name after creating group
-  const fetchGroupName = async (refList) => {
-    const groupDict = {...groupNameMap}
-    const groups = []
-    try {
-      for(let i = 0; i< refList.length; i++){
-        let data = refList[i]
-        if(data.group_id in groupDict){
-          groups.push(groupDict[data.group_id])
-          continue
-
-        }
-        const res = await getGroupName(data.group_id)
-
-          groupDict[res.id] = {
-            id: data.id,
-			group_id: data.group_id,
-            ...res.data()
-          }
-          groups.push(groupDict[data.group_id])
-      }
-
-	}catch (e) {
-		console.log(e.message)
-	}
-    setDataList(groups)
-    setGroupNameMap(groupDict)
-  }
-
-	useEffect(
-		() => onSnapshot(query(collection(db, "groupNuser"), where("user_id", "==", user.user.id)), (snapshot) => {
-			// Update to Redux
-			const refList = snapshot.docs.map((doc) => ({...doc.data(), id: doc.id}))
-			fetchGroupName(refList)
-		}
-		),
-		[]
-	);
-
-
-  //Left the group
   const handleDelete = (group_id) => {
     console.log("ID",group_id)
     dispatch(deleteGroupAsync(group_id))
+  navigation.navigate("Dashboard")
+}
+  const handleEnter = (id) => {
+    console.log("Enter", id)
+    dispatch(changeEnterGroup({
+      enterGroup: true,
+      groupId: id
+    }))
+    navigation.navigate("Dashboard")
   }
 
-	const handleEnter = (id) => {
-		console.log("Enter", id)
-		dispatch(changeEnterGroup({
-			enterGroup: true,
-			groupId: id
-		}))
-		navigation.navigate("Dashboard")
-	}
+const dataList = hits.map(item => ({
+  id: item.objectID,
+  group_id: item.group_id,
+  group_name: item.group_name,
+  user_id: item.user_id,
+}))
+
 
   return (
-    <InstantSearch searchClient={searchClient} indexName="group">
-
-    <View>
       <Stack
         backgroundColor={colors.background}
         h="100%"
         w="100%"
         items="center"
-        paddingTop={35}
+        paddingTop={20}
       >
-        <Stack w='80%' spacing={20} marginTop={20}>
-        <SearchBox searchBoxName= "Search group" />
-            {/* {showHits ? <InfiniteHits/> : null} */}
-            <GroupHits/>
-          {/* {dataList.map((data, index) => {
-            return (
-              <TouchableOpacity
-                elevation={4}
-                backgroundColor="white"
-                style={styles.groupCardContainer}
-                w='100%'
-                key={index}
-				onPress={() => handleEnter(data.group_id)}
+         <FlatList
+        style={styles.listContainer}
+        data={dataList}
+        height={0}
+        keyExtractor={item => item.objectID}
+        renderItem = {({item}) => (
+        <Stack w='100%' spacing={20} mb={10}>
+          <TouchableOpacity
+            elevation={4}
+            backgroundColor="white"
+            style={styles.groupCardContainer}
+            w='100%'
+            onPress={() => handleEnter(item.group_id)}
+          >
+            <Flex
+              w="100%"
+              items="center"
+              direction="row"
+            >
+              <Stack
+                style={{ marginLeft: 17 }}
+                spacing={5}
+                w="70%"
               >
-                <Flex
-                  w="100%"
-                  items="center"
-                  direction="row"
-                >
-                  <Stack
-                    style={{ marginLeft: 17 }}
-                    spacing={5}
-                    w="70%"
-                  >
-                    <Text style={styles.cardHeader} >
-                      {data.group_name}
-                    </Text>
-                    <Text style={styles.infoContent} >
-                      3 members
-                    </Text>
-                  </Stack>
+                <Text style={styles.cardHeader} >
+                  {item.group_name}
+                </Text>
+                <Text style={styles.infoContent} >
+                  3 members
+                </Text>
+              </Stack>
 
-                  <IconButton
-                    icon={props => <Icon name={'exit-outline'} {...props} />}
-                    color="#EE6548"
-                    style={{ alignSelf: "center", padding: 20, backgroundColor: 'transparent', borderRadius: 10, color: '#9ACDD0', marginRight: 20 }}
-                    onPress={() => handleDelete(data.id)}
-                  />
-                </Flex>
-              </TouchableOpacity>
-            )
-          })} */}
-        </Stack>
-        <Spacer />
-        <Stack w='80%' items="center">
-          <View style={styles.bottomContainer}>
-            <View style={{ ...styles.shadowBtn, shadowOpacity: Platform.OS == "ios" ? 0.23 : 0.5 }}>
               <IconButton
-                style={{ alignSelf: "center", overflow: 'hidden', padding: 25, backgroundColor: 'white', borderRadius: 10, marginBottom: 16, }}
-                icon={props => <MIcon name="group-add" {...props} />}
-                color="#9CC7CA"
-                onPress={() => navigation.navigate("CreateGroup")}
-              >
-              </IconButton>
-            </View>
-          </View>
+                icon={props => <Icon name={'exit-outline'} {...props} />}
+                color="#EE6548"
+                style={{ alignSelf: "center", padding: 20, backgroundColor: 'transparent', borderRadius: 10, color: '#9ACDD0', marginRight: 20 }}
+                onPress={() => handleDelete(item.id)}
+              />
+            </Flex>
+          </TouchableOpacity>
+            )
         </Stack>
+        )}/>
       </Stack>
+  )
+})
+
+const Groups = ({ navigation }) => {
+  const user = useSelector(selectUser)
+
+  return (
+    <View>
+  <InstantSearch searchClient={searchClient} indexName="group">
+            <SearchBox searchBoxName= "Search group" />
+    <GroupFilter user_id={user.user.id} attribute="user_id"/>
+    <GroupHits navigation={navigation} />
+  </InstantSearch>
     </View>
-    </InstantSearch>
 
   )
 }
 
-export default Groups
-
+export default Groups;
