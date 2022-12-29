@@ -105,7 +105,7 @@ const AddFriends = ({navigation}) => {
 
     const handleAdd = (receiver, index) => {
         user = useSelector(selectUser)
-
+        
         setSelectedIndex(prev => {
             const isInclude = selectedIndex.includes(index)
             if (isInclude) {
@@ -129,6 +129,9 @@ const AddFriends = ({navigation}) => {
         }
     }
 
+    // const sendRequest = async () => {
+        
+    // }
 
     return (
         <View>
