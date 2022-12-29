@@ -1,0 +1,2 @@
+export const MAPBOX_PUBLIC_KEY= "pk.eyJ1Ijoib21wcm1pdCIsImEiOiJjbGM0amFtYjIwZWU3M3ZybzlnYTh4aDJ2In0.eqGfah7gCQxT31ZylFQ6nA"
+

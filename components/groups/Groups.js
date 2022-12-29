@@ -37,10 +37,13 @@ const Groups = ({ navigation }) => {
 
         }
         const res = await getGroupName(data.group_id)
+		// count group members
+		const memData = await getDocs(query(collection(db, "groupNuser"), where("group_id", "==", data.group_id)))
 
         groupDict[res.id] = {
           id: data.id,
           group_id: data.group_id,
+			count: memData.docs.length,
           ...res.data()
         }
         groups.push(groupDict[data.group_id])
@@ -157,7 +160,7 @@ const Groups = ({ navigation }) => {
                       {data.group_name}
                     </Text>
                     <Text style={styles.infoContent} >
-                      3 members
+						{data.count} {data.count == 1 ? "member": "members"}
                     </Text>
                   </Stack>
 
