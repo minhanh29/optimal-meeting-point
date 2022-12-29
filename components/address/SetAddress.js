@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, TextInput } from 'react-native'
+import { View, Text, TouchableOpacity, TextInput, ScrollView } from 'react-native'
 import styles from './styles'
 import React from 'react'
 import { useState, useEffect } from 'react'
@@ -8,19 +8,76 @@ import { Box, Flex, HStack, IconButton, Stack, VStack } from '@react-native-mate
 import { useRef } from 'react'
 import Icon from "@expo/vector-icons/Ionicons";
 import FIcon from "@expo/vector-icons/Feather";
+import AIcon from "@expo/vector-icons/AntDesign";
 import Config from "react-native-config";
 import { getAddressFromGeopoint, getGeoCodeFromAddress } from '../common/Utils'
+import { GOONG_PUBLIC_KEY } from '../../key';
+
 
 
 const SetAddress = ({ navigation }) => {
   const { colors } = useTheme();
-  const [addressText, setAddressText] = useState({})
-  const [searchInput, setSearchInput] = useState("")
-  console.log("Search Input", searchInput)
+
+  // const [searchInput, setSearchInput] = useState("")
+  const [suggestionList, setSuggestionList] = useState([])
+  const [timeInput, setTimeInput] = useState(0)
+  const [defaultValue, setDefaultValue] = useState("")
+  const [geoLocation, setGeoLocation] = useState(null)
+  console.log("GEO", geoLocation)
 
 
+  const fetchData = async (data) => {
+    setDefaultValue(data)
+    console.log("Data", data)
+    if (timeInput) {
+      setTimeInput(clearTimeout(timeInput))
+    }
+    if (data.trim() == "") {
+      setSuggestionList([])
 
-  // console.log("KEY", Config.GOOGLE_MAPS_API_KEY)
+      return
+    }
+    setTimeInput(setTimeout(async () => {
+      try {
+
+
+        let suggestion_list = []
+        let url = "https://rsapi.goong.io/Place/AutoComplete?api_key=" + GOONG_PUBLIC_KEY + "&input=" + data;
+        let res = await fetch(url)
+        res = await res.json()
+        if (res == null) {
+          setSuggestionList([])
+          return
+        }
+        res.predictions.map((location) => {
+          const location_details = {
+            place_id: location.place_id,
+            description: location.description
+          }
+          suggestion_list.push(location_details)
+        })
+        setSuggestionList(suggestion_list)
+      } catch (e) {
+        console.log(e.message)
+      }
+    }, 300))
+  }
+
+  //Geocode
+  const updateInput = async(content) => {
+    setDefaultValue(content.description)
+    try {
+      let url = "https://rsapi.goong.io/Place/Detail?place_id=" + content.place_id + "&api_key=" + GOONG_PUBLIC_KEY
+      let res = await fetch(url)
+      res = await res.json()
+      setGeoLocation({
+        address: res.result.geometry.location,
+        location: content.description
+      })
+    } catch (e) {
+      console.log(e.message)
+    }
+  }
 
   return (
     <Stack
@@ -30,55 +87,50 @@ const SetAddress = ({ navigation }) => {
       items="center"
       paddingTop={35}
     >
-      <Stack w="80%" items="start">
-        <TextInput
-          style={styles.textInput}
-          placeholder='Your group name (optional)'
-          color='#B4BABC'
-          onChangeText={(newText) => setSearchInput(newText)}
-        />
-      </Stack>
-      {/* <View style={{ ...styles.searchContainer, marginTop: Platform.OS == "ios" ? 27 : 18 }}>
-        <GooglePlacesAutocomplete
-          placeholder='Search Location'
-          keepResultsAfterBlur={true}
-          onPress={(data, details) => {
-            setAddressText({
-              location: details.geometry.location,
-              address: details.formatted_address,
-            })
-          }}
+      <Stack w="90%" items="start">
+        <HStack direction='row' w='100%' spacing={20} style={{ ...styles.searchHolder, marginTop: Platform.OS == "ios" ? 15 : 20 }}>
+          <AIcon name="search1" size={24} style={styles.iconImg} color='B4BABC' />
+          <TextInput
+            style={styles.searchInput}
+            placeholder='Search Location'
+            color='#B4BABC'
+            onChangeText={(newText) => fetchData(newText)}
+            value={defaultValue}
+          />
+        </HStack>
+        {suggestionList.length != 0 ?
+          <ScrollView style={{ ...styles.listContainer }}>
+            <Stack w='100%' spacing={30} backgroundColor='white' padding={20}>
+              {suggestionList.map((item, index) => {
+                return (
+                  <TouchableOpacity
+                    elevation={3}
+                    backgroundColor="white"
+                    onPress={() => updateInput(item)}
+                    w='100%'
+                    key={index}
+                  >
+                    <HStack
+                      w="100%"
+                      items="center"
+                      spacing={10}
+                    >
+                      <Box style={styles.iconContainer}>
+                        <Icon name="location-sharp" size={24} style={styles.iconStyle} />
+                      </Box>
+                      <Text style={styles.locationContent} >
+                        {item.description}
+                      </Text>
+                    </HStack>
+                  </TouchableOpacity>
+                )
+              })}
+            </Stack>
+          </ScrollView>
+          : <Stack></Stack>
+        }
 
-          fetchDetails={true}
-          // GooglePlacesDetailsQuery={{
-          //   fields: ['formatted_address', 'geometry'],
-          // }}
-          renderRow={(rowData) => {
-            const title = rowData.structured_formatting.main_text;
-            const address = rowData.structured_formatting.secondary_text
-            return (
-              <View style={styles.dropDownList}>
-                <HStack width='100%' spacing={20}>
-                  <Box style={styles.iconContainer}>
-                    <Icon name="location-sharp" size={24} style={styles.iconStyle} />
-                  </Box>
-                  <VStack style={styles.textContainer}>
-                    <Text style={styles.titleText}>{title}</Text>
-                    <Text style={styles.locationAddress}>{address}</Text>
-                  </VStack>
-                </HStack>
-              </View>
-            )
-          }}
-          query={{
-            // key: Config.GOOGLE_MAPS_API_KEY,
-            key: GOOGLE_MAPS_API_KEY,
-            language: 'en',
-            components: 'country:vn'  // Limit to only Vietnam
-          }}
-          enablePoweredByContainer={false}
-        />
-      </View> */}
+      </Stack>
       <View style={styles.bottomContainer}>
         <TouchableOpacity
           style={{
@@ -107,3 +159,4 @@ const SetAddress = ({ navigation }) => {
 }
 
 export default SetAddress
+

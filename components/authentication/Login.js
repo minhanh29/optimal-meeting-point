@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import {StyleSheet, Text, View, Image, TextInput, TouchableOpacity, Alert} from "react-native";
 import { Feather } from '@expo/vector-icons';
 import { Flex } from "@react-native-material/core";
-import logo from "./../../images/logo.png"
+// import logo from "./../../images/logo.png"
 import { logInAsync, selectUser, changeStatus, USER_LOGIN_FAILED, USER_LOGIN_PENDING, USER_LOGIN_SUCCESS, USER_IDLE } from "../../redux/reducers/userSlice";
 import { useDispatch, useSelector } from "react-redux";
 import Spinner from 'react-native-loading-spinner-overlay';
@@ -52,7 +52,7 @@ const Login = ({ navigation }) => {
 			textStyle={{color: "white"}}
 			cancelable={true}
 		/>
-		<Image style={styles.image} source={logo} />
+		<Image style={styles.image} source={{ uri: "https://firebasestorage.googleapis.com/v0/b/optimal-meeting-point.appspot.com/o/logo.png?alt=media&token=be4d379b-2075-4f89-af92-0ab134a593a5" }} />
 		<Text style={styles.appName}>OMP</Text>
 
 		<StatusBar style="auto" />

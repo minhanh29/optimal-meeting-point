@@ -24,7 +24,7 @@ const Groups = ({ navigation }) => {
   const group = useSelector(selectGroup);
   console.log("Data", dataList);
 
-  //Cannot see the group name after creating group
+
   const fetchGroupName = async (refList) => {
     const groupDict = { ...groupNameMap }
     const groups = []
@@ -36,11 +36,14 @@ const Groups = ({ navigation }) => {
           continue
 
         }
-        const res = await getGroupName(data.group_id);
+        const res = await getGroupName(data.group_id)
+		// count group members
+		const memData = await getDocs(query(collection(db, "groupNuser"), where("group_id", "==", data.group_id)))
 
         groupDict[res.id] = {
           id: data.id,
           group_id: data.group_id,
+			count: memData.docs.length,
           ...res.data()
         }
         groups.push(groupDict[data.group_id])
@@ -142,10 +145,22 @@ const Groups = ({ navigation }) => {
                 key={index}
                 onPress={() => handleEnter(data.group_id)}
               >
-                <Flex w="100%" items="center" direction="row">
-                  <Stack style={{ marginLeft: 17 }} spacing={5} w="70%">
-                    <Text style={styles.cardHeader}>{data.group_name}</Text>
-                    <Text style={styles.infoContent}>3 members</Text>
+                <Flex
+                  w="100%"
+                  items="center"
+                  direction="row"
+                >
+                  <Stack
+                    style={{ marginLeft: 17 }}
+                    spacing={5}
+                    w="70%"
+                  >
+                    <Text style={styles.cardHeader} >
+                      {data.group_name}
+                    </Text>
+                    <Text style={styles.infoContent} >
+						{data.count} {data.count == 1 ? "member": "members"}
+                    </Text>
                   </Stack>
 
                   <IconButton

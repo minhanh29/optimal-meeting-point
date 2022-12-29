@@ -8,7 +8,7 @@ import React, {
 } from "react";
 import { View, Image, Alert } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import MapView, { Marker, Callout } from "react-native-maps";
+import MapView, { Marker, Callout, PROVIDER_GOOGLE } from "react-native-maps";
 import Svg from "react-native-svg";
 import { IconButton, Text } from "@react-native-material/core";
 import Icon from "@expo/vector-icons/Feather";
@@ -20,8 +20,9 @@ import mapStyleJson from "./../../mapStyle.json";
 import styles from "./styles";
 import { useSelector, useDispatch } from "react-redux";
 import { selectUser } from "../../redux/reducers/userSlice";
-import { selectGroup } from "../../redux/reducers/groupSlice";
-import { MAPBOX_PUBLIC_KEY } from "@env";
+import { selectGroup} from "../../redux/reducers/groupSlice";
+// import { MAPBOX_PUBLIC_KEY } from '@env';
+import { MAPBOX_PUBLIC_KEY } from '../../key';
 
 import { getGroupName } from "../../firebaseConfig";
 import BottomSheet from "reanimated-bottom-sheet";
