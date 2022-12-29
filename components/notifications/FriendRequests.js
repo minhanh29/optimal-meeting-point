@@ -39,6 +39,7 @@ const FriendRequests = () => {
 					...doc.data(),
 					id: doc.id
 				}))
+				
 				fetchData(refList)
 			})
 		} else {
@@ -129,10 +130,14 @@ const FriendRequests = () => {
 						if (dataClone[j].id !== checkedBoxes[i])
 						continue
 
-						//add friend
+						//add friend 1
 						await addDoc(collection(db, "friend"), {
 							person1_id: dataClone[j].id,
 							person2_id: user.id,
+						})
+						await addDoc(collection(db, "friend"), {
+							person1_id: user.id,
+							person2_id: dataClone[j].id,
 						})
 						break
 					}
@@ -153,12 +158,12 @@ const FriendRequests = () => {
 			)
 		}
 	}
-	console.log(data)
+	
 	return (
 		<Stack h="100%" overflow="visible">
 			<Stack w="100%" spacing={10} marginTop={20} justify="between">
 				<Spinner
-					visible={!loaded}
+					visible={!loaded || processing}
 					textContent={processing ? 'Processing...':'Loading...'}
 					textStyle={{color: "white"}}
 					cancelable={true}
