@@ -34,11 +34,12 @@ const FriendRequests = () => {
 
 	useEffect(() => {
 		if (user.id !== "") {
-			onSnapshot(query(collection(db, "friend_request"), where("reciever_id", "==", user.id), where("status", "==", STATUS_PENDING)), (snapshot) => {
+			onSnapshot(query(collection(db, "friend_request"), where("receiver_id", "==", user.id), where("status", "==", STATUS_PENDING)), (snapshot) => {
 				const refList = snapshot.docs.map(doc => ({
 					...doc.data(),
 					id: doc.id
 				}))
+				
 				fetchData(refList)
 			})
 		} else {
@@ -52,6 +53,7 @@ const FriendRequests = () => {
 			const userData = await fetchUserData(refList)
 			for (let i = 0; i < refList.length; i++) {
 				let sData = userData[refList[i].sender_id]
+				
 				result.push({
 					id: refList[i].id,
 					senderName: sData.name,
@@ -125,10 +127,14 @@ const FriendRequests = () => {
 						if (dataClone[j].id !== checkedBoxes[i])
 						continue
 
-						//add friend
+						//add friend 1
 						await addDoc(collection(db, "friend"), {
 							person1_id: dataClone[j].id,
 							person2_id: user.id,
+						})
+						await addDoc(collection(db, "friend"), {
+							person1_id: user.id,
+							person2_id: dataClone[j].id,
 						})
 						break
 					}
@@ -149,11 +155,12 @@ const FriendRequests = () => {
 			)
 		}
 	}
+	
 	return (
 		<Stack h="100%" overflow="visible">
 			<Stack w="100%" spacing={10} marginTop={20} justify="between">
 				<Spinner
-					visible={!loaded}
+					visible={!loaded || processing}
 					textContent={processing ? 'Processing...':'Loading...'}
 					textStyle={{color: "white"}}
 					cancelable={true}
