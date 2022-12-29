@@ -16,7 +16,7 @@ import { deleteGroupAsync, selectGroup, changeEnterGroup } from '../../redux/red
 import { InstantSearch } from "react-instantsearch-native";
 import { searchClient } from "../../App";
 import SearchBox from "../search/SearchBox";
-import InfiniteHits from "../search/InfiniteHits";
+import GroupHits from './GroupHits';
 
 const Groups = ({ navigation }) => {
   const { colors } = useTheme();
@@ -104,12 +104,11 @@ const Groups = ({ navigation }) => {
         items="center"
         paddingTop={35}
       >
-            <SearchBox searchBoxName= "Search group" />
-            {/* {showHits ? <InfiniteHits/> : null} */}
-            <InfiniteHits/>
-
         <Stack w='80%' spacing={20} marginTop={20}>
-          {dataList.map((data, index) => {
+        <SearchBox searchBoxName= "Search group" />
+            {/* {showHits ? <InfiniteHits/> : null} */}
+            <GroupHits/>
+          {/* {dataList.map((data, index) => {
             return (
               <TouchableOpacity
                 elevation={4}
@@ -146,7 +145,7 @@ const Groups = ({ navigation }) => {
                 </Flex>
               </TouchableOpacity>
             )
-          })}
+          })} */}
         </Stack>
         <Spacer />
         <Stack w='80%' items="center">

@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import { StyleSheet, Text, FlatList, View} from 'react-native';
 import { Avatar, Stack, Box, Flex } from '@react-native-material/core';
 import PropTypes from 'prop-types';
-import { connectHits } from 'react-instantsearch-native';
+import { connectInfiniteHits } from 'react-instantsearch-native';
 import Icon from "@expo/vector-icons/Ionicons";
 
 
@@ -10,49 +10,46 @@ import Icon from "@expo/vector-icons/Ionicons";
 const InfiniteHits = ({hits, hasMore, refineNext}) => {
     console.log("hits", hits)
     return (
-        <View>
-
-        </View>
-        // <FlatList
-        // style={styles.listContainer}
-        // data={hits}
-        // keyExtractor={item => item.objectID}
-        // onEndReached={() => hasMore && refineNext}
-        // renderItem = {({item}) => (
-        //     <Box w='100%' spacing={20}>
-        //         <Box
-        //             elevation={3}
-        //             backgroundColor="white"
-        //             style={styles.cardContainer}
-        //             w='80%'
-        //         >
-        //             <Flex
-        //                 w="100%"
-        //                 items="center"
-        //                 direction="row"
-        //             >
-        //                 <Avatar
-        //                     label={item.name}
-        //                     icon={props => <Icon name="account" {...props} />}
-        //                     image={item.ava_url ? { uri: item.ava_url } : null}
-        //                     imageStyle={{ borderRadius: 10 }}
-        //                 />
-        //                 <Stack
-        //                     style={{ marginLeft: 17 }}
-        //                     spacing={5}
-        //                     w="58%"
-        //                 >
-        //                     <Text style={styles.cardHeader}>
-        //                         {item.name}
-        //                     </Text>
-        //                     <Text style={styles.infoContent} >
-        //                         @{item.username}
-        //                     </Text>
-        //                 </Stack>
-        //             </Flex>
-        //         </Box>
-        //     </Box>
-        // )}/>
+        <FlatList
+        style={styles.listContainer}
+        data={hits}
+        keyExtractor={item => item.objectID}
+        onEndReached={() => hasMore && refineNext}
+        renderItem = {({item}) => (
+            <Box w='100%' spacing={20}>
+                <Box
+                    elevation={3}
+                    backgroundColor="white"
+                    style={styles.cardContainer}
+                    w='80%'
+                >
+                    <Flex
+                        w="100%"
+                        items="center"
+                        direction="row"
+                    >
+                        <Avatar
+                            label={item.name}
+                            icon={props => <Icon name="account" {...props} />}
+                            image={item.ava_url ? { uri: item.ava_url } : null}
+                            imageStyle={{ borderRadius: 10 }}
+                        />
+                        <Stack
+                            style={{ marginLeft: 17 }}
+                            spacing={5}
+                            w="58%"
+                        >
+                            <Text style={styles.cardHeader}>
+                                {item.name}
+                            </Text>
+                            <Text style={styles.infoContent} >
+                                @{item.username}
+                            </Text>
+                        </Stack>
+                    </Flex>
+                </Box>
+            </Box>
+        )}/>
     )
 }
 
@@ -98,4 +95,4 @@ const styles = StyleSheet.create({
 
 })
 
-export default connectHits(InfiniteHits);
+export default connectInfiniteHits(InfiniteHits);

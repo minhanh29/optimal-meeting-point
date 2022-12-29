@@ -10,7 +10,7 @@ const Friends = () => {
   // console.log(showHits)
   return (
     <View>
-		<InstantSearch searchClient={searchClient} indexName="username">
+		<InstantSearch searchClient={searchClient} indexName="user">
          <SearchBox searchBoxName= "Search friend" />
          {/* {showHits ? <InfiniteHits/> : null} */}
          <InfiniteHits/>
