@@ -11,7 +11,7 @@ import FIcon from "@expo/vector-icons/Feather";
 import AIcon from "@expo/vector-icons/AntDesign";
 import Config from "react-native-config";
 import { getAddressFromGeopoint, getGeoCodeFromAddress } from '../common/Utils'
-import { GOONG_PUBLIC_KEY } from '@env';
+import { GOONG_PUBLIC_KEY } from '../../key';
 
 
 
