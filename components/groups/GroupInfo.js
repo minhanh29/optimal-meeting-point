@@ -105,12 +105,12 @@ const GroupInfo = () => {
                                 items="center"
                                 direction="row"
                             >
-                                {/* <Avatar
+                                <Avatar
                                     label={"Hula"}
                                     icon={props => <Icon name="account" {...props} />}
-                                    image={avatar ? { uri: user.ava_url } : null}
+                                    image={avatar ? { uri: 'https://phunugioi.com/wp-content/uploads/2020/01/anh-avatar-supreme-dep-lam-dai-dien-facebook.jpg' } : null}
                                     imageStyle={{ borderRadius: 10 }}
-                                /> */}
+                                />
                                 <Stack
                                     style={{ marginLeft: 17 }}
                                     spacing={5}
@@ -125,13 +125,6 @@ const GroupInfo = () => {
                                         @hula30
                                     </Text>
                                 </Stack>
-
-                                <IconButton
-                                    icon={props => <FIcon name={'plus'} {...props} />}
-                                    color="black"
-                                    style={{ alignSelf: "center", padding: 20, backgroundColor: 'transparent', borderRadius: 10, color: '#9ACDD0', marginRight: 20 }}
-                                // onPress={() => handleAdd(user, index)}
-                                />
                             </Flex>
                         </Box>
                             {/* )
