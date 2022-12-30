@@ -73,14 +73,10 @@ const renderHeader = () => (
 const sheetRef = React.createRef();
 const fall = new Animated.Value(1);
 
-const PinOnMap = ({ navigation }) => {
-  const user = useSelector(selectUser);
-  const group = useSelector(selectGroup);
-  const dispatch = useDispatch();
-  const { colors } = useTheme();
-  const [marker, setMarker] = useState(null);
-  const [addressText, setAddressText] = useState(null);
-  console.log("AddressText", addressText);
+const PinOnMap = ({ route, navigation }) => {
+	const { setGeoLocation } = route.params;
+
+	const user = useSelector(selectUser)
 
   useEffect(() => {
     if (group.status === UPDATE_ADDRESS_REJECTED) {
@@ -193,6 +189,95 @@ const PinOnMap = ({ navigation }) => {
               </Svg>
             </View>
             {/* <Callout>
+	const updateGroupAddress = () => {
+		const newAddress = {
+			// location: addressText,
+			// address: new GeoPoint(marker.latitude, marker.longitude),
+			location: {
+				latitude: marker.latitude,
+				longitude: marker.longitude
+			},
+			address_text: addressText,
+		}
+
+		// const data = { groupId: group.groupId, newAddress }
+
+		// dispatch(updateAddressAsync(data));
+	}
+
+	const fetchData = async (data) => {
+		console.log("DATA", data)
+		const { latitude, longitude } = data
+		try {
+			let url = "https://rsapi.goong.io/Geocode?latlng=" + latitude + ",%20" + longitude + "&api_key=" + GOONG_PUBLIC_KEY
+			let res = await fetch(url)
+			res = await res.json()
+			setAddressText(res.results[0].formatted_address)
+		} catch (e) {
+
+		}
+	}
+
+
+
+
+	return (
+		<View style={styles.container}>
+			<Spinner
+				visible={group.status === UPDATE_ADDRESS_PENDING}
+				textContent={'Loading...'}
+				textStyle={{ color: "white" }}
+				cancelable={true}
+			/>
+			<StatusBar style="dark" backgroundColor="white" />
+			<MapView
+				style={styles.map}
+				initialRegion={initRegion}
+				customMapStyle={mapStyle}
+				provider={PROVIDER_GOOGLE}
+				onPress={(event) => {
+					setMarker(event.nativeEvent.coordinate)
+					fetchData(event.nativeEvent.coordinate)
+				}}
+			>
+				{marker &&
+					<Marker
+						coordinate={marker}
+
+					>
+
+						<View
+							style={{
+								flexDirection: "row",
+								backgroundColor: "#00bfff",
+								borderTopLeftRadius: 60,
+								borderTopRightRadius: 60,
+								borderBottomRightRadius: 0,
+								borderBottomLeftRadius: 60,
+								transform: [{ rotate: "45deg" }],
+								alignSelf: "flex-start",
+								height: 45,
+								width: 45
+							}}
+						>
+						<Svg width={40} height={30}>
+								<Image
+									source={{ uri: user.user.ava_url }}
+									width={40}
+									height={30}
+									style={{
+										height: 40,
+										width: 40,
+										transform: [{ rotate: "-45deg" }],
+										borderRadius: 90,
+										position: "absolute",
+										left: 1.5, // 1.5
+										bottom: -42 // -32
+									}}
+								/>
+							</Svg>
+						</View>
+						{/* <Callout>
 							<View
 								style={{
 									flexDirection: "column",

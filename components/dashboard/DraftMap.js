@@ -20,7 +20,10 @@ import mapStyleJson from "./../../mapStyle.json";
 import styles from "./styles";
 import { useSelector, useDispatch } from "react-redux";
 import { selectUser } from "../../redux/reducers/userSlice";
-import { selectGroup } from "../../redux/reducers/groupSlice";
+import {
+  selectGroup,
+  updateAddressAsync,
+} from "../../redux/reducers/groupSlice";
 // import { MAPBOX_PUBLIC_KEY } from '@env';
 import { MAPBOX_PUBLIC_KEY } from "../../key";
 
@@ -30,15 +33,17 @@ import Animated from "react-native-reanimated";
 import { TouchableOpacity } from "react-native-gesture-handler";
 const mapStyle = mapStyleJson["mapStyle"];
 
-import { db } from "../../firebaseConfig";
+import { db, updateAddress } from "../../firebaseConfig";
 import {
   onSnapshot,
   doc,
   getDocs,
+  getDoc,
   collection,
   query,
   where,
   documentId,
+  GeoPoint,
 } from "firebase/firestore";
 import { ref, onValue, push, update, remove } from "firebase/database";
 import { connectStorageEmulator } from "firebase/storage";
@@ -79,10 +84,10 @@ const myLocation = {
   longitude: 106.72191374093879,
 };
 
-const renderContent = ({ place }) => (
+const renderContent = () => (
   <View style={styles.panel}>
     <View>
-      <Text style={styles.panelTitle}>{place.placeName}Location's Name</Text>
+      <Text style={styles.panelTitle}>Location's Name</Text>
       <Text style={styles.panelSubtitle}>Location's Address</Text>
     </View>
     <TouchableOpacity style={styles.panelButton}>
@@ -297,7 +302,8 @@ const Dashboard = ({ navigation }) => {
   const [groupData, setGroupData] = useState(null);
   const [middlePoint, setMiddlePoint] = useState(null);
   const [suggestion, setSuggestion] = useState([]);
-  const [locationList, setLocationList] = useState(null);
+  const [locationList, setLocationList] = useState([]);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (group.enterGroup) {
@@ -384,6 +390,33 @@ const Dashboard = ({ navigation }) => {
       console.log(e.message);
     }
   };
+
+  console.log("User id", user.user.id);
+  const setGroupLocation = async (data) => {
+    if (!group.enterGroup) return;
+
+    try {
+      // get groupNuser doc id
+      const snapshot = await getDocs(
+        query(
+          collection(db, "groupNuser"),
+          where("user_id", "==", user.user.id)
+        )
+      );
+      console.log("GroupNuser", snapshot);
+      if (snapshot.docs.length == 0) return;
+      const myDoc = snapshot.docs[0];
+      console.log(data, myDoc.id);
+      await updateAddress(myDoc.id, {
+        group_address: new GeoPoint(
+          data.location.latitude,
+          data.location.longitude
+        ),
+      });
+    } catch (e) {
+      console.log(e.message);
+    }
+  };
   // console.log("User Info", user.user.address)
   return (
     <View style={styles.container}>
@@ -450,7 +483,6 @@ const Dashboard = ({ navigation }) => {
               <TouchableOpacity
                 onPress={() => {
                   sheetRef.current.snapTo(0);
-                  renderContent(place);
                 }}
               >
                 <Image
@@ -498,7 +530,8 @@ const Dashboard = ({ navigation }) => {
           >
             <IconButton
               icon={(props) => <Icon name="map-pin" {...props} />}
-              color="#EE6548"
+              color={group.enterGroup ? "#EE6548" : "#C2C2C2"}
+              disabled={!group.enterGroup}
               style={{
                 alignSelf: "center",
                 overflow: "hidden",
@@ -508,7 +541,11 @@ const Dashboard = ({ navigation }) => {
                 margin: 16,
                 ...styles.shadowBtn,
               }}
-              onPress={() => navigation.navigate("Address")}
+              onPress={() =>
+                navigation.navigate("Address", {
+                  setGeoLocation: setGroupLocation,
+                })
+              }
             />
           </View>
           <View
@@ -540,7 +577,8 @@ const Dashboard = ({ navigation }) => {
             <IconButton
               icon={(props) => <AIcon name="search1" {...props} />}
               // color="#C2C2C2"
-              color="#EE6548"
+              color={group.enterGroup ? "#EE6548" : "#C2C2C2"}
+              disabled={!group.enterGroup}
               style={{
                 alignSelf: "center",
                 padding: 25,
