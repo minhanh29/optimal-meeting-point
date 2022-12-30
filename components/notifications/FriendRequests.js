@@ -124,6 +124,7 @@ const FriendRequests = () => {
 		for (let i = 0; i<checkedBoxes.length; i++) {
 			try {
 				//update request status
+				console.log("========================= start")
 				await setDoc(doc(db, "friend_request", checkedBoxes[i]), {
 					status
 				}, {merge: true})
@@ -145,7 +146,8 @@ const FriendRequests = () => {
 						break
 					}
 				} else if (status === STATUS_REJECTED) {
-					handleDeleteRequest(dataClone.id)
+					console.log("test================")
+					handleDeleteRequest(checkedBoxes[i])
 				}
 			} catch (e) {
 				showErrorMessage(e.message)

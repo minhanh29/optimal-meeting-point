@@ -305,7 +305,6 @@ const userSlice = createSlice({
         })
         .addCase(addFriendAsync.fulfilled, (state,action) => {
             state.status= USER_ADD_SUCCESS
-            state.user = action.payload
         })
         .addCase(addFriendAsync.rejected, (state, action) => {
             state.status=USER_ADD_FAILED

@@ -62,12 +62,10 @@ const AddFriends = ({navigation}) => {
 
     useEffect(() => {
         fetchUserInfo();
-        // fetchFriendInfo();
-        // fetchRequestInfo();
     }, []);
 
     const handleAdd = (receiver, index) => {
-        // user = useSelector(selectUser)
+    
 
         setSelectedIndex(prev => {
             const isInclude = selectedIndex.includes(index)
@@ -90,6 +88,8 @@ const AddFriends = ({navigation}) => {
             console.log(e)
         }
     }
+
+    // const sendRequest = async
 
 
     return (
@@ -117,7 +117,7 @@ const AddFriends = ({navigation}) => {
 
                     <ScrollView style={styles.listContainer}>
                         <Stack w="100%" spacing={20} >
-                            {userList.map((user, index) => {
+                            {userList.map((item, index) => {
                                 return (
                                     <Box elevation ={3}
                                     backgroundColor="white"
@@ -131,9 +131,9 @@ const AddFriends = ({navigation}) => {
                                         direction="row"
                                         >
                                             <Avatar
-                                            label={user.name}
+                                            label={item.name}
                                             icon={props => <Icon name="account" {...props} />}
-                                            image={avatar ? {uri: user.ava_url} : null}
+                                            image={avatar ? {uri: item.ava_url} : null}
                                             imageStyle={{borderRadius: 10}}
                                             />
                                         <Stack
@@ -142,17 +142,17 @@ const AddFriends = ({navigation}) => {
                                         w="58%"
                                         >
                                             <Text style={styles.cardHeader}>
-                                                {user.name}
+                                                {item.name}
                                             </Text>
                                             <Text style={styles.infoContent}>
-                                                @{user.username}
+                                                @{item.username}
                                             </Text>
                                             </Stack>
                                             <IconButton
                                                 icon={props => <FIcon name={selectedIndex.includes(index) ? 'check' : 'plus'} {...props} />}
                                                 color = "black"
                                                 style={{alignSelf: "center", padding: 20, backgroundColor: 'transparent', borderRadius:10, color: '#9ACDD0', marginRight: 20}}
-                                                onPress={() => handleAdd(user, index)}
+                                                onPress={() => handleAdd(item, index)}
                                                 />
                                         </Flex>
                                     </Box>

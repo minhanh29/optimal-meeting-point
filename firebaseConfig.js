@@ -101,7 +101,7 @@ const createGroupInvitation = (group_id, sender_id, receiver_id) => {
 }
 
 const deleteRequest = (id) => {
-	return deleteDoc(collection(db, "friend_request", id))
+	return deleteDoc(doc(db, "friend_request", id))
 }
 
 const createFriendRequest = (sender_id, receiver_id) => {
