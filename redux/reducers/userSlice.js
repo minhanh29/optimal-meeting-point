@@ -8,7 +8,8 @@ import {
 	createUser,
 	signOut,
     getUserInfo,
-    createFriendRequest
+    createFriendRequest,
+    deleteRequest
 } from "../../firebaseConfig"
 import { EmailAuthProvider, reauthenticateWithCredential, updatePassword } from "firebase/auth";
 
@@ -31,9 +32,9 @@ export const USER_ADD_PENDING = 9
 export const USER_ADD_SUCCESS = 10
 export const USER_ADD_FAILED = 11
 
-export const USER_REQUEST_PENDING = 12
-export const USER_REQUEST_REJECTED = 13
-export const USER_REQUEST_ACCEPTED = 14
+export const REQUEST_DELETE_PENDING = 12
+export const REQUEST_DELETE_REJECTED = 13
+export const REQUEST_DELETE_SUCCESS = 14
 
 const authErrors = {
 	"auth/wrong-password": "The password is invalid or the user does not have a password.",
@@ -229,6 +230,11 @@ export const addFriendAsync = createAsyncThunk('user/addFriendAsync', async (dat
     }
 })
 
+export const deleteRequestAsync = createAsyncThunk('user/deleteRequestAsync', async (data) => {
+    await deleteRequest(data)
+    return data
+})
+
 const userSlice = createSlice({
     name: 'user',
     initialState,
@@ -304,6 +310,17 @@ const userSlice = createSlice({
         .addCase(addFriendAsync.rejected, (state, action) => {
             state.status=USER_ADD_FAILED
             console.log("ACTION", action)
+        })
+        .addCase(deleteRequestAsync.rejected, (state, action) => {
+            state.status = REQUEST_DELETE_REJECTED
+            console.log("ACTION", action)
+        })
+        .addCase(deleteRequestAsync.fulfilled, (state, action) => {
+            const id = action.payload
+            state.status=REQUEST_DELETE_SUCCESS
+        })
+        .addCase(deleteRequestAsync.pending, (state) => {
+            state.status = REQUEST_DELETE_PENDING
         })
     }
 })

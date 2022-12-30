@@ -26,49 +26,21 @@ const AddFriends = ({navigation}) => {
     const [avatar, setAvatar] = useState(null);
     const dispatch = useDispatch()
 
-    // const fetchFriendInfo = async () => {
-    //     try {
-    //         const querySnapshot = await getDocs(collection(db, "friend"));
-    //         const result = []
-    //         querySnapshot.forEach(doc => {
-    //             result.push({
-    //                 id: doc.id,
-    //                 ...doc.data()
-    //             })
-    //         })
-    //         setFriendList(result)
-    //     } catch (e) {
-    //         console.log(e)
-    //     }
-    // }
-
-    // const fetchRequestInfo = async () => {
-    //     try {
-    //         const querySnapshot = await getDocs(collection(db, "friend_request"));
-    //         const result = []
-    //         querySnapshot.forEach(doc => {
-    //             result.push({
-    //                 id: doc.id,
-    //                 ...doc.data()
-    //             })
-    //         })
-    //         setRequestList(result)
-    //     } catch (e) {
-    //         console.log(e)
-    //     }
-    // }
-
     const fetchUserInfo = async () => {
         try {
             const friendSnapshot = await getDocs(query(collection(db, "friend"), where("person1_id", "==", user.user.id)));
 			const friendSet = new Set(friendSnapshot.docs.map(doc => doc.data().person2_id))
-			console.log("Friend", friendSet)
+			// console.log("Friend", friendSet)
+
+            const requestSnapshot = await getDocs(query(collection(db, "friend_request"), where("sender_id", "==", user.user.id), where("status", "==", 0)));
+            const requestSet = new Set(requestSnapshot.docs.map(doc => doc.data().receiver_id))
+            // console.log("Request", requestSet)
 
             const querySnapshot = await getDocs(collection(db, "user"));
             const result = []
             querySnapshot.forEach(doc => {
 				console.log(doc.id, doc.data().name)
-                if (doc.id !== user.user.id && !friendSet.has(doc.id)) {
+                if (doc.id !== user.user.id && !friendSet.has(doc.id) && !requestSet.has(doc.id)) {
                     result.push({
                         id: doc.id,
                         ...doc.data()

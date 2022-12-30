@@ -100,10 +100,8 @@ const createGroupInvitation = (group_id, sender_id, receiver_id) => {
 	})
 }
 
-const createFriend = (person1_id, person2_id) => {
-	return addDoc(collection(db, "friend"), {
-		...data
-	})
+const deleteRequest = (id) => {
+	return deleteDoc(collection(db, "friend_request", id))
 }
 
 const createFriendRequest = (sender_id, receiver_id) => {
@@ -241,4 +239,5 @@ export {
 	firebase,
 	updateAddress,
 	createFriendRequest,
+	deleteRequest
 }

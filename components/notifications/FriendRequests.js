@@ -3,7 +3,7 @@ import { FlatList, View, TouchableOpacity, Animated, Alert } from 'react-native'
 import { Avatar, Box, Stack, Text, Switch, Flex, Spacer } from "@react-native-material/core";
 import { useTheme } from '@react-navigation/native';
 import { db } from "../../firebaseConfig"
-import { doc, setDoc, addDoc, onSnapshot, query, collection, where, getDoc, GeoPoint } from "firebase/firestore";
+import { doc, setDoc, addDoc, onSnapshot, query, collection, where, getDoc, GeoPoint, deleteDoc } from "firebase/firestore";
 import { useDispatch, useSelector } from "react-redux"
 import {
     selectUser,
@@ -14,6 +14,7 @@ import Spinner from 'react-native-loading-spinner-overlay';
 import Card from "./Card"
 import styles from "./styles"
 import { async } from '@firebase/util';
+import { deleteRequestAsync } from '../../redux/reducers/userSlice';
 
 const STATUS_PENDING = 0;
 const STATUS_ACCEPTED = 1;
@@ -29,6 +30,7 @@ const FriendRequests = () => {
 	const [checkedBoxes, setCheckedBoxes] = useState([])
 	const [userDict, setUserDict] = useState({})
 	// const [friendDict, setFriendDict] = useState({})
+    const dispatch = useDispatch()
 
 	const {user} = useSelector(selectUser)
 
@@ -142,6 +144,8 @@ const FriendRequests = () => {
 						})
 						break
 					}
+				} else if (status === STATUS_REJECTED) {
+					handleDeleteRequest(dataClone.id)
 				}
 			} catch (e) {
 				showErrorMessage(e.message)
@@ -159,6 +163,11 @@ const FriendRequests = () => {
 				{cancelable:true}
 			)
 		}
+	}
+	
+	const handleDeleteRequest = (request_id) => {
+		console.log("ID", request_id)
+		dispatch(deleteRequestAsync(request_id))
 	}
 
 	return (
