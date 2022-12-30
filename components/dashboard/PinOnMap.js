@@ -65,7 +65,9 @@ const renderHeader = () => (
 const sheetRef = React.createRef();
 const fall = new Animated.Value(1);
 
-const PinOnMap = ({ navigation }) => {
+const PinOnMap = ({ route, navigation }) => {
+	const { setGeoLocation } = route.params;
+
 	const user = useSelector(selectUser)
 
 	const group = useSelector(selectGroup)
@@ -108,13 +110,18 @@ const PinOnMap = ({ navigation }) => {
 
 	const updateGroupAddress = () => {
 		const newAddress = {
-			location: addressText,
-			address: new GeoPoint(marker.latitude, marker.longitude),
+			// location: addressText,
+			// address: new GeoPoint(marker.latitude, marker.longitude),
+			location: {
+				latitude: marker.latitude,
+				longitude: marker.longitude
+			},
+			address_text: addressText,
 		}
 
-		const data = { groupId: group.groupId, newAddress }
+		// const data = { groupId: group.groupId, newAddress }
 
-		dispatch(updateAddressAsync(data));
+		// dispatch(updateAddressAsync(data));
 	}
 
 	const fetchData = async (data) => {

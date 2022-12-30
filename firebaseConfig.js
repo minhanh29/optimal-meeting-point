@@ -209,7 +209,7 @@ const deleteFileByUrl = async (url) => {
 }
 
 const updateAddress = (id, data) => {
-    return setDoc(doc(db, "group", id), {
+    return setDoc(doc(db, "groupNuser", id), {
 		...data
 	}, {
 		merge: true

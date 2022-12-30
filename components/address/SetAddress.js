@@ -15,15 +15,16 @@ import { GOONG_PUBLIC_KEY } from '../../key';
 
 
 
-const SetAddress = ({ navigation }) => {
+const SetAddress = ({ route, navigation }) => {
+	const { setGeoLocation } = route.params;
   const { colors } = useTheme();
 
   // const [searchInput, setSearchInput] = useState("")
   const [suggestionList, setSuggestionList] = useState([])
   const [timeInput, setTimeInput] = useState(0)
   const [defaultValue, setDefaultValue] = useState("")
-  const [geoLocation, setGeoLocation] = useState(null)
-  console.log("GEO", geoLocation)
+  // const [geoLocation, setGeoLocation] = useState(null)
+  // console.log("GEO", geoLocation)
 
 
   const fetchData = async (data) => {
@@ -71,8 +72,11 @@ const SetAddress = ({ navigation }) => {
       let res = await fetch(url)
       res = await res.json()
       setGeoLocation({
-        address: res.result.geometry.location,
-        location: content.description
+		  location: {
+			  latitude: res.result.geometry.location.lat,
+			  longitude: res.result.geometry.location.lng,
+		  },
+        address_text: content.description
       })
     } catch (e) {
       console.log(e.message)
@@ -139,7 +143,7 @@ const SetAddress = ({ navigation }) => {
             padding: 17,
             backgroundColor: 'white'
           }}
-          onPress={() => navigation.navigate("MapPin")}
+			onPress={() => navigation.navigate("MapPin", { setGeoLocation })}
         >
           <HStack display='flex' alignItems='center' spacing={20}>
             <FIcon name="map" size={24} style={styles.iconStyle} />
