@@ -75,7 +75,7 @@ export const deleteGroupAsync = createAsyncThunk('group/deleteGroupAsync', async
 })
 
 export const updateAddressAsync = createAsyncThunk('group/updateAddressAsync', async(data) => {
-    await updateAddress(data.groupId, data.newAddress)
+    await updateAddress(data.id, data.newAddress)
 })
 
 
