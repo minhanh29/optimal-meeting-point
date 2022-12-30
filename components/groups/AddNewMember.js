@@ -1,4 +1,4 @@
-import { View, TextInput, ScrollView, TouchableOpacity,Alert } from 'react-native'
+import { View, TextInput, ScrollView, TouchableOpacity, Alert } from 'react-native'
 import React from 'react'
 import { Avatar, Box, Stack, Text, Switch, Flex, Spacer, IconButton } from '@react-native-material/core'
 import { useTheme } from '@react-navigation/native';
@@ -21,12 +21,10 @@ const AddNewMember = () => {
     const [selectedIndex, setSelectedIndex] = useState([]);
     const [memberList, setMemberList] = useState([])
     const [groupData, setGroupData] = useState('')
+    const [numMember, setNumMember] = useState()
     const dispatch = useDispatch()
-    // console.log("GROUP DATA", groupData) // group_id
-    // console.log("MEMBERLIST", memberList)
-    // console.log("USERLIST", userList)
     console.log('satus', group.status)
-    console.log("GROUP", groupData.groupId)
+    console.log("GROUP", groupData)
 
     useEffect(() => {
         if (group.status === ADD_MEMBER_REJECTED) {
@@ -56,14 +54,15 @@ const AddNewMember = () => {
         }
     }, [group.status])
 
-    const verifyAndFetchData = async (groupId) => { // Mot lam xong thi cai groupId nay se la cai lay ra dc tu cai param
+    const verifyAndFetchData = async (groupId) => {
         try {
             const ans = await getGroupName(groupId)
             const group = ans.data()
             setGroupData({
                 groupId,
-                ...group
+                ...group,
             })
+
             // setStatus(SUCCESS)
         } catch (e) {
             // setStatus(ERROR)
@@ -71,9 +70,11 @@ const AddNewMember = () => {
         }
     }
 
+    
+
     useEffect(() => {
         verifyAndFetchData(group.groupId)
-    }, []) // Mot lam thiet thi thay cai dieu kien nay [] thanh [groupID]
+    }, [])
 
 
     const fetchUserInfo = async () => {
@@ -220,7 +221,7 @@ const AddNewMember = () => {
 
                     <Spacer />
                     <Stack w='100%' items="center">
-                        <Text style={styles.subContent}>Number of members: 2</Text>
+                        <Text style={styles.subContent}>Number of members:2</Text>
                         <TouchableOpacity
                             style={{
                                 ...styles.buttonContainer,
