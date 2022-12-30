@@ -7,7 +7,8 @@ import { Box, Flex, HStack, IconButton, Stack, VStack } from '@react-native-mate
 import Icon from "@expo/vector-icons/Ionicons";
 import FIcon from "@expo/vector-icons/Feather";
 import AIcon from "@expo/vector-icons/AntDesign";
-import { GOONG_PUBLIC_KEY } from '@env';
+import { GOONG_PUBLIC_KEY } from '../../key';
+
 
 
 const SetAddress = ({ navigation }) => {
@@ -32,6 +33,7 @@ const SetAddress = ({ navigation }) => {
     }
     setTimeInput(setTimeout(async () => {
       try {
+
 
         let suggestion_list = []
         let url = "https://rsapi.goong.io/Place/AutoComplete?api_key=" + GOONG_PUBLIC_KEY + "&input=" + data;
@@ -151,5 +153,4 @@ const SetAddress = ({ navigation }) => {
 }
 
 export default SetAddress
-
 

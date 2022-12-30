@@ -37,10 +37,13 @@ const Groups = ({ navigation }) => {
 
         }
         const res = await getGroupName(data.group_id)
+        // count group members
+        const memData = await getDocs(query(collection(db, "groupNuser"), where("group_id", "==", data.group_id)))
 
         groupDict[res.id] = {
           id: data.id,
           group_id: data.group_id,
+          count: memData.docs.length,
           ...res.data()
         }
         groups.push(groupDict[data.group_id])
@@ -132,7 +135,7 @@ const Groups = ({ navigation }) => {
           />
         </Flex>
 
-        <ScrollView style={{...styles.listContainer, marginTop: 20}}>
+        <ScrollView style={{ ...styles.listContainer, marginTop: 20 }}>
           <Stack w='100%' spacing={20}>
             {dataList.map((data, index) => {
               return (
@@ -158,7 +161,7 @@ const Groups = ({ navigation }) => {
                         {data.group_name}
                       </Text>
                       <Text style={styles.infoContent} >
-                        3 members
+                        {data.count} {data.count == 1 ? "member" : "members"}
                       </Text>
                     </Stack>
 
@@ -175,6 +178,8 @@ const Groups = ({ navigation }) => {
           </Stack>
         </ScrollView>
 
+
+
         <Spacer />
         <Stack w='80%' items="center">
           <View style={styles.bottomContainer}>
@@ -189,7 +194,7 @@ const Groups = ({ navigation }) => {
             </View>
           </View>
         </Stack>
-      </Stack>
+        </Stack>
     </View>
   )
 }

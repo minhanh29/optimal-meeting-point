@@ -21,7 +21,7 @@ import * as Location from 'expo-location';
 import { useEffect } from "react";
 import { GROUP_IDLE, selectGroup, updateAddressAsync, UPDATE_ADDRESS_PENDING, UPDATE_ADDRESS_REJECTED, UPDATE_ADDRESS_SUCCESS, changeGroupStatus } from "../../redux/reducers/groupSlice";
 import Spinner from 'react-native-loading-spinner-overlay';
-import { GOONG_PUBLIC_KEY } from '@env';
+import { GOONG_PUBLIC_KEY } from '../../key';
 
 const mapStyle = mapStyleJson["mapStyle"];
 
@@ -157,7 +157,7 @@ const PinOnMap = ({ navigation }) => {
 						coordinate={marker}
 
 					>
-							
+
 						<View
 							style={{
 								flexDirection: "row",
@@ -171,7 +171,7 @@ const PinOnMap = ({ navigation }) => {
 								height: 45,
 								width: 45
 							}}
-						> 
+						>
 						<Svg width={40} height={30}>
 								<Image
 									source={{ uri: user.user.ava_url }}
