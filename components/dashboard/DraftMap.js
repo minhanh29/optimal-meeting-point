@@ -20,9 +20,9 @@ import mapStyleJson from "./../../mapStyle.json";
 import styles from "./styles";
 import { useSelector, useDispatch } from "react-redux";
 import { selectUser } from "../../redux/reducers/userSlice";
-import { selectGroup} from "../../redux/reducers/groupSlice";
+import { selectGroup } from "../../redux/reducers/groupSlice";
 // import { MAPBOX_PUBLIC_KEY } from '@env';
-import { MAPBOX_PUBLIC_KEY } from '../../key';
+import { MAPBOX_PUBLIC_KEY } from "../../key";
 
 import { getGroupName } from "../../firebaseConfig";
 import BottomSheet from "reanimated-bottom-sheet";
@@ -79,10 +79,10 @@ const myLocation = {
   longitude: 106.72191374093879,
 };
 
-const renderContent = () => (
+const renderContent = ({ place }) => (
   <View style={styles.panel}>
     <View>
-      <Text style={styles.panelTitle}>Location's Name</Text>
+      <Text style={styles.panelTitle}>{place.placeName}Location's Name</Text>
       <Text style={styles.panelSubtitle}>Location's Address</Text>
     </View>
     <TouchableOpacity style={styles.panelButton}>
@@ -104,46 +104,70 @@ const fall = new Animated.Value(1);
 
 const AvaMarker = ({ groupID, setLocationList }) => {
   const [userList, setUserList] = useState([]);
-  const [userIDList, setUserIDList] = useState([]);
 
-  const fetchUsers = async (userIDs) => {
+  const fetchUsers = async (userIDs, userGroup) => {
     const users = [];
-    const q = query(
-      collection(db, "user"),
-      where(documentId(), "in", userIDs)
-    );
+    const usersFromSnap = [];
+    const q = query(collection(db, "user"), where(documentId(), "in", userIDs));
     const snap = await getDocs(q);
 
     if (snap) {
       snap.forEach(async (doc) => {
-        users.push({
+        usersFromSnap.push({
           id: doc.id,
           ...doc.data(),
         });
       });
     }
+
+    console.log("userGroup", userGroup);
+    for (let i = 0; i < usersFromSnap.length; i++) {
+      for (let j = 0; j < userGroup.length; j++) {
+        let data = usersFromSnap[i];
+        if (data.id === userGroup[j].user_id) {
+          users.push({
+            user_id: data.user_id,
+            user_group_address: userGroup[j].user_group_address,
+            username: data.username,
+            name: data.name,
+            ava_url: data.ava_url,
+            gps_enabled: data.gps_enabled,
+          });
+        }
+      }
+    }
+
     console.log("users in fetchUsers", users.length, " ", users);
     setUserList(users);
   };
 
   const fetchGroupInfo = async (groupInfo) => {
-    const userIDs = [];
-    const locations = [];
+    const users = []; // contains user_id & user_cur_address
+    const userIDs = []; // array of user_ids only
+    const locations = []; // array of locations only
+
     try {
       for (let i = 0; i < groupInfo.length; i++) {
         let data = groupInfo[i];
+
+        users.push({
+          user_id: data.user_id,
+          user_group_address: data.group_address,
+        });
+
         userIDs.push(data.user_id);
-        if (typeof(data.group_address) !== "string") {
+        if (typeof data.group_address !== "string") {
           locations.push(data.group_address);
         }
       }
     } catch (error) {
       console.log(error.message);
     }
-    setUserIDList(userIDs);
+
+    console.log("new users list", users);
+    console.log("locations list", locations);
     setLocationList(locations);
-    console.log("check locations", locations);
-    fetchUsers(userIDs); // get users info with matching ids
+    fetchUsers(userIDs, users); // get users info with matching ids
   };
 
   useEffect(() => {
@@ -161,22 +185,7 @@ const AvaMarker = ({ groupID, setLocationList }) => {
     return () => unsubcribe();
   }, [groupID]);
 
-  // useEffect(
-  //   () =>
-  //     onSnapshot(query(collection(db, "user")), (snapshot) => {
-  //       const userInfo = snapshot.docs.map((doc) => ({
-  //         ...doc.data(),
-  //         id: doc.id,
-  //       }));
-  //       // console.log("User Info in UE", userInfo);
-  //       setAllUsers(userInfo);
-  //     }),
-  //   []
-  // );
-
-  // console.log("Data", userList && userList);
   console.log("Count Length", userList && userList.length);
-  // console.log("Check address", userList && userList[0].address);
 
   return (
     <>
@@ -184,8 +193,8 @@ const AvaMarker = ({ groupID, setLocationList }) => {
         userList.map((user) => (
           <Marker
             coordinate={{
-              latitude: user.address.latitude,
-              longitude: user.address.longitude,
+              latitude: user.user_group_address.latitude,
+              longitude: user.user_group_address.longitude,
             }}
             title={"user"}
           >
@@ -244,6 +253,40 @@ const AvaMarker = ({ groupID, setLocationList }) => {
             </Callout>
           </Marker>
         ))}
+    </>
+  );
+};
+
+const PlaceMarker = ({ suggestion }) => {
+  return (
+    <>
+      {suggestion.map((place, i) => (
+        <>
+          <Marker
+            key={i}
+            coordinate={place.coordinate}
+            title={place.placeName}
+            description={place.placeName}
+          >
+            <TouchableOpacity onPress={() => sheetRef.current.snapTo(0)}>
+              <Image
+                style={styles.marker_icon}
+                source={require("../../assets/location-dot.png")}
+              ></Image>
+            </TouchableOpacity>
+          </Marker>
+          <BottomSheet
+            ref={sheetRef}
+            snapPoints={[550, 300, 0]}
+            style={styles.bottomSheetContainer}
+            // renderContent={renderContent}
+            // renderHeader={renderHeader}
+            initialSnap={2}
+            callbackNode={fall}
+            enabledGestureInteraction={true}
+          />
+        </>
+      ))}
     </>
   );
 };
@@ -363,7 +406,8 @@ const Dashboard = ({ navigation }) => {
         {/* 		></Image> */}
         {/* 	</TouchableOpacity> */}
         {/* </Marker>: null} */}
-        {suggestion.map((place, i) => (
+
+        {/* {suggestion.map((place, i) => (
           <Marker
             key={i}
             coordinate={place.coordinate}
@@ -377,7 +421,8 @@ const Dashboard = ({ navigation }) => {
               ></Image>
             </TouchableOpacity>
           </Marker>
-        ))}
+        ))} */}
+
         {/* {middlePoint ? */}
         {/* <Marker */}
         {/* 	coordinate={middlePoint} */}
@@ -391,23 +436,33 @@ const Dashboard = ({ navigation }) => {
         {/* 		></Image> */}
         {/* 	</TouchableOpacity> */}
         {/* </Marker>: null} */}
+
+        {/* <PlaceMarker suggestion={suggestion}></PlaceMarker> */}
+
         {suggestion.map((place, i) => (
-          <Marker
-            key={i}
-            coordinate={place.coordinate}
-            title={place.placeName}
-            description={place.placeName}
-          >
-            <TouchableOpacity onPress={() => sheetRef.current.snapTo(0)}>
-              <Image
-                style={styles.marker_icon}
-                source={require("../../assets/location-dot.png")}
-              ></Image>
-            </TouchableOpacity>
-          </Marker>
+          <>
+            <Marker
+              key={i}
+              coordinate={place.coordinate}
+              title={place.placeName}
+              description={place.placeName}
+            >
+              <TouchableOpacity
+                onPress={() => {
+                  sheetRef.current.snapTo(0);
+                  renderContent(place);
+                }}
+              >
+                <Image
+                  style={styles.marker_icon}
+                  source={require("../../assets/location-dot.png")}
+                ></Image>
+              </TouchableOpacity>
+            </Marker>
+          </>
         ))}
 
-        {/* // User's location */}
+        {/* // User's location Pin */}
         {group.enterGroup ? (
           <AvaMarker
             groupID={group.groupId}
@@ -415,6 +470,7 @@ const Dashboard = ({ navigation }) => {
           />
         ) : null}
       </MapView>
+
       <BottomSheet
         ref={sheetRef}
         snapPoints={[550, 300, 0]}
@@ -425,6 +481,7 @@ const Dashboard = ({ navigation }) => {
         callbackNode={fall}
         enabledGestureInteraction={true}
       />
+
       {groupData ? (
         <View style={styles.topContainer}>
           <Text style={styles.topTitle}>{groupData.group_name}</Text>
