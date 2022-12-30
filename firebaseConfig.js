@@ -26,8 +26,11 @@ import {
 	getStorage,
 } from 'firebase/storage'
 
-
 import { initializeApp } from 'firebase/app';
+
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/auth';
+import 'firebase/compat/firestore';
 
 // Initialize Firebase
 const firebaseConfig = {
@@ -97,6 +100,20 @@ const createGroupInvitation = (group_id, sender_id, receiver_id) => {
 	})
 }
 
+const createFriend = (person1_id, person2_id) => {
+	return addDoc(collection(db, "friend"), {
+		...data
+	})
+}
+
+const createFriendRequest = (sender_id, receiver_id) => {
+	return addDoc(collection(db, "friend_request"), {
+		receiver_id,
+		sender_id,
+		created_at: new Date(),
+		status: 0,
+	})
+}
 
 // CLOUD STORAGE
 const uploadFile = async (folderName, imageUri, fileName) => {
@@ -221,5 +238,7 @@ export {
 	deleteFile,
 	deleteFileByUrl,
 	createGroupInvitation,
+	firebase,
 	updateAddress,
+	createFriendRequest,
 }

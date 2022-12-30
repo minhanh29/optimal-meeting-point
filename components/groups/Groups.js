@@ -17,14 +17,18 @@ import Spinner from 'react-native-loading-spinner-overlay';
 
 const Groups = ({ navigation }) => {
   const { colors } = useTheme();
-  const user = useSelector(selectUser)
-  const [dataList, setDataList] = useState([])
-  const [groupNameMap, setGroupNameMap] = useState({})
-  const dispatch = useDispatch()
+  const user = useSelector(selectUser);
+  const [dataList, setDataList] = useState([]);
+  const [groupNameMap, setGroupNameMap] = useState({});
+  const dispatch = useDispatch();
   const group = useSelector(selectGroup);
-  console.log("Data", dataList)
+  console.log("Data", dataList);
 
 
+<<<<<<< HEAD
+
+=======
+>>>>>>> ee170111493700ec30b6ce1569f5264c0be715ad
   const fetchGroupName = async (refList) => {
     const groupDict = { ...groupNameMap }
     const groups = []
@@ -48,13 +52,12 @@ const Groups = ({ navigation }) => {
         }
         groups.push(groupDict[data.group_id])
       }
-
     } catch (e) {
-      console.log(e.message)
+      console.log(e.message);
     }
-    setDataList(groups)
-    setGroupNameMap(groupDict)
-  }
+    setDataList(groups);
+    setGroupNameMap(groupDict);
+  };
 
   useEffect(
     () => onSnapshot(query(collection(db, "groupNuser"), where("user_id", "==", user.user.id)), (snapshot) => {
@@ -130,8 +133,8 @@ const Groups = ({ navigation }) => {
           <AIcon name="search1" style={styles.iconImg} color='B4BABC' />
           <TextInput
             style={styles.searchInput}
-            placeholder='Search group'
-            color='#B4BABC'
+            placeholder="Search group"
+            color="#B4BABC"
           />
         </Flex>
 
@@ -177,20 +180,28 @@ const Groups = ({ navigation }) => {
             })}
           </Stack>
         </ScrollView>
-
-
-
         <Spacer />
-        <Stack w='80%' items="center">
+        <Stack w="80%" items="center">
           <View style={styles.bottomContainer}>
-            <View style={{ ...styles.shadowBtn, shadowOpacity: Platform.OS == "ios" ? 0.23 : 0.5 }}>
+            <View
+              style={{
+                ...styles.shadowBtn,
+                shadowOpacity: Platform.OS == "ios" ? 0.23 : 0.5,
+              }}
+            >
               <IconButton
-                style={{ alignSelf: "center", overflow: 'hidden', padding: 25, backgroundColor: 'white', borderRadius: 10, marginBottom: 16, }}
-                icon={props => <MIcon name="group-add" {...props} />}
+                style={{
+                  alignSelf: "center",
+                  overflow: "hidden",
+                  padding: 25,
+                  backgroundColor: "white",
+                  borderRadius: 10,
+                  marginBottom: 16,
+                }}
+                icon={(props) => <MIcon name="group-add" {...props} />}
                 color="#9CC7CA"
                 onPress={() => navigation.navigate("CreateGroup")}
-              >
-              </IconButton>
+              ></IconButton>
             </View>
           </View>
         </Stack>

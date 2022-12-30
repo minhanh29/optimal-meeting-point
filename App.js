@@ -13,11 +13,12 @@ import ChangePassword from "./components/settings/ChangePassword";
 import UpdateProfile from "./components/settings/UpdateProfile";
 import Groups from "./components/groups/Groups";
 import Notifications from "./components/notifications/Notifications";
-import { useFonts } from 'expo-font';
+// import { useFonts } from 'expo-font';
 import 'react-native-gesture-handler';
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import Friends from "./components/friends/Friends";
+import AddFriends from "./components/friends/AddFriends";
 import SetAddress from "./components/address/SetAddress";
 import { Ionicons } from '@expo/vector-icons';
 import CreateGroup from "./components/groups/CreateGroup";
@@ -27,6 +28,9 @@ import { selectUser } from "./redux/reducers/userSlice";
 import AddNewMember from "./components/groups/AddNewMember";
 import GroupInfo from "./components/groups/GroupInfo";
 import PinOnMap from "./components/dashboard/PinOnMap";
+
+import useFonts from "./useFonts"
+import AppLoading from 'expo-app-loading'; // This is must
 
 const StackNavigator = createStackNavigator()
 
@@ -43,14 +47,29 @@ export const theme = {
 const AppInner = () => {
 	const { isAuthenticated } = useSelector(selectUser)
 
-	const [fontsLoaded] = useFonts({
-		Montserrat: require("./assets/fonts/Montserrat-Regular.ttf"),
-		"Montserrat-Italic": require("./assets/fonts/Montserrat-Italic-VariableFont_wght.ttf"),
-		"Montserrat-Bold": require("./assets/fonts/Montserrat-Bold.ttf"),
-		"jsMath-cmbx10": require("./assets/fonts/jsMath-cmbx10.ttf"),
-	});
+	// const [fontsLoaded] = useFonts({
+	// 	Montserrat: require("./assets/fonts/Montserrat-Regular.ttf"),
+	// 	"Montserrat-Italic": require("./assets/fonts/Montserrat-Italic-VariableFont_wght.ttf"),
+	// 	"Montserrat-Bold": require("./assets/fonts/Montserrat-Bold.ttf"),
+	// 	"jsMath-cmbx10": require("./assets/fonts/jsMath-cmbx10.ttf"),
+	// });
 
-	if (!fontsLoaded) return null;
+	// if (!fontsLoaded) return null;
+	const [IsReady, SetIsReady] = useState(false);
+
+	const LoadFontsAndRestoreToken = async () => {
+		await useFonts();
+	};
+
+	if (!IsReady) {
+		return (
+			<AppLoading
+				startAsync={LoadFontsAndRestoreToken}
+				onFinish={() => SetIsReady(true)}
+				onError={() => {}}
+			/>
+		);
+	}
 
 	return (
 		<NavigationContainer theme={theme}>
@@ -144,7 +163,7 @@ const AppInner = () => {
 					component={Groups}
 					options={{
 						title: "Your Groups"
-					}} 
+					}}
 				/>
 				<StackNavigator.Screen
 					name="AddNewMember"
@@ -169,6 +188,7 @@ const AppInner = () => {
 				/>
 				<StackNavigator.Screen name="Notifications" component={Notifications} />
 				<StackNavigator.Screen name="Friends" component={Friends} />
+				<StackNavigator.Screen name="AddFriends" component={AddFriends} />
 				<StackNavigator.Screen name="Address" component={SetAddress} />
 			</StackNavigator.Navigator>
 		</NavigationContainer>
@@ -205,3 +225,70 @@ const styles = StyleSheet.create({
 });
 
 export default App;
+
+
+// import React from 'react';
+// import { StyleSheet, View, Text } from 'react-native';
+// import MapboxGL from '@rnmapbox/maps';
+// import MapboxPlacesAutocomplete from "react-native-mapbox-places-autocomplete";
+// import mapStyle from "./goong_map_web.json"
+
+// MapboxGL.setWellKnownTileServer(MapboxGL.TileServers.Mapbox)
+// MapboxGL.setAccessToken('sk.eyJ1Ijoib21wcm1pdCIsImEiOiJjbGM0amY0eTAwZ2pjM25tbzVja2JkMjNhIn0.LRLJBu7m5G3o-1CZPixi-Q');
+
+// const App = () => {
+// 	return (
+// 		<View style={styles.page}>
+// 			<MapboxPlacesAutocomplete
+// 				id="id"
+// 				placeholder="Origin"
+// 				accessToken="pk.eyJ1Ijoib21wcm1pdCIsImEiOiJjbGM0amFtYjIwZWU3M3ZybzlnYTh4aDJ2In0.eqGfah7gCQxT31ZylFQ6nA"
+// 				onPlaceSelect={(data) => {
+// 					console.log(data);
+// 				}}
+// 				countryId="vn"
+// 				inputStyle={styles.autocomplete}
+// 				containerStyle={styles.autocompleteContainer}
+// 			/>
+// 			<MapboxGL.MapView style={styles.map} />
+// 		</View>
+// 	);
+// }
+
+// export default App;
+
+// const styles = StyleSheet.create({
+// 	page: {
+// 		flex: 1,
+// 		justifyContent: "center",
+// 		alignItems: "center",
+// 	},
+// 	container: {
+// 		height: "100%",
+// 		width: "100%",
+// 	},
+// 	map: {
+// 		flex: 1,
+// 		height: "80%",
+// 		width: "100%",
+// 	},
+// 	autocomplete: {
+// 		width: 300,
+// 		height: 50,
+// 		backgroundColor: "white",
+// 		color: "black",
+// 		borderRadius: 15,
+// 		shadowOffset: {
+// 			width: 0,
+// 			height: 4,
+// 		},
+// 		shadowOpacity: 0.25,
+// 		shadowColor: "black",
+// 		padding: 15,
+// 		elevation: 4,
+// 	},
+// 	autocompleteContainer: {
+// 		width: 300,
+// 		height: 50,
+// 	},
+// });

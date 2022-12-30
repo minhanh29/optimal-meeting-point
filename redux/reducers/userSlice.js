@@ -8,6 +8,7 @@ import {
 	createUser,
 	signOut,
     getUserInfo,
+    createFriendRequest
 } from "../../firebaseConfig"
 import { EmailAuthProvider, reauthenticateWithCredential, updatePassword } from "firebase/auth";
 
@@ -25,6 +26,14 @@ export const USER_LOGIN_PENDING = 5
 export const USER_CHANGING_SUCCESS = 6
 export const USER_CHANGING_FAILED = 7
 export const USER_CHANGING_PENDING = 8
+
+export const USER_ADD_PENDING = 9
+export const USER_ADD_SUCCESS = 10
+export const USER_ADD_FAILED = 11
+
+export const USER_REQUEST_PENDING = 12
+export const USER_REQUEST_REJECTED = 13
+export const USER_REQUEST_ACCEPTED = 14
 
 const authErrors = {
 	"auth/wrong-password": "The password is invalid or the user does not have a password.",
@@ -209,6 +218,17 @@ export const logOutAsync = createAsyncThunk('user/logOutAsync', async () => {
     await signOut(auth)
 })
 
+
+export const addFriendAsync = createAsyncThunk('user/addFriendAsync', async (data) => {
+     //send friend request
+    
+    await createFriendRequest(data.user_id, data.receiver_id)
+
+    return {
+    ...data
+    }
+})
+
 const userSlice = createSlice({
     name: 'user',
     initialState,
@@ -274,6 +294,17 @@ const userSlice = createSlice({
 			state.passwordInfoStatus = USER_CHANGING_FAILED
 			state.errorMessage = authErrors[action.error.code] ?  authErrors[action.error.code] : "Unknown Error!";
 		})
+        .addCase(addFriendAsync.pending, state=> {
+            state.status = USER_ADD_PENDING
+        })
+        .addCase(addFriendAsync.fulfilled, (state,action) => {
+            state.status= USER_ADD_SUCCESS
+            state.user = action.payload
+        })
+        .addCase(addFriendAsync.rejected, (state, action) => {
+            state.status=USER_ADD_FAILED
+            console.log("ACTION", action)
+        })
     }
 })
 

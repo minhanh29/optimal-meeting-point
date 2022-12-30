@@ -76,7 +76,7 @@ const Dashboard = ({ navigation }) => {
 				provider={PROVIDER_GOOGLE}
 				onPress={(event) => setMarker(event.nativeEvent.coordinate)}
 			>
-				{marker && 
+				{marker &&
 				<Marker
 					coordinate={marker}
 				></Marker>
@@ -89,7 +89,7 @@ const Dashboard = ({ navigation }) => {
 					<TouchableOpacity onPress={() => sheetRef.current.snapTo(0)}>
 						<Image
 							style={styles.marker_icon}
-							source={require("../../assets/location-dot.png")}
+							source={{ uri: "https://firebasestorage.googleapis.com/v0/b/optimal-meeting-point.appspot.com/o/location-dot.png?alt=media&token=8cedb920-bd3e-43f4-a3ac-bfa2ceece093" }}
 						></Image>
 					</TouchableOpacity>
 				</Marker>
@@ -207,6 +207,12 @@ const Dashboard = ({ navigation }) => {
 								margin: 16,
 								...styles.shadowBtn
 							}}
+<<<<<<< HEAD
+						>
+							User's name
+						</Text>
+						<Text
+=======
 							onPress={() => navigation.navigate("Groups")}
 						/>
 					</View>
@@ -219,6 +225,7 @@ const Dashboard = ({ navigation }) => {
 						<IconButton
 							icon={props => <AIcon name="search1" {...props} />}
 							color="#C2C2C2"
+>>>>>>> 89229b1574a5eb0eb3ce74eef13ee156d33b8317
 							style={{
 								alignSelf: "center",
 								padding: 25,
