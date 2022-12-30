@@ -119,6 +119,7 @@ const CreateGroup = ({navigation}) => {
                 group_name: groupName.trim(),
                 location: '',
                 user_id: user.user.id,
+                user_location: user.user.address,
 				memberIds: memberList.map(item => item.id)
             }
             dispatch(createGroupAsync(data))

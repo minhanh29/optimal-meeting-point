@@ -14,7 +14,7 @@ import { selectUser } from '../../redux/reducers/userSlice';
 import Icon from "@expo/vector-icons/Ionicons";
 
 
-const GroupInfo = () => {
+const GroupInfo = ({navigation}) => {
     const { colors } = useTheme();
     const [avatar, setAvatar] = useState(null);
     const [dataList, setDataList] = useState([])
@@ -86,6 +86,7 @@ const GroupInfo = () => {
                         icon={props => <FIcon name={'plus'} {...props} />}
                         color="black"
                         style={{ alignSelf: "center", padding: 20, backgroundColor: 'white', borderRadius: 10, color: '#9ACDD0', marginRight: 20 }}
+                        onPress = {() => navigation.navigate("AddNewMember")}
                     />
                 </Flex>
 

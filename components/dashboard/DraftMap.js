@@ -576,7 +576,7 @@ const Dashboard = ({ navigation }) => {
                 margin: 12,
                 ...styles.shadowBtn,
               }}
-              onPress={() => navigation.navigate("Friends")}
+              onPress={() => navigation.navigate("GroupInfo")}
             />
           </View>
         ) : null}

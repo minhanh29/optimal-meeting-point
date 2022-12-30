@@ -25,10 +25,7 @@ const Groups = ({ navigation }) => {
   console.log("Data", dataList);
 
 
-<<<<<<< HEAD
 
-=======
->>>>>>> ee170111493700ec30b6ce1569f5264c0be715ad
   const fetchGroupName = async (refList) => {
     const groupDict = { ...groupNameMap }
     const groups = []
@@ -109,7 +106,7 @@ const Groups = ({ navigation }) => {
     console.log("Enter", id)
     dispatch(changeEnterGroup({
       enterGroup: true,
-      groupId: id
+      groupId: id,
     }))
     navigation.navigate("Dashboard")
   }
