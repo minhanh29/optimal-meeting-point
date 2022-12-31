@@ -188,7 +188,11 @@ const AppInner = () => {
 				/>
 				<StackNavigator.Screen name="Notifications" component={Notifications} />
 				<StackNavigator.Screen name="Friends" component={Friends} />
-				<StackNavigator.Screen name="AddFriends" component={AddFriends} />
+				<StackNavigator.Screen 
+					name="AddFriends" 
+					component={AddFriends} 
+					options = {{title: "Add Friends"}}
+				/>
 				<StackNavigator.Screen name="Address" component={SetAddress} />
 			</StackNavigator.Navigator>
 		</NavigationContainer>

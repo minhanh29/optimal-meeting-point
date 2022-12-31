@@ -26,49 +26,21 @@ const AddFriends = ({navigation}) => {
     const [avatar, setAvatar] = useState(null);
     const dispatch = useDispatch()
 
-    // const fetchFriendInfo = async () => {
-    //     try {
-    //         const querySnapshot = await getDocs(collection(db, "friend"));
-    //         const result = []
-    //         querySnapshot.forEach(doc => {
-    //             result.push({
-    //                 id: doc.id,
-    //                 ...doc.data()
-    //             })
-    //         })
-    //         setFriendList(result)
-    //     } catch (e) {
-    //         console.log(e)
-    //     }
-    // }
-
-    // const fetchRequestInfo = async () => {
-    //     try {
-    //         const querySnapshot = await getDocs(collection(db, "friend_request"));
-    //         const result = []
-    //         querySnapshot.forEach(doc => {
-    //             result.push({
-    //                 id: doc.id,
-    //                 ...doc.data()
-    //             })
-    //         })
-    //         setRequestList(result)
-    //     } catch (e) {
-    //         console.log(e)
-    //     }
-    // }
-
     const fetchUserInfo = async () => {
         try {
             const friendSnapshot = await getDocs(query(collection(db, "friend"), where("person1_id", "==", user.user.id)));
 			const friendSet = new Set(friendSnapshot.docs.map(doc => doc.data().person2_id))
-			console.log("Friend", friendSet)
+			// console.log("Friend", friendSet)
+
+            const requestSnapshot = await getDocs(query(collection(db, "friend_request"), where("sender_id", "==", user.user.id), where("status", "==", 0)));
+            const requestSet = new Set(requestSnapshot.docs.map(doc => doc.data().receiver_id))
+            // console.log("Request", requestSet)
 
             const querySnapshot = await getDocs(collection(db, "user"));
             const result = []
             querySnapshot.forEach(doc => {
 				console.log(doc.id, doc.data().name)
-                if (doc.id !== user.user.id && !friendSet.has(doc.id)) {
+                if (doc.id !== user.user.id && !friendSet.has(doc.id) && !requestSet.has(doc.id)) {
                     result.push({
                         id: doc.id,
                         ...doc.data()
@@ -90,12 +62,10 @@ const AddFriends = ({navigation}) => {
 
     useEffect(() => {
         fetchUserInfo();
-        // fetchFriendInfo();
-        // fetchRequestInfo();
     }, []);
 
     const handleAdd = (receiver, index) => {
-        // user = useSelector(selectUser)
+    
 
         setSelectedIndex(prev => {
             const isInclude = selectedIndex.includes(index)
@@ -118,6 +88,8 @@ const AddFriends = ({navigation}) => {
             console.log(e)
         }
     }
+
+    // const sendRequest = async
 
 
     return (
@@ -145,7 +117,7 @@ const AddFriends = ({navigation}) => {
 
                     <ScrollView style={styles.listContainer}>
                         <Stack w="100%" spacing={20} >
-                            {userList.map((user, index) => {
+                            {userList.map((item, index) => {
                                 return (
                                     <Box elevation ={3}
                                     backgroundColor="white"
@@ -159,9 +131,9 @@ const AddFriends = ({navigation}) => {
                                         direction="row"
                                         >
                                             <Avatar
-                                            label={user.name}
+                                            label={item.name}
                                             icon={props => <Icon name="account" {...props} />}
-                                            image={avatar ? {uri: user.ava_url} : null}
+                                            image={avatar ? {uri: item.ava_url} : null}
                                             imageStyle={{borderRadius: 10}}
                                             />
                                         <Stack
@@ -170,17 +142,17 @@ const AddFriends = ({navigation}) => {
                                         w="58%"
                                         >
                                             <Text style={styles.cardHeader}>
-                                                {user.name}
+                                                {item.name}
                                             </Text>
                                             <Text style={styles.infoContent}>
-                                                @{user.username}
+                                                @{item.username}
                                             </Text>
                                             </Stack>
                                             <IconButton
                                                 icon={props => <FIcon name={selectedIndex.includes(index) ? 'check' : 'plus'} {...props} />}
                                                 color = "black"
                                                 style={{alignSelf: "center", padding: 20, backgroundColor: 'transparent', borderRadius:10, color: '#9ACDD0', marginRight: 20}}
-                                                onPress={() => handleAdd(user, index)}
+                                                onPress={() => handleAdd(item, index)}
                                                 />
                                         </Flex>
                                     </Box>

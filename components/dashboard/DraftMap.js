@@ -402,7 +402,8 @@ const Dashboard = ({ navigation }) => {
       const snapshot = await getDocs(
         query(
           collection(db, "groupNuser"),
-          where("user_id", "==", user.user.id)
+          where("user_id", "==", user.user.id),
+			where("group_id", "==", group.groupId)
         )
       );
       console.log("GroupNuser", snapshot);
