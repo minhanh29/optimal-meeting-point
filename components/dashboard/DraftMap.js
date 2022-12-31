@@ -371,6 +371,7 @@ const Dashboard = ({ navigation }) => {
         style={styles.map}
         initialRegion={initRegion}
         customMapStyle={mapStyle}
+		  provider={PROVIDER_GOOGLE}
       >
         {/* {middlePoint ? */}
         {/* <Marker */}
