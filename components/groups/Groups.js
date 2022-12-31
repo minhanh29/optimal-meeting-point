@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert } from 'react-native'
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, ScrollView } from 'react-native'
 import { Avatar, Box, Stack, Switch, Flex, Spacer, IconButton } from "@react-native-material/core";
 import React, { useEffect } from 'react'
 import { useTheme } from '@react-navigation/native';
@@ -25,6 +25,7 @@ const Groups = ({ navigation }) => {
   console.log("Data", dataList);
 
 
+
   const fetchGroupName = async (refList) => {
     const groupDict = { ...groupNameMap }
     const groups = []
@@ -37,13 +38,13 @@ const Groups = ({ navigation }) => {
 
         }
         const res = await getGroupName(data.group_id)
-		// count group members
-		const memData = await getDocs(query(collection(db, "groupNuser"), where("group_id", "==", data.group_id)))
+        // count group members
+        const memData = await getDocs(query(collection(db, "groupNuser"), where("group_id", "==", data.group_id)))
 
         groupDict[res.id] = {
           id: data.id,
           group_id: data.group_id,
-			count: memData.docs.length,
+          count: memData.docs.length,
           ...res.data()
         }
         groups.push(groupDict[data.group_id])
@@ -105,7 +106,7 @@ const Groups = ({ navigation }) => {
     console.log("Enter", id)
     dispatch(changeEnterGroup({
       enterGroup: true,
-      groupId: id
+      groupId: id,
     }))
     navigation.navigate("Dashboard")
   }
@@ -134,53 +135,48 @@ const Groups = ({ navigation }) => {
           />
         </Flex>
 
-        <Stack w="80%" spacing={20} marginTop={20}>
-          {dataList.map((data, index) => {
-            return (
-              <TouchableOpacity
-                elevation={4}
-                backgroundColor="white"
-                style={styles.groupCardContainer}
-                w="100%"
-                key={index}
-                onPress={() => handleEnter(data.group_id)}
-              >
-                <Flex
-                  w="100%"
-                  items="center"
-                  direction="row"
+        <ScrollView style={{ ...styles.listContainer, marginTop: 20 }}>
+          <Stack w='100%' spacing={20}>
+            {dataList.map((data, index) => {
+              return (
+                <TouchableOpacity
+                  elevation={4}
+                  backgroundColor="white"
+                  style={styles.groupCardContainer}
+                  w='100%'
+                  key={index}
+                  onPress={() => handleEnter(data.group_id)}
                 >
-                  <Stack
-                    style={{ marginLeft: 17 }}
-                    spacing={5}
-                    w="70%"
+                  <Flex
+                    w="100%"
+                    items="center"
+                    direction="row"
                   >
-                    <Text style={styles.cardHeader} >
-                      {data.group_name}
-                    </Text>
-                    <Text style={styles.infoContent} >
-						{data.count} {data.count == 1 ? "member": "members"}
-                    </Text>
-                  </Stack>
+                    <Stack
+                      style={{ marginLeft: 17 }}
+                      spacing={5}
+                      w="70%"
+                    >
+                      <Text style={styles.cardHeader} >
+                        {data.group_name}
+                      </Text>
+                      <Text style={styles.infoContent} >
+                        {data.count} {data.count == 1 ? "member" : "members"}
+                      </Text>
+                    </Stack>
 
-                  <IconButton
-                    icon={(props) => <Icon name={"exit-outline"} {...props} />}
-                    color="#EE6548"
-                    style={{
-                      alignSelf: "center",
-                      padding: 20,
-                      backgroundColor: "transparent",
-                      borderRadius: 10,
-                      color: "#9ACDD0",
-                      marginRight: 20,
-                    }}
-                    onPress={() => handleDelete(data.id)}
-                  />
-                </Flex>
-              </TouchableOpacity>
-            );
-          })}
-        </Stack>
+                    <IconButton
+                      icon={props => <Icon name={'exit-outline'} {...props} />}
+                      color="#EE6548"
+                      style={{ alignSelf: "center", padding: 20, backgroundColor: 'transparent', borderRadius: 10, color: '#9ACDD0', marginRight: 20 }}
+                      onPress={() => handleDelete(data.id)}
+                    />
+                  </Flex>
+                </TouchableOpacity>
+              )
+            })}
+          </Stack>
+        </ScrollView>
         <Spacer />
         <Stack w="80%" items="center">
           <View style={styles.bottomContainer}>
@@ -206,7 +202,7 @@ const Groups = ({ navigation }) => {
             </View>
           </View>
         </Stack>
-      </Stack>
+        </Stack>
     </View>
   )
 }

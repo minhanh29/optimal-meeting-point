@@ -1,10 +1,6 @@
 import React, {
   useState,
   useEffect,
-  useCallback,
-  useRef,
-  useMemo,
-  cloneElement,
 } from "react";
 import { View, Image, Alert } from "react-native";
 import { StatusBar } from "expo-status-bar";
@@ -22,10 +18,11 @@ import { useSelector, useDispatch } from "react-redux";
 import { selectUser } from "../../redux/reducers/userSlice";
 import {
   selectGroup,
-  updateAddressAsync,
+	updateGroupInfo,
 } from "../../redux/reducers/groupSlice";
 // import { MAPBOX_PUBLIC_KEY } from '@env';
 import { MAPBOX_PUBLIC_KEY } from "../../key";
+import { geoToDict } from "../common/Utils";
 
 import { getGroupName } from "../../firebaseConfig";
 import BottomSheet from "reanimated-bottom-sheet";
@@ -315,6 +312,11 @@ const Dashboard = ({ navigation }) => {
     try {
       const group_data = await getGroupName(group.groupId);
       setGroupData(group_data.data());
+		dispatch(updateGroupInfo({
+			group_id: group_data.id,
+			...group_data.data(),
+			address: geoToDict(group_data.data().address)
+		}))
     } catch (e) {
       console.log(e.message);
     }
@@ -672,7 +674,7 @@ const Dashboard = ({ navigation }) => {
                 margin: 12,
                 ...styles.shadowBtn,
               }}
-              onPress={() => navigation.navigate("Friends")}
+              onPress={() => navigation.navigate("GroupInfo")}
             />
           </View>
         ) : null}
