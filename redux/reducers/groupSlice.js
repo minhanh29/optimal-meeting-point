@@ -88,6 +88,9 @@ const groupSlice = createSlice({
     name: 'group',
     initialState,
     reducers: {
+        updateGroupInfo: (state, action) => {
+            state.groupInfo = action.payload
+        },
         changeGroupStatus: (state, action) => {
             state.status = action.payload
         },
@@ -146,7 +149,7 @@ const groupSlice = createSlice({
 })
 
 export const selectGroup = (state) => state.group
-export const { changeGroupStatus, changeEnterGroup } = groupSlice.actions
+export const { updateGroupInfo, changeGroupStatus, changeEnterGroup } = groupSlice.actions
 
 export default groupSlice.reducer
 
