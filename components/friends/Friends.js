@@ -17,32 +17,32 @@ const Friends = ({navigation}) => {
   const user = useSelector(selectUser);
 
   return (
-    <View>
       <Stack
       backgroundColor={colors.background}
       h="100%"
       w="100%"
       items="center"
       paddingTop={35}
+
       >
 
-          <Flex w="70%" style={styles.searchHolder} direction="row">
-            <AIcon name="search1" style={styles.iconImg} color='B4BABC'/>
-            <TextInput
-              style={styles.searchInput}
-              placeholder='Search friends'
-              color='#B4BABC'
-            />
+          <Flex w="85%" direction="row">
+			  <Flex w="90%" style={styles.searchHolder} direction="row">
+				<AIcon name="search1" style={styles.iconImg} color='B4BABC'/>
+				<TextInput
+				  style={styles.searchInput}
+				  placeholder='Search friends'
+				  color='#B4BABC'
+				/>
+			  </Flex>
             <IconButton
-            icon={props => <AIcon name="adduser" {...props} style={styles.iconImg} color='B4BABC' />}
+            icon={props => <AIcon name="adduser" {...props} color='B4BABC' />}
             onPress={() => navigation.navigate("AddFriends")}
             />
 
           </Flex>
 
       </Stack>
-    </View>
-
   );
 };
 

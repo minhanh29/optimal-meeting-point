@@ -7,7 +7,7 @@ import Icon from "@expo/vector-icons/Ionicons";
 import FIcon from "@expo/vector-icons/Feather";
 import MIcon from "@expo/vector-icons/MaterialIcons"
 import styles from "./styles"
-import { collection, getDocs, onSnapshot, query, where } from "firebase/firestore";
+import { documentId, collection, getDocs, onSnapshot, query, where } from "firebase/firestore";
 import { db, getGroupName } from "../../firebaseConfig"
 import { useDispatch, useSelector } from 'react-redux';
 import { selectUser } from '../../redux/reducers/userSlice';
@@ -20,6 +20,7 @@ const Groups = ({ navigation }) => {
   const user = useSelector(selectUser);
   const [dataList, setDataList] = useState([]);
   const [groupNameMap, setGroupNameMap] = useState({});
+  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const group = useSelector(selectGroup);
   console.log("Data", dataList);
@@ -29,13 +30,13 @@ const Groups = ({ navigation }) => {
   const fetchGroupName = async (refList) => {
     const groupDict = { ...groupNameMap }
     const groups = []
+
     try {
       for (let i = 0; i < refList.length; i++) {
         let data = refList[i]
         if (data.group_id in groupDict) {
           groups.push(groupDict[data.group_id])
           continue
-
         }
         const res = await getGroupName(data.group_id)
         // count group members
@@ -54,17 +55,17 @@ const Groups = ({ navigation }) => {
     }
     setDataList(groups);
     setGroupNameMap(groupDict);
+	setLoading(false)
   };
 
-  useEffect(
-    () => onSnapshot(query(collection(db, "groupNuser"), where("user_id", "==", user.user.id)), (snapshot) => {
-      // Update to Redux
-      const refList = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
-      fetchGroupName(refList)
-    }
-    ),
-    []
-  );
+	useEffect(() => {
+		setLoading(true)
+		onSnapshot(query(collection(db, "groupNuser"), where("user_id", "==", user.user.id)), (snapshot) => {
+		  // Update to Redux
+		  const refList = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
+		  fetchGroupName(refList)
+		})
+	}, []);
 
   useEffect(() => {
     if (group.status === GROUP_DELETE_REJECTED) {
@@ -121,7 +122,7 @@ const Groups = ({ navigation }) => {
         paddingTop={35}
       >
         <Spinner
-          visible={group.status === GROUP_DELETE_PENDING}
+          visible={group.status === GROUP_DELETE_PENDING || loading}
           textContent={'Loading...'}
           textStyle={{ color: "white" }}
           cancelable={true}

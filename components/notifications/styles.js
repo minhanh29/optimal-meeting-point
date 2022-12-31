@@ -21,10 +21,11 @@ const styles = StyleSheet.create({
 		borderRadius: 15,
 		padding: 15,
 		elevation: 0,
+		overflow: "hidden",
 	},
 	tabBarItemTitle: {
 		fontFamily: "Montserrat-Bold",
-		fontSize: 14,
+		fontSize: 13,
 		textAlign: 'center',
 		color: "black"
 	},
@@ -43,9 +44,9 @@ const styles = StyleSheet.create({
 	},
 	activeTabBarItemTitle: {
 		fontFamily: "Montserrat-Bold",
-		fontSize: 14,
+		fontSize: 13,
 		textAlign: 'center',
-		color: "white"
+		color: "white",
 	},
 	cardContainer: {
 		width: "100%",

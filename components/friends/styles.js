@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
         borderRadius: 15,
     },
 	searchInput: {
-		width: "80%",
+		width: "75%",
 		paddingTop: 14,
         paddingBottom: 14,
 		backgroundColor: "white",

@@ -4,12 +4,12 @@
     "slug": "optimal-meeting-point",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/myicon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/mysplash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#EDF4F7"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -30,8 +30,8 @@
 	  "versionCode": 1,
       "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#FFFFFF"
+        "foregroundImage": "./assets/my-adaptive-icon.png",
+        "backgroundColor": "#EDF4F7"
       },
       "permissions": [
         "android.permission.RECORD_AUDIO"

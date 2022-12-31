@@ -28,6 +28,8 @@ import { getGroupName } from "../../firebaseConfig";
 import BottomSheet from "reanimated-bottom-sheet";
 import Animated from "react-native-reanimated";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import Spinner from 'react-native-loading-spinner-overlay';
+
 const mapStyle = mapStyleJson["mapStyle"];
 
 import { db, updateAddress } from "../../firebaseConfig";
@@ -192,13 +194,14 @@ const AvaMarker = ({ groupID, setLocationList }) => {
   return (
     <>
       {userList &&
-        userList.map((user) => (
+        userList.map((user, index) => (
           <Marker
             coordinate={{
               latitude: user.user_group_address.latitude,
               longitude: user.user_group_address.longitude,
             }}
             title={"user"}
+			key={index}
           >
             <View></View>
             <View
@@ -298,6 +301,7 @@ const Dashboard = ({ navigation }) => {
   const group = useSelector(selectGroup);
   const [groupData, setGroupData] = useState(null);
   const [middlePoint, setMiddlePoint] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [suggestion, setSuggestion] = useState([]);
   const [locationList, setLocationList] = useState([]);
   const dispatch = useDispatch();
@@ -339,6 +343,7 @@ const Dashboard = ({ navigation }) => {
       return;
     }
 
+	setLoading(true)
     let longitude = 0;
     let latitude = 0;
     for (let i = 0; i < locationList.length; i++) {
@@ -388,7 +393,9 @@ const Dashboard = ({ navigation }) => {
       );
 
       setSuggestion(places.slice(0, Math.min(places.length, NUM_SUGGESTION)));
+	setLoading(false)
     } catch (e) {
+		setLoading(false)
       console.log(e.message);
     }
   };
@@ -423,6 +430,12 @@ const Dashboard = ({ navigation }) => {
   // console.log("User Info", user.user.address)
   return (
     <View style={styles.container}>
+        <Spinner
+          visible={loading}
+          textContent={'Finding meeting point...'}
+          textStyle={{ color: "white" }}
+          cancelable={true}
+        />
       <StatusBar style="dark" backgroundColor="white" />
       <MapView
         style={styles.map}
@@ -477,7 +490,6 @@ const Dashboard = ({ navigation }) => {
         {/* <PlaceMarker suggestion={suggestion}></PlaceMarker> */}
 
         {suggestion.map((place, i) => (
-          <>
             <Marker
               key={i}
               coordinate={place.coordinate}
@@ -495,7 +507,6 @@ const Dashboard = ({ navigation }) => {
                 ></Image>
               </TouchableOpacity>
             </Marker>
-          </>
         ))}
 
         {/* // User's location Pin */}

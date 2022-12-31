@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, TextInput, ScrollView } from 'react-native'
+import { Alert, View, Text, TouchableOpacity, TextInput, ScrollView } from 'react-native'
 import styles from './styles'
 import React from 'react'
 import { useState, useEffect } from 'react'
@@ -7,6 +7,7 @@ import { Box, Flex, HStack, IconButton, Stack, VStack } from '@react-native-mate
 import Icon from "@expo/vector-icons/Ionicons";
 import FIcon from "@expo/vector-icons/Feather";
 import AIcon from "@expo/vector-icons/AntDesign";
+import Spinner from "react-native-loading-spinner-overlay";
 import { GOONG_PUBLIC_KEY } from '../../key';
 
 
@@ -17,6 +18,7 @@ const SetAddress = ({ route, navigation }) => {
   const [suggestionList, setSuggestionList] = useState([])
   const [timeInput, setTimeInput] = useState(0)
   const [defaultValue, setDefaultValue] = useState("")
+  const [loading, setLoading] = useState(false)
   // const [geoLocation, setGeoLocation] = useState(null)
   // console.log("GEO", geoLocation)
 
@@ -61,18 +63,32 @@ const SetAddress = ({ route, navigation }) => {
   //Geocode
   const updateInput = async (content) => {
     setDefaultValue(content.description)
+	setLoading(true)
     try {
       let url = "https://rsapi.goong.io/Place/Detail?place_id=" + content.place_id + "&api_key=" + GOONG_PUBLIC_KEY
       let res = await fetch(url)
       res = await res.json()
-      setGeoLocation({
+      await setGeoLocation({
 		  location: {
 			  latitude: res.result.geometry.location.lat,
 			  longitude: res.result.geometry.location.lng,
 		  },
         address_text: content.description
       })
+		setLoading(false)
+		Alert.alert(
+			"Update Location",
+			"Group location has been updated successfully",
+			[
+				{
+					text: "OK",
+					onPress:() => navigation.navigate("Dashboard"),
+				}
+			],
+			{ cancelable: true }
+		);
     } catch (e) {
+		setLoading(false)
       console.log(e.message)
     }
   }
@@ -85,6 +101,12 @@ const SetAddress = ({ route, navigation }) => {
       items="center"
       paddingTop={35}
     >
+      <Spinner
+        visible={loading}
+        textContent={"Loading..."}
+        textStyle={{ color: "white" }}
+        cancelable={true}
+      />
       <Stack w="90%" items="start">
         <HStack direction='row' w='100%' spacing={20} style={{ ...styles.searchHolder, marginTop: Platform.OS == "ios" ? 15 : 20 }}>
           <AIcon name="search1" size={24} style={styles.iconImg} color='B4BABC' />
