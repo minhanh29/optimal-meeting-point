@@ -2,15 +2,11 @@ import { View, Text, TouchableOpacity, TextInput, ScrollView } from 'react-nativ
 import styles from './styles'
 import React from 'react'
 import { useState, useEffect } from 'react'
-import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete'
 import { useTheme } from '@react-navigation/native';
 import { Box, Flex, HStack, IconButton, Stack, VStack } from '@react-native-material/core'
-import { useRef } from 'react'
 import Icon from "@expo/vector-icons/Ionicons";
 import FIcon from "@expo/vector-icons/Feather";
 import AIcon from "@expo/vector-icons/AntDesign";
-import Config from "react-native-config";
-import { getAddressFromGeopoint, getGeoCodeFromAddress } from '../common/Utils'
 import { GOONG_PUBLIC_KEY } from '../../key';
 
 
@@ -18,8 +14,6 @@ import { GOONG_PUBLIC_KEY } from '../../key';
 const SetAddress = ({ route, navigation }) => {
 	const { setGeoLocation } = route.params;
   const { colors } = useTheme();
-
-  // const [searchInput, setSearchInput] = useState("")
   const [suggestionList, setSuggestionList] = useState([])
   const [timeInput, setTimeInput] = useState(0)
   const [defaultValue, setDefaultValue] = useState("")
@@ -65,7 +59,7 @@ const SetAddress = ({ route, navigation }) => {
   }
 
   //Geocode
-  const updateInput = async(content) => {
+  const updateInput = async (content) => {
     setDefaultValue(content.description)
     try {
       let url = "https://rsapi.goong.io/Place/Detail?place_id=" + content.place_id + "&api_key=" + GOONG_PUBLIC_KEY

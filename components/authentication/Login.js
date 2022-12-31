@@ -5,6 +5,7 @@ import { Feather } from '@expo/vector-icons';
 import { Flex } from "@react-native-material/core";
 // import logo from "./../../images/logo.png"
 import { logInAsync, selectUser, changeStatus, USER_LOGIN_FAILED, USER_LOGIN_PENDING, USER_LOGIN_SUCCESS, USER_IDLE } from "../../redux/reducers/userSlice";
+import { changeEnterGroup } from "../../redux/reducers/groupSlice";
 import { useDispatch, useSelector } from "react-redux";
 import Spinner from 'react-native-loading-spinner-overlay';
 
@@ -22,6 +23,10 @@ const Login = ({ navigation }) => {
 			showErrorMessage(user.errorMessage)
         } else if (user.status === USER_LOGIN_SUCCESS){
             dispatch(changeStatus(USER_IDLE))
+			dispatch(changeEnterGroup({
+				enterGroup: false,
+				groupId: "",
+			}))
 			navigation.navigate("Dashboard")
         }
     },[user.status])
