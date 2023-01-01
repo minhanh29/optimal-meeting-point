@@ -17,7 +17,6 @@
     "@react-navigation/native": "^6.0.14",
     "@react-navigation/stack": "^6.3.5",
     "@reduxjs/toolkit": "^1.9.1",
-    "@rnmapbox/maps": "^10.0.0-beta.62",
     "base-64": "^1.0.0",
     "expo": "~47.0.9",
     "expo-app-loading": "^2.1.1",
