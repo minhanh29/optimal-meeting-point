@@ -166,7 +166,7 @@ const FriendRequests = () => {
 			)
 		}
 	}
-	
+
 	const handleDeleteRequest = (request_id) => {
 		console.log("ID", request_id)
 		dispatch(deleteRequestAsync(request_id))
@@ -174,13 +174,13 @@ const FriendRequests = () => {
 
 	return (
 		<Stack h="100%" overflow="visible">
+			<Spinner
+				visible={!loaded || processing}
+				textContent={processing ? 'Processing...':'Loading...'}
+				textStyle={{color: "white"}}
+				cancelable={true}
+			/>
 			<Stack w="100%" spacing={10} marginTop={20} justify="between">
-				<Spinner
-					visible={!loaded || processing}
-					textContent={processing ? 'Processing...':'Loading...'}
-					textStyle={{color: "white"}}
-					cancelable={true}
-				/>
 				<Flex direction="row">
 					<CheckBox
 						disabled={false}

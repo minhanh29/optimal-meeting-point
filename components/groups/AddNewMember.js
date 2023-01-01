@@ -6,7 +6,7 @@ import styles from "./styles"
 import AIcon from "@expo/vector-icons/AntDesign";
 import { useEffect } from 'react';
 import { useState } from 'react';
-import { collection, doc, getDocs, query, addDoc, GeoPoint } from "firebase/firestore";
+import { collection, doc, getDocs, query, where, documentId, addDoc, GeoPoint } from "firebase/firestore";
 import { db, getGroupName } from "../../firebaseConfig"
 import FIcon from "@expo/vector-icons/Feather";
 import { useDispatch, useSelector } from 'react-redux';
@@ -20,11 +20,9 @@ const AddNewMember = () => {
     const [userList, setUserList] = useState([]);
     const [selectedIndex, setSelectedIndex] = useState([]);
     const [memberList, setMemberList] = useState([])
-    const [groupData, setGroupData] = useState('')
+    const [groupData, setGroupData] = useState({})
     const [numMember, setNumMember] = useState()
     const dispatch = useDispatch()
-    console.log('satus', group.status)
-    console.log("GROUP", groupData)
 
     useEffect(() => {
         if (group.status === ADD_MEMBER_REJECTED) {
@@ -70,7 +68,7 @@ const AddNewMember = () => {
         }
     }
 
-    
+
 
     useEffect(() => {
         verifyAndFetchData(group.groupId)
@@ -79,13 +77,20 @@ const AddNewMember = () => {
 
     const fetchUserInfo = async () => {
         try {
-            const querySnapshot = await getDocs(collection(db, "user"));
+			const memberIdSet = new Set(group.memberIds)
+			console.log("Set ====", memberIdSet)
+            const friendSnapshot = await getDocs(query(collection(db, "friend"), where("person1_id", "==", user.user.id)));
+			const friendIdList = friendSnapshot.docs.map(doc => doc.data().person2_id)
+            const querySnapshot = await getDocs(query(collection(db, "user"), where(documentId(), "in", friendIdList)));
+
             const result = []
             querySnapshot.forEach(doc => {
-                result.push({
-                    id: doc.id,
-                    ...doc.data()
-                })
+				if (!memberIdSet.has(doc.id)) {
+					result.push({
+						id: doc.id,
+						...doc.data()
+					})
+				}
             })
             setUserList(result)
         } catch (e) {

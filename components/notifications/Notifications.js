@@ -8,8 +8,8 @@ import FriendRequests from "./FriendRequests"
 import styles from "./styles"
 
 const renderScene = SceneMap({
-  first: GroupInvitations,
-  second: FriendRequests,
+	first: GroupInvitations,
+	second: FriendRequests,
 });
 
 const Notifications = () => {

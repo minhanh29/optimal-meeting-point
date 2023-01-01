@@ -9,11 +9,12 @@ import { useState } from 'react';
 import { collection, doc, getDocs, query, addDoc, onSnapshot, where } from "firebase/firestore";
 import { db, getGroupName, getUserInfo } from "../../firebaseConfig"
 import FIcon from "@expo/vector-icons/Feather";
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { selectUser } from '../../redux/reducers/userSlice';
 import Icon from "@expo/vector-icons/Ionicons";
 import {
   selectGroup,
+	changeMemberIds,
 } from "../../redux/reducers/groupSlice";
 
 
@@ -26,6 +27,7 @@ const GroupInfo = ({navigation}) => {
     // const groupID = "vwcofpwSCqh01WnAaqsZ" //useParam
     console.log("DataList", dataList)
     const user = useSelector(selectUser)
+    const dispatch = useDispatch()
     console.log("MemberName", memberNameMap)
 
     const fetchMemberName = async (refList) => {
@@ -45,6 +47,7 @@ const GroupInfo = ({navigation}) => {
 
             memberDict[res.id] = {
               id: data.id,
+				user_id: res.id,
               ...res.data()
             }
 
@@ -55,6 +58,7 @@ const GroupInfo = ({navigation}) => {
         } catch (e) { }
         setDataList(members)
         setMemberNameMap(memberDict)
+		dispatch(changeMemberIds(members.map(item => item.user_id)))
       }
 
 	useEffect(() => {
@@ -102,7 +106,7 @@ const GroupInfo = ({navigation}) => {
                             backgroundColor="white"
                             style={styles.cardContainer}
                             w='100%'
-                            // key={index}
+                            key={index}
                         >
                             <Flex
                                 w="100%"

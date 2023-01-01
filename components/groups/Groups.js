@@ -26,44 +26,84 @@ const Groups = ({ navigation }) => {
   console.log("Data", dataList);
 
 
+	const loadMemberCount = async (groupDict) => {
+		try {
+			const result = {}
+			for (const [key, value] of Object.entries(groupDict)) {
+				if (value.count !== -1) {
+					result[key] = value
+					continue
+				}
 
-  const fetchGroupName = async (refList) => {
-    const groupDict = { ...groupNameMap }
-    const groups = []
+				const memData = await getDocs(
+					query(
+						collection(db, "groupNuser"),
+						where("group_id", "==", value.group_id)
+					)
+				);
+				result[key] = {
+					...value,
+					count: memData.docs.length,
+				}
+			}
 
-    try {
-      for (let i = 0; i < refList.length; i++) {
-        let data = refList[i]
-        if (data.group_id in groupDict) {
-          groups.push(groupDict[data.group_id])
-          continue
-        }
-        const res = await getGroupName(data.group_id)
-        // count group members
-        const memData = await getDocs(query(collection(db, "groupNuser"), where("group_id", "==", data.group_id)))
+			// update data list
+			let groups = Array.from(new Map(Object.entries(result)).values());
+			groups.sort((a, b) => a.group_name.localeCompare(b.group_name));
+			setDataList(groups);
+			setGroupNameMap(groupDict);
+		} catch (e) {
+			console.log(e.message)
+		}
+	};
 
-        groupDict[res.id] = {
-          id: data.id,
-          group_id: data.group_id,
-          count: memData.docs.length,
-          ...res.data()
-        }
-        groups.push(groupDict[data.group_id])
-      }
-    } catch (e) {
-      console.log(e.message);
-    }
-    setDataList(groups);
-    setGroupNameMap(groupDict);
-	setLoading(false)
-  };
+	const fetchGroupData = async refList => {
+		const groupDict = { ...groupNameMap };
+		let groups = [];
+
+		try {
+			// get group data
+			const groupIdList = refList.map(item => item.group_id);
+			const groupIdToRef = refList.reduce((map, item) => {
+				map[item.group_id] = item.id;
+				return map;
+			}, {});
+
+			const groupData = await getDocs(
+				query(
+					collection(db, "group"),
+					where(documentId(), "in", groupIdList)
+				)
+			);
+
+			groupData.docs.forEach(doc => {
+				groupDict[doc.id] = {
+					id: groupIdToRef[doc.id],
+					group_id: doc.id,
+					count: -1,
+					...doc.data()
+				};
+			});
+
+			groups = Array.from(new Map(Object.entries(groupDict)).values());
+			groups.sort((a, b) => a.group_name.localeCompare(b.group_name));
+		} catch (e) {
+			console.log(e.message);
+		}
+		setDataList(groups);
+		setGroupNameMap(groupDict);
+		setLoading(false);
+
+		loadMemberCount(groupDict)
+	};
+
 
 	useEffect(() => {
 		setLoading(true)
 		onSnapshot(query(collection(db, "groupNuser"), where("user_id", "==", user.user.id)), (snapshot) => {
 		  // Update to Redux
 		  const refList = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
-		  fetchGroupName(refList)
+		  fetchGroupData(refList)
 		})
 	}, []);
 
@@ -98,9 +138,9 @@ const Groups = ({ navigation }) => {
 
 
   //Left the group
-  const handleDelete = (group_id) => {
-    console.log("ID", group_id)
-    dispatch(deleteGroupAsync(group_id))
+  const handleDelete = (groupNuser_id) => {
+    console.log("Delete ID", groupNuser_id)
+    dispatch(deleteGroupAsync(groupNuser_id))
   }
 
   const handleEnter = (id) => {
@@ -161,9 +201,13 @@ const Groups = ({ navigation }) => {
                       <Text style={styles.cardHeader} >
                         {data.group_name}
                       </Text>
+						{data.count == -1 ?
+                      <Text style={styles.infoContent} >
+						  Counting members...
+					  </Text>:
                       <Text style={styles.infoContent} >
                         {data.count} {data.count == 1 ? "member" : "members"}
-                      </Text>
+                      </Text>}
                     </Stack>
 
                     <IconButton

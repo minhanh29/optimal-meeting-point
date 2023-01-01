@@ -49,6 +49,7 @@ const initialState = {
     groupNuserStatus: GROUP_AND_USER_IDLE,
     enterGroup: false,
     groupId: "",
+	memberIds: []
 }
 
 
@@ -77,11 +78,11 @@ export const updateAddressAsync = createAsyncThunk('group/updateAddressAsync', a
 })
 
 export const addNewMemberAsync = createAsyncThunk('group/addNewMemberAsync', async (data) => {
-        // send invitation
-        const memberIds = data.memberIds
-        for (let i = 0; i < memberIds.length; i++) {
-            await createGroupInvitation(data.group_id, data.user_id, memberIds[i])
-        }
+	// send invitation
+	const memberIds = data.memberIds
+	for (let i = 0; i < memberIds.length; i++) {
+		await createGroupInvitation(data.group_id, data.user_id, memberIds[i])
+	}
 })
 
 const groupSlice = createSlice({
@@ -97,6 +98,9 @@ const groupSlice = createSlice({
         changeEnterGroup: (state, action) => {
             state.enterGroup = action.payload.enterGroup
             state.groupId = action.payload.groupId
+        },
+        changeMemberIds: (state, action) => {
+            state.memberIds = action.payload
         },
     },
     extraReducers: builder => {
@@ -149,7 +153,7 @@ const groupSlice = createSlice({
 })
 
 export const selectGroup = (state) => state.group
-export const { updateGroupInfo, changeGroupStatus, changeEnterGroup } = groupSlice.actions
+export const { changeMemberIds, updateGroupInfo, changeGroupStatus, changeEnterGroup } = groupSlice.actions
 
 export default groupSlice.reducer
 

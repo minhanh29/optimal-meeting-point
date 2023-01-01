@@ -6,14 +6,12 @@ import { collection, getDocs, query, where } from "firebase/firestore";
 import { useDispatch, useSelector } from "react-redux";
 import { useTheme } from '@react-navigation/native';
 import AIcon from "@expo/vector-icons/AntDesign";
-// import Icon from "@expo/vector-icons/Ionicons";
 import FIcon from "@expo/vector-icons/Feather";
-import MIcon from "@expo/vector-icons/MaterialIcons";
 import styles from "./styles";
 import { selectUser } from '../../redux/reducers/userSlice';
 import { useState } from "react";
 import { addFriendAsync } from "../../redux/reducers/userSlice";
-import { async } from "@firebase/util";
+import Spinner from 'react-native-loading-spinner-overlay';
 
 const AddFriends = ({navigation}) => {
 
@@ -22,11 +20,12 @@ const AddFriends = ({navigation}) => {
     // const [friendList , setFriendList] = useState([]);
     // const [requestList, setRequestList] = useState([]);
     const [selectedIndex, setSelectedIndex] = useState([]);
+    const [loading, setLoading] = useState(true);
     const user = useSelector(selectUser);
-    const [avatar, setAvatar] = useState(null);
     const dispatch = useDispatch()
 
     const fetchUserInfo = async () => {
+		setLoading(true)
         try {
             const friendSnapshot = await getDocs(query(collection(db, "friend"), where("person1_id", "==", user.user.id)));
 			const friendSet = new Set(friendSnapshot.docs.map(doc => doc.data().person2_id))
@@ -48,16 +47,12 @@ const AddFriends = ({navigation}) => {
                 }
             })
 
-            const doc = querySnapshot.docs[0]
-            const data = doc.data()
-            // setName(data.name)
-            // setUsername(data.username)
-            setAvatar(data.ava_url)
             setUserList(result)
 
         } catch (e) {
             console.log(e)
         }
+		setLoading(false)
     }
 
     useEffect(() => {
@@ -65,7 +60,7 @@ const AddFriends = ({navigation}) => {
     }, []);
 
     const handleAdd = (receiver, index) => {
-    
+
 
         setSelectedIndex(prev => {
             const isInclude = selectedIndex.includes(index)
@@ -89,9 +84,6 @@ const AddFriends = ({navigation}) => {
         }
     }
 
-    // const sendRequest = async
-
-
     return (
         <View>
             <Stack
@@ -99,8 +91,14 @@ const AddFriends = ({navigation}) => {
             h="100%"
             w="100%"
             items="center"
-            paddingTop={40}
+            paddingTop={45}
             >
+				<Spinner
+					visible={loading}
+					textContent={'Loading...'}
+					textStyle={{ color: "white" }}
+					cancelable={true}
+				/>
                 <Stack h="100%"
                     w="100%"
                     items="center"
@@ -133,7 +131,7 @@ const AddFriends = ({navigation}) => {
                                             <Avatar
                                             label={item.name}
                                             icon={props => <Icon name="account" {...props} />}
-                                            image={avatar ? {uri: item.ava_url} : null}
+                                            image={item.ava_url ? {uri: item.ava_url} : null}
                                             imageStyle={{borderRadius: 10}}
                                             />
                                         <Stack

@@ -156,7 +156,7 @@ const AvaMarker = ({ groupID, setLocationList }) => {
 
         users.push({
           user_id: data.user_id,
-          user_group_address: data.group_address,
+			user_group_address: typeof data.group_address !== "string" ? data.group_address : rmit,
         });
 
         userIDs.push(data.user_id);
@@ -312,19 +312,22 @@ const Dashboard = ({ navigation }) => {
     }
   }, [group.enterGroup, group.groupId]);
 
-  const fetchGroupData = async () => {
-    try {
-      const group_data = await getGroupName(group.groupId);
-      setGroupData(group_data.data());
-		dispatch(updateGroupInfo({
-			group_id: group_data.id,
-			...group_data.data(),
-			address: geoToDict(group_data.data().address)
-		}))
-    } catch (e) {
-      console.log(e.message);
-    }
-  };
+	const fetchGroupData = async () => {
+		try {
+			const snapshot = await getGroupName(group.groupId);
+			const group_data = snapshot.data();
+			setGroupData(group_data)
+			dispatch(updateGroupInfo({
+					group_id: snapshot.id,
+					...group_data,
+					location: group_data.location && (typeof group_data.location !== "string") ? geoToDict(group_data.location) : null,
+					address: group_data.address && (typeof group_data.address === "string") ? group_data.address : "",
+			}));
+		} catch (e) {
+			console.log(e.message);
+		}
+	};
+
   const distance = (pt1, pt2) => {
     return (
       Math.pow(pt1.longitude - pt2.longitude, 2) +
@@ -356,9 +359,6 @@ const Dashboard = ({ navigation }) => {
 
     setMiddlePoint({ longitude, latitude });
 
-    // const url = "https://api.mapbox.com/geocoding/v5/mapbox.places/coffee.json?bbox=" + minLon + "," + minLat +  "," + maxLon + "," + maxLat +"&access_token=" + MAPBOX_PUBLIC_KEY
-
-    // const url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + latitude + "," + longitude + "&radius=" + radius + "&type=" + placeType + "&key=" + GOOGLE_MAPS_API_KEY;
     try {
       let places = [];
       for (let k = 0; k < placeTypes.length; k++) {
