@@ -211,7 +211,7 @@ export const logInAsync = createAsyncThunk('user/logInAsync', async (data) => {
 	return {
 		id: res.user.uid,
 		...userInfo,
-		address: geoToDict(userInfo.address)  // prevent non-serializable error
+		address: userInfo.address ? geoToDict(userInfo.address) : initialState.user.address // prevent non-serializable error
 	}
 })
 
@@ -222,7 +222,7 @@ export const logOutAsync = createAsyncThunk('user/logOutAsync', async () => {
 
 export const addFriendAsync = createAsyncThunk('user/addFriendAsync', async (data) => {
      //send friend request
-    
+
     await createFriendRequest(data.user_id, data.receiver_id)
 
     return {
@@ -255,6 +255,10 @@ const userSlice = createSlice({
 		},
 		changePasswordStatus: (state, action) => {
 			state.passwordInfoStatus = action.payload
+		},
+		changeLocation: (state, action) => {
+			state.user.address = action.payload.address
+			state.user.address_text = action.payload.address_text
 		},
     },
     extraReducers: builder =>{
@@ -325,6 +329,6 @@ const userSlice = createSlice({
 })
 
 export const selectUser = (state) => state.user
-export const {changeSignUpStatus, changePasswordStatus, signUpFail, changeStatus, loginFail} = userSlice.actions
+export const { changeLocation, changeSignUpStatus, changePasswordStatus, signUpFail, changeStatus, loginFail} = userSlice.actions
 
 export default userSlice.reducer

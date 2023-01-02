@@ -4,6 +4,7 @@ import React, {
 } from "react";
 import { View, Image, Alert } from "react-native";
 import { StatusBar } from "expo-status-bar";
+import { Ionicons } from '@expo/vector-icons';
 import MapView, { Marker, Callout, PROVIDER_GOOGLE } from "react-native-maps";
 import Svg from "react-native-svg";
 import { IconButton, Text } from "@react-native-material/core";
@@ -489,7 +490,7 @@ const Dashboard = ({ navigation }) => {
 
         {/* <PlaceMarker suggestion={suggestion}></PlaceMarker> */}
 
-        {suggestion.map((place, i) => (
+        {group.enterGroup && suggestion.map((place, i) => (
             <Marker
               key={i}
               coordinate={place.coordinate}
@@ -515,7 +516,69 @@ const Dashboard = ({ navigation }) => {
             groupID={group.groupId}
             setLocationList={setLocationList}
           />
-        ) : null}
+        ) :
+          <Marker
+            coordinate={{
+              latitude: user.user.address.latitude,
+              longitude: user.user.address.longitude,
+            }}
+            title={"user"}
+          >
+            <View></View>
+            <View
+              style={{
+                flexDirection: "row",
+                backgroundColor: "#00bfff",
+                borderTopLeftRadius: 60,
+                borderTopRightRadius: 60,
+                borderBottomRightRadius: 0,
+                borderBottomLeftRadius: 60,
+                transform: [{ rotate: "45deg" }],
+                alignSelf: "flex-start",
+                height: 45,
+                width: 45,
+              }}
+            >
+              <Svg width={40} height={30}>
+                <Image
+                  source={{ uri: user.user.ava_url }}
+                  width={40}
+                  height={30}
+                  style={{
+                    height: 40,
+                    width: 40,
+                    transform: [{ rotate: "-45deg" }],
+                    borderRadius: 90,
+                    position: "absolute",
+                    left: 1.5, // 1.5
+                    bottom: -42, // -32
+                  }}
+                />
+              </Svg>
+            </View>
+            <Callout>
+              <View
+                style={{
+                  flexDirection: "column",
+                  width: 120,
+                  height: 30,
+                }}
+              >
+                <Text
+                  style={{
+                    marginLeft: 2,
+                    marginBottom: 1,
+                    color: "black",
+                    fontWeight: "bold",
+                    alignSelf: "center",
+                  }}
+                >
+                  {user.user.username}
+                </Text>
+              </View>
+            </Callout>
+          </Marker>
+		  }
       </MapView>
 
       <BottomSheet
@@ -529,7 +592,7 @@ const Dashboard = ({ navigation }) => {
         enabledGestureInteraction={true}
       />
 
-      {groupData ? (
+      {group.enterGroup && groupData ? (
         <View style={styles.topContainer}>
           <Text style={styles.topTitle}>{groupData.group_name}</Text>
         </View>
@@ -668,7 +731,7 @@ const Dashboard = ({ navigation }) => {
             onPress={() => navigation.navigate("Friends")}
           />
         </View>
-        {groupData ? (
+        {group.enterGroup && groupData ? (
           <View
             style={{
               ...styles.shadowBtn,

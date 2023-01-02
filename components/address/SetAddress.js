@@ -78,7 +78,7 @@ const SetAddress = ({ route, navigation }) => {
 		setLoading(false)
 		Alert.alert(
 			"Update Location",
-			"Group location has been updated successfully",
+			"Your location has been updated successfully",
 			[
 				{
 					text: "OK",

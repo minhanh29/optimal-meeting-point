@@ -3,15 +3,20 @@ import { TouchableOpacity, Platform, Alert } from 'react-native'
 import { Avatar, Box, Stack, Text, Switch, Flex, Spacer } from "@react-native-material/core";
 import { useTheme } from '@react-navigation/native';
 import * as Location from 'expo-location';
-import { db } from "../../firebaseConfig"
-import { onSnapshot, doc } from "firebase/firestore";
+import { db, updateUser } from "../../firebaseConfig"
+import { onSnapshot, doc, GeoPoint } from "firebase/firestore";
 import {
 	logOutAsync,
-	selectUser
+	selectUser,
+	changeLocation
 } from "../../redux/reducers/userSlice"
+import {
+	changeEnterGroup
+} from "../../redux/reducers/groupSlice"
 import { useDispatch, useSelector } from "react-redux"
 
 import styles from "./styles"
+import {geoToDict} from '../common/Utils';
 
 const Settings = ({ navigation }) => {
 	const { colors } = useTheme();
@@ -76,6 +81,22 @@ const Settings = ({ navigation }) => {
 	const handleLogout = () => {
 		dispatch(logOutAsync())
 		navigation.navigate("Login")
+	}
+
+	const setUserLocation = async (data) => {
+		const newData = {
+			address: new GeoPoint(data.location.latitude, data.location.longitude),
+			address_text: data.address_text
+		}
+		await updateUser(user.id, newData)
+		dispatch(changeLocation({
+			address: data.location,
+			address_text: data.address_text
+		}))
+		dispatch(changeEnterGroup({
+			enterGroup: false,
+			groupId: "",
+		}))
 	}
 
 	return (
@@ -168,7 +189,13 @@ const Settings = ({ navigation }) => {
 				/>
 			</Flex>
 
-			<TouchableOpacity style={styles.cardContainer} >
+			<TouchableOpacity style={styles.cardContainer}
+              onPress={() =>
+                navigation.navigate("Address", {
+                  setGeoLocation: setUserLocation,
+                })
+              }
+			>
 				<Text style={styles.cardHeader} >
 					Edit your default location
 				</Text>
