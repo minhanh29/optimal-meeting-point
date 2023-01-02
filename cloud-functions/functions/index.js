@@ -97,6 +97,33 @@ exports.groupWriteListener = functions.region('asia-northeast1').firestore
 		})
 	})
 
+exports.friendWriteListener = functions.region('asia-northeast1').firestore
+.document("friend/{docID}")
+.onCreate(async (snap, context) => {
+	console.log(snap.data())
+	const person1_id = snap.data().person1_id
+	const person2_id = snap.data().person2_id
+
+	const person1 = await db.collection('user').doc(person1_id).get()
+	console.log("person 1 data ", person1.data())
+	
+	const person1_info = {
+		person1_id: person1_id,
+		ava_url: person1.data().ava_url,
+		name: person1.data().name,
+		username: person1.data().username
+	};
+	const record = {
+		objectID: snap.id,
+		...person1_info,
+		person2_id: person2_id
+	};
+	console.log(record)
+		saveDocumentInAlgolia(record)
+		.then(res => console.log("Friend is added to algolia", res))
+		.catch(e => console.log("Algolia Add Error", e.message))
+})
+
 exports.groupUpdateFromGroupListener = functions.region('asia-northeast1').firestore
 	.document("group/{docID}")
 	.onUpdate((snap, context) =>{
@@ -168,6 +195,7 @@ exports.sendFriendsToAlgolia = functions.region('asia-northeast1').https.onReque
 		res.status(500).send(e.message);
 	}
 })
+
 
 exports.friendUpdateListener = functions.region('asia-northeast1').firestore
 	.document("user/{docId}")
