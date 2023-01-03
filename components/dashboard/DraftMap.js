@@ -440,7 +440,12 @@ const Dashboard = ({ navigation }) => {
       <StatusBar style="dark" backgroundColor="white" />
       <MapView
         style={styles.map}
-        initialRegion={initRegion}
+		  initialRegion={user.user.address ? {
+				latitude: user.user.address.latitude,
+				longitude: user.user.address.longitude,
+				latitudeDelta: 0.0922,
+				longitudeDelta: 0.0421,
+		  }:initRegion}
         customMapStyle={mapStyle}
 		  provider={PROVIDER_GOOGLE}
       >

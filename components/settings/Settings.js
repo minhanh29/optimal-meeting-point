@@ -93,10 +93,10 @@ const Settings = ({ navigation }) => {
 			address: data.location,
 			address_text: data.address_text
 		}))
-		dispatch(changeEnterGroup({
-			enterGroup: false,
-			groupId: "",
-		}))
+		// dispatch(changeEnterGroup({
+		// 	enterGroup: false,
+		// 	groupId: "",
+		// }))
 	}
 
 	return (
