@@ -14,58 +14,135 @@ import { selectUser } from '../../redux/reducers/userSlice';
 import { useState } from 'react';
 import { deleteGroupAsync, selectGroup, changeEnterGroup, GROUP_DELETE_PENDING, GROUP_DELETE_REJECTED, GROUP_DELETE_SUCCESS, changeGroupStatus, GROUP_IDLE } from '../../redux/reducers/groupSlice';
 import Spinner from 'react-native-loading-spinner-overlay';
+import { InstantSearch, connectRefinementList, connectHits } from "react-instantsearch-native";
+import { searchClient } from "../../App";
+import SearchBox from "../search/SearchBox";
 
-const Groups = ({ navigation }) => {
-  const { colors } = useTheme();
-  const user = useSelector(selectUser);
-  const [dataList, setDataList] = useState([]);
-  const [groupNameMap, setGroupNameMap] = useState({});
-  const [loading, setLoading] = useState(false);
-  const dispatch = useDispatch();
-  const group = useSelector(selectGroup);
-  console.log("Data", dataList);
+const GroupFilter = connectRefinementList(({ items, refine, user_id }) => {
+	useEffect(() => {
+		refine(user_id);
+	}, [user_id]);
+
+	return <View></View>;
+});
 
 
+const GroupHits = connectHits(({hits, navigation}) => {
+	const { colors } = useTheme();
+	const [searchString, setSearchString] = useState("")
+	const user = useSelector(selectUser);
+	const [dataList, setDataList] = useState([]);
+	const [groupNameMap, setGroupNameMap] = useState({});
+	const [loading, setLoading] = useState(false);
+	const dispatch = useDispatch();
+	const group = useSelector(selectGroup);
 
-  const fetchGroupName = async (refList) => {
-    const groupDict = { ...groupNameMap }
-    const groups = []
+	const loadMemberCount = async (groupDict) => {
+		try {
+			const result = {}
+			for (const [key, value] of Object.entries(groupDict)) {
+				if (value.count !== -1) {
+					result[key] = value
+					continue
+				}
 
-    try {
-      for (let i = 0; i < refList.length; i++) {
-        let data = refList[i]
-        if (data.group_id in groupDict) {
-          groups.push(groupDict[data.group_id])
-          continue
-        }
-        const res = await getGroupName(data.group_id)
-        // count group members
-        const memData = await getDocs(query(collection(db, "groupNuser"), where("group_id", "==", data.group_id)))
+				const memData = await getDocs(
+					query(
+						collection(db, "groupNuser"),
+						where("group_id", "==", value.group_id)
+					)
+				);
+				result[key] = {
+					...value,
+					count: memData.docs.length,
+				}
+			}
 
-        groupDict[res.id] = {
-          id: data.id,
-          group_id: data.group_id,
-          count: memData.docs.length,
-          ...res.data()
-        }
-        groups.push(groupDict[data.group_id])
-      }
-    } catch (e) {
-      console.log(e.message);
-    }
-    setDataList(groups);
-    setGroupNameMap(groupDict);
-	setLoading(false)
-  };
+			// update data list
+			let groups = Array.from(new Map(Object.entries(result)).values());
+			groups.sort((a, b) => a.group_name.localeCompare(b.group_name));
+			setDataList(groups);
+			setGroupNameMap(groupDict);
+		} catch (e) {
+			console.log(e.message)
+		}
+	};
+
+	const fetchGroupData = async refList => {
+		const groupDict = { ...groupNameMap };
+		let groups = [];
+
+		try {
+			// get group data
+			const groupIdList = refList.map(item => item.group_id);
+			const groupIdToRef = refList.reduce((map, item) => {
+				map[item.group_id] = item.id;
+				return map;
+			}, {});
+
+			const groupData = await getDocs(
+				query(
+					collection(db, "group"),
+					where(documentId(), "in", groupIdList)
+				)
+			);
+
+			groupData.docs.forEach(doc => {
+				groupDict[doc.id] = {
+					id: groupIdToRef[doc.id],
+					group_id: doc.id,
+					count: -1,
+					...doc.data()
+				};
+			});
+
+			groups = Array.from(new Map(Object.entries(groupDict)).values());
+			groups.sort((a, b) => a.group_name.localeCompare(b.group_name));
+		} catch (e) {
+			console.log(e.message);
+		}
+		setDataList(groups);
+		setGroupNameMap(groupDict);
+		setLoading(false);
+
+		loadMemberCount(groupDict)
+	};
+
+	const fetchGroupHits = async hits => {
+		const groupDict = {};
+
+		hits.forEach(item => {
+			groupDict[item.group_id] = {
+				id: item.objectID,
+				group_id: item.group_id,
+				group_name: item.group_name,
+				user_id: item.user_id,
+				count: -1,
+			};
+		});
+
+		let groups = Array.from(new Map(Object.entries(groupDict)).values());
+		groups.sort((a, b) => a.group_name.localeCompare(b.group_name));
+
+		setDataList(groups);
+		setGroupNameMap(groupDict);
+		setLoading(false);
+
+		loadMemberCount(groupDict)
+	};
 
 	useEffect(() => {
-		setLoading(true)
-		onSnapshot(query(collection(db, "groupNuser"), where("user_id", "==", user.user.id)), (snapshot) => {
-		  // Update to Redux
-		  const refList = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
-		  fetchGroupName(refList)
-		})
-	}, []);
+		if (searchString.trim() === "") {
+			onSnapshot(query(collection(db, "groupNuser"), where("user_id", "==", user.user.id)), (snapshot) => {
+			  // Update to Redux
+			  const refList = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
+			  fetchGroupData(refList)
+			})
+		} else {
+			fetchGroupHits(hits)
+		}
+
+	}, [hits, searchString]);
 
   useEffect(() => {
     if (group.status === GROUP_DELETE_REJECTED) {
@@ -98,9 +175,9 @@ const Groups = ({ navigation }) => {
 
 
   //Left the group
-  const handleDelete = (group_id) => {
-    console.log("ID", group_id)
-    dispatch(deleteGroupAsync(group_id))
+  const handleDelete = (groupNuser_id) => {
+    console.log("Delete ID", groupNuser_id)
+    dispatch(deleteGroupAsync(groupNuser_id))
   }
 
   const handleEnter = (id) => {
@@ -113,30 +190,23 @@ const Groups = ({ navigation }) => {
   }
 
   return (
-    <View>
-      <Stack
-        backgroundColor={colors.background}
-        h="100%"
-        w="100%"
-        items="center"
-        paddingTop={35}
-      >
-        <Spinner
-          visible={group.status === GROUP_DELETE_PENDING || loading}
-          textContent={'Loading...'}
-          textStyle={{ color: "white" }}
-          cancelable={true}
-        />
-        <Flex direction='row' w='80%' style={{ ...styles.searchHolder, marginTop: Platform.OS == "ios" ? 15 : 20 }}>
-          <AIcon name="search1" style={styles.iconImg} color='B4BABC' />
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search group"
-            color="#B4BABC"
-          />
-        </Flex>
-
+	<Stack
+		backgroundColor={colors.background}
+		h="100%"
+		w="100%"
+		items="center"
+		paddingTop={35}
+	>
+		<Stack mt={15} w="100%" items="center">
+			<SearchBox width="80%" searchBoxName="Search group" setSearchString={setSearchString} />
+		</Stack>
         <ScrollView style={{ ...styles.listContainer, marginTop: 20 }}>
+			<Spinner
+			  visible={group.status === GROUP_DELETE_PENDING || loading}
+			  textContent={'Loading...'}
+			  textStyle={{ color: "white" }}
+			  cancelable={true}
+			/>
           <Stack w='100%' spacing={20}>
             {dataList.map((data, index) => {
               return (
@@ -161,9 +231,13 @@ const Groups = ({ navigation }) => {
                       <Text style={styles.cardHeader} >
                         {data.group_name}
                       </Text>
+						{data.count == -1 ?
+                      <Text style={styles.infoContent} >
+						  Counting members...
+					  </Text>:
                       <Text style={styles.infoContent} >
                         {data.count} {data.count == 1 ? "member" : "members"}
-                      </Text>
+                      </Text>}
                     </Stack>
 
                     <IconButton
@@ -178,34 +252,44 @@ const Groups = ({ navigation }) => {
             })}
           </Stack>
         </ScrollView>
-        <Spacer />
-        <Stack w="80%" items="center">
-          <View style={styles.bottomContainer}>
-            <View
-              style={{
-                ...styles.shadowBtn,
-                shadowOpacity: Platform.OS == "ios" ? 0.23 : 0.5,
-              }}
-            >
-              <IconButton
-                style={{
-                  alignSelf: "center",
-                  overflow: "hidden",
-                  padding: 25,
-                  backgroundColor: "white",
-                  borderRadius: 10,
-                  marginBottom: 16,
-                }}
-                icon={(props) => <MIcon name="group-add" {...props} />}
-                color="#9CC7CA"
-                onPress={() => navigation.navigate("CreateGroup")}
-              ></IconButton>
-            </View>
-          </View>
-        </Stack>
-        </Stack>
-    </View>
+		<Spacer />
+		<Stack w="80%" items="center">
+			<View style={styles.bottomContainer}>
+				<View
+					style={{
+						...styles.shadowBtn,
+						shadowOpacity: Platform.OS == "ios" ? 0.23 : 0.5
+					}}
+				>
+					<IconButton
+						style={{
+							alignSelf: "center",
+							overflow: "hidden",
+							padding: 25,
+							backgroundColor: "white",
+							borderRadius: 10,
+							marginBottom: 16
+						}}
+						icon={props => <MIcon name="group-add" {...props} />}
+						color="#9CC7CA"
+						onPress={() => navigation.navigate("CreateGroup")}
+					></IconButton>
+				</View>
+			</View>
+		</Stack>
+	</Stack>
   )
-}
+})
+
+const Groups = ({ navigation }) => {
+	const user = useSelector(selectUser);
+
+	return (
+	<InstantSearch searchClient={searchClient} indexName="group">
+		<GroupFilter user_id={user.user.id} attribute="user_id" />
+		<GroupHits navigation={navigation} />
+	</InstantSearch>
+	);
+};
 
 export default Groups

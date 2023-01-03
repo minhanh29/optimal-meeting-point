@@ -3,7 +3,7 @@ import { FlatList, View, TouchableOpacity, Animated, Alert } from 'react-native'
 import { Avatar, Box, Stack, Text, Switch, Flex, Spacer } from "@react-native-material/core";
 import { useTheme } from '@react-navigation/native';
 import { db } from "../../firebaseConfig"
-import { doc, setDoc, addDoc, onSnapshot, query, collection, where, getDoc, GeoPoint } from "firebase/firestore";
+import { doc, getDocs, documentId, setDoc, addDoc, onSnapshot, query, collection, where, getDoc, GeoPoint } from "firebase/firestore";
 import { useDispatch, useSelector } from "react-redux"
 import {
     selectUser,
@@ -71,43 +71,52 @@ const GroupInvitations = () => {
 	}
 
 	const fetchGroupData = async (refList) => {
-		const groupData = {...groupDict}
-		for (let i = 0; i < refList.length; i++) {
-			try {
-				let id = refList[i].group_id
-				if (id in groupData) {
-					continue
-				}
+		const resultDict = { ...groupDict };
+		try {
+			// get group data
+			const groupIdList = refList.map(item => item.group_id);
+			const groupData = await getDocs(
+				query(
+					collection(db, "group"),
+					where(documentId(), "in", groupIdList)
+				)
+			);
 
-				const data = await getDoc(doc(db, "group", id))
-				groupData[id] = data.data()
-			} catch (e) {
-				console.log(e.message)
-			}
+			groupData.docs.forEach(doc => {
+				resultDict[doc.id] = {
+					...doc.data()
+				};
+			});
+		} catch (e) {
+			console.log(e.message);
 		}
-
-		setGroupDict(groupData)
-		return groupData
+		setGroupDict(resultDict);
+		return resultDict
 	}
 
 	const fetchUsersData = async (refList) => {
-		const userData = {...userDict}
-		for (let i = 0; i < refList.length; i++) {
-			try {
-				let id = refList[i].sender_id
-				if (id in userData) {
-					continue
-				}
+		const resultDict = { ...userDict };
+		try {
+			// get group data
+			const userIdList = refList.map(item => item.sender_id);
+			const userData = await getDocs(
+				query(
+					collection(db, "user"),
+					where(documentId(), "in", userIdList)
+				)
+			);
 
-				const data = await getDoc(doc(db, "user", id))
-				userData[id] = data.data()
-			} catch (e) {
-				console.log(e.message)
-			}
+			userData.docs.forEach(doc => {
+				resultDict[doc.id] = {
+					...doc.data()
+				};
+			});
+		} catch (e) {
+			console.log(e.message);
 		}
+		setUserDict(resultDict)
+		return resultDict
 
-		setUserDict(userData)
-		return userData
 	}
 
 	const handleCheckbox = (id) => {
@@ -210,8 +219,8 @@ const GroupInvitations = () => {
 						isChecked={checkedBoxes.includes(item.id)}
 						handleCheckbox={() => handleCheckbox(item.id)}
 						id={item.id}
-						title={item.senderName}
-						content={`@${item.senderUsername} invites you to group ${item.groupName}`}
+						title={item.groupName}
+						content={`@${item.senderUsername} sent you a group invitation`}
 						ava={item.senderAva}
 					/>}
 					keyExtractor={item => item.id}

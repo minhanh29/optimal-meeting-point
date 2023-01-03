@@ -6,66 +6,87 @@ import { collection, getDocs, query, where } from "firebase/firestore";
 import { useDispatch, useSelector } from "react-redux";
 import { useTheme } from '@react-navigation/native';
 import AIcon from "@expo/vector-icons/AntDesign";
-// import Icon from "@expo/vector-icons/Ionicons";
 import FIcon from "@expo/vector-icons/Feather";
-import MIcon from "@expo/vector-icons/MaterialIcons";
 import styles from "./styles";
 import { selectUser } from '../../redux/reducers/userSlice';
 import { useState } from "react";
 import { addFriendAsync } from "../../redux/reducers/userSlice";
-import { async } from "@firebase/util";
+import { InstantSearch, connectRefinementList, connectHits } from "react-instantsearch-native";
+import { searchClient } from "../../App";
+import SearchBox from "../search/SearchBox";
+import Spinner from 'react-native-loading-spinner-overlay';
 
-const AddFriends = ({navigation}) => {
-
+const AddFriendHits = connectHits(({hits, navigation }) => {
     const {colors} = useTheme();
+	const [searchString, setSearchString] = useState("")
     const [userList, setUserList] = useState([]);
-    // const [friendList , setFriendList] = useState([]);
-    // const [requestList, setRequestList] = useState([]);
+    const [_friendSet , setFriendSet] = useState(null);
+    const [_requestSet, setRequestSet] = useState(null);
     const [selectedIndex, setSelectedIndex] = useState([]);
+    const [loading, setLoading] = useState(true);
     const user = useSelector(selectUser);
-    const [avatar, setAvatar] = useState(null);
     const dispatch = useDispatch()
 
-    const fetchUserInfo = async () => {
+    const fetchUserInfo = async (hits) => {
         try {
-            const friendSnapshot = await getDocs(query(collection(db, "friend"), where("person1_id", "==", user.user.id)));
-			const friendSet = new Set(friendSnapshot.docs.map(doc => doc.data().person2_id))
+			let friendSet = new Set()
+			if (_friendSet) {
+				friendSet = _friendSet
+			} else {
+				const friendSnapshot = await getDocs(query(collection(db, "friend"), where("person1_id", "==", user.user.id)));
+				friendSet = new Set(friendSnapshot.docs.map(doc => doc.data().person2_id))
+				setFriendSet(friendSet)
+			}
 			// console.log("Friend", friendSet)
 
-            const requestSnapshot = await getDocs(query(collection(db, "friend_request"), where("sender_id", "==", user.user.id), where("status", "==", 0)));
-            const requestSet = new Set(requestSnapshot.docs.map(doc => doc.data().receiver_id))
-            // console.log("Request", requestSet)
+			let requestSet = new Set()
+			if (_requestSet) {
+				requestSet = _requestSet
+			} else {
+				const requestSnapshot = await getDocs(query(collection(db, "friend_request"), where("sender_id", "==", user.user.id), where("status", "==", 0)));
+				requestSet = new Set(requestSnapshot.docs.map(doc => doc.data().receiver_id))
+				setRequestSet(requestSet)
+				// console.log("Request", requestSet)
+			}
 
-            const querySnapshot = await getDocs(collection(db, "user"));
             const result = []
-            querySnapshot.forEach(doc => {
-				console.log(doc.id, doc.data().name)
-                if (doc.id !== user.user.id && !friendSet.has(doc.id) && !requestSet.has(doc.id)) {
-                    result.push({
-                        id: doc.id,
-                        ...doc.data()
-                    })
-                }
-            })
+			if (hits) {
+				hits.forEach(item => {
+					if (item.objectID !== user.user.id && !friendSet.has(item.objectID) && !requestSet.has(item.objectID) && item.name && item.ava_url && item.username) {
+						result.push({
+							id: item.objectID,
+							name: item.name,
+							ava_url: item.ava_url,
+							username: item.username
+						})
+					}
+				})
+			} else {
+				const querySnapshot = await getDocs(collection(db, "user"));
+				querySnapshot.forEach(doc => {
+					if (doc.id !== user.user.id && !friendSet.has(doc.id) && !requestSet.has(doc.id)) {
+						result.push({
+							id: doc.id,
+							...doc.data()
+						})
+					}
+				})
+			}
 
-            const doc = querySnapshot.docs[0]
-            const data = doc.data()
-            // setName(data.name)
-            // setUsername(data.username)
-            setAvatar(data.ava_url)
             setUserList(result)
 
         } catch (e) {
             console.log(e)
         }
+		setLoading(false)
     }
 
     useEffect(() => {
-        fetchUserInfo();
-    }, []);
+		fetchUserInfo(searchString.trim() === "" ? null : hits);
+    }, [hits, searchString]);
 
     const handleAdd = (receiver, index) => {
-    
+
 
         setSelectedIndex(prev => {
             const isInclude = selectedIndex.includes(index)
@@ -89,82 +110,85 @@ const AddFriends = ({navigation}) => {
         }
     }
 
-    // const sendRequest = async
-
-
     return (
-        <View>
-            <Stack
-            backgroundColor={colors.background}
-            h="100%"
-            w="100%"
-            items="center"
-            paddingTop={40}
-            >
-                <Stack h="100%"
-                    w="100%"
-                    items="center"
-                    spacing={20}>
+		<Stack
+			backgroundColor={colors.background}
+			h="100%"
+			w="100%"
+			items="center"
+			paddingTop={45}
+		>
+			<SearchBox
+				width="80%"
+				searchBoxName="Search friends"
+				setSearchString={setSearchString}
+			/>
 
-                    <Flex w="80%" style={styles.searchHolder} direction="row">
-                        <AIcon name="search1" style={styles.iconImg} color='B4BABC'/>
-                        <TextInput
-                        style={styles.searchInput}
-                        placeholder='Search friends'
-                        color='#B4BABC'
-                        />
-                    </Flex>
-
-                    <ScrollView style={styles.listContainer}>
-                        <Stack w="100%" spacing={20} >
-                            {userList.map((item, index) => {
-                                return (
-                                    <Box elevation ={3}
-                                    backgroundColor="white"
-                                    style={styles.cardContainer}
-                                    w='100%'
-                                    key={index}
-                                    >
-                                        <Flex
-                                        w="100%"
-                                        items="center"
-                                        direction="row"
-                                        >
-                                            <Avatar
-                                            label={item.name}
-                                            icon={props => <Icon name="account" {...props} />}
-                                            image={avatar ? {uri: item.ava_url} : null}
-                                            imageStyle={{borderRadius: 10}}
-                                            />
-                                        <Stack
-                                        style ={{marginLeft:17}}
-                                        spacing={5}
-                                        w="58%"
-                                        >
-                                            <Text style={styles.cardHeader}>
-                                                {item.name}
-                                            </Text>
-                                            <Text style={styles.infoContent}>
-                                                @{item.username}
-                                            </Text>
-                                            </Stack>
-                                            <IconButton
-                                                icon={props => <FIcon name={selectedIndex.includes(index) ? 'check' : 'plus'} {...props} />}
-                                                color = "black"
-                                                style={{alignSelf: "center", padding: 20, backgroundColor: 'transparent', borderRadius:10, color: '#9ACDD0', marginRight: 20}}
-                                                onPress={() => handleAdd(item, index)}
-                                                />
-                                        </Flex>
-                                    </Box>
-                                )
-                            })}
-                        </Stack>
-                    </ScrollView>
-                </Stack>
-
-        </Stack>
-    </View>
+			<Stack mt={20} w="100%" h="100%" items="center">
+			<ScrollView style={styles.listContainer}>
+				<Spinner
+					visible={loading}
+					textContent={'Loading...'}
+					textStyle={{ color: "white" }}
+					cancelable={true}
+				/>
+				<Stack w="100%" spacing={20} >
+					{userList.map((item, index) => {
+						return (
+							<Box elevation ={3}
+							backgroundColor="white"
+							style={styles.cardContainer}
+							w='100%'
+							key={index}
+							>
+								<Flex
+								w="100%"
+								items="center"
+								direction="row"
+								>
+									<Avatar
+									label={item.name}
+									icon={props => <Icon name="account" {...props} />}
+									image={item.ava_url ? {uri: item.ava_url} : null}
+									imageStyle={{borderRadius: 10}}
+									/>
+								<Stack
+								style ={{marginLeft:17}}
+								spacing={5}
+								w="58%"
+								>
+									<Text style={styles.cardHeader}>
+										{item.name}
+									</Text>
+									<Text style={styles.infoContent}>
+										@{item.username}
+									</Text>
+									</Stack>
+									<IconButton
+										icon={props => <FIcon name={selectedIndex.includes(index) ? 'check' : 'plus'} {...props} />}
+										color = "black"
+										style={{alignSelf: "center", padding: 20, backgroundColor: 'transparent', borderRadius:10, color: '#9ACDD0', marginRight: 20}}
+										onPress={() => handleAdd(item, index)}
+										/>
+								</Flex>
+							</Box>
+						)
+					})}
+				</Stack>
+			</ScrollView>
+			</Stack>
+		</Stack>
     )
-}
+})
+
+const AddFriends = ({ navigation }) => {
+	return (
+		<InstantSearch searchClient={searchClient} indexName="user">
+			<AddFriendHits
+				navigation={navigation}
+			/>
+		</InstantSearch>
+	);
+};
 
 export default AddFriends;

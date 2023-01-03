@@ -29,6 +29,49 @@
             {
               "client_id": "109193486522-4tlhjd9v7suahlso2s0rhm6lgsnld8kq.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "109193486522-j804uerv2fid1a94hj67a5jokvuj8v31.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.omp"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:109193486522:android:2af524ad2c0fdf656ee283",
+        "android_client_info": {
+          "package_name": "com.omprmit.mobile"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "109193486522-4tlhjd9v7suahlso2s0rhm6lgsnld8kq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAS_-RJJpqr6WvnptlW3WrKYL6hdqM1vVw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "109193486522-4tlhjd9v7suahlso2s0rhm6lgsnld8kq.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "109193486522-j804uerv2fid1a94hj67a5jokvuj8v31.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.omp"
+              }
             }
           ]
         }

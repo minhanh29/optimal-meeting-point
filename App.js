@@ -31,6 +31,10 @@ import PinOnMap from "./components/dashboard/PinOnMap";
 
 import useFonts from "./useFonts"
 import AppLoading from 'expo-app-loading'; // This is must
+import algoliasearch from "algoliasearch";
+
+
+export const searchClient = algoliasearch('SLMR245D6L', 'aef99302f1a8bb42a9e9104a0c9cdaec')
 
 const StackNavigator = createStackNavigator()
 
@@ -188,9 +192,9 @@ const AppInner = () => {
 				/>
 				<StackNavigator.Screen name="Notifications" component={Notifications} />
 				<StackNavigator.Screen name="Friends" component={Friends} />
-				<StackNavigator.Screen 
-					name="AddFriends" 
-					component={AddFriends} 
+				<StackNavigator.Screen
+					name="AddFriends"
+					component={AddFriends}
 					options = {{title: "Add Friends"}}
 				/>
 				<StackNavigator.Screen name="Address" component={SetAddress} />

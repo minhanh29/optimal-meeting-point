@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, Image, Alert } from "react-native";
 import { StatusBar } from "expo-status-bar";
+import { Ionicons } from "@expo/vector-icons";
 import MapView, { Marker, Callout, PROVIDER_GOOGLE } from "react-native-maps";
 import Svg from "react-native-svg";
 import { IconButton, Text } from "@react-native-material/core";
@@ -150,7 +151,8 @@ const AvaMarker = ({ groupID, setLocationList }) => {
 
         users.push({
           user_id: data.user_id,
-          user_group_address: data.group_address,
+          user_group_address:
+            typeof data.group_address !== "string" ? data.group_address : rmit,
         });
 
         userIDs.push(data.user_id);
@@ -308,19 +310,28 @@ const Dashboard = ({ navigation }) => {
 
   const fetchGroupData = async () => {
     try {
-      const group_data = await getGroupName(group.groupId);
-      setGroupData(group_data.data());
+      const snapshot = await getGroupName(group.groupId);
+      const group_data = snapshot.data();
+      setGroupData(group_data);
       dispatch(
         updateGroupInfo({
-          group_id: group_data.id,
-          ...group_data.data(),
-          address: geoToDict(group_data.data().address),
+          group_id: snapshot.id,
+          ...group_data,
+          location:
+            group_data.location && typeof group_data.location !== "string"
+              ? geoToDict(group_data.location)
+              : null,
+          address:
+            group_data.address && typeof group_data.address === "string"
+              ? group_data.address
+              : "",
         })
       );
     } catch (e) {
       console.log(e.message);
     }
   };
+
   const distance = (pt1, pt2) => {
     return (
       Math.pow(pt1.longitude - pt2.longitude, 2) +
@@ -351,9 +362,6 @@ const Dashboard = ({ navigation }) => {
 
     setMiddlePoint({ longitude, latitude });
 
-    // const url = "https://api.mapbox.com/geocoding/v5/mapbox.places/coffee.json?bbox=" + minLon + "," + minLat +  "," + maxLon + "," + maxLat +"&access_token=" + MAPBOX_PUBLIC_KEY
-
-    // const url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + latitude + "," + longitude + "&radius=" + radius + "&type=" + placeType + "&key=" + GOOGLE_MAPS_API_KEY;
     try {
       let places = [];
       for (let k = 0; k < placeTypes.length; k++) {
@@ -456,8 +464,8 @@ const Dashboard = ({ navigation }) => {
 
         {/* <PlaceMarker suggestion={suggestion}></PlaceMarker> */}
 
-        {suggestion.map((place, i) => (
-          <View>
+        {group.enterGroup &&
+          suggestion.map((place, i) => (
             <Marker
               key={i}
               coordinate={place.coordinate}
@@ -473,23 +481,19 @@ const Dashboard = ({ navigation }) => {
                   style={styles.marker_icon}
                   source={require("../../assets/location-dot.png")}
                 ></Image>
-
               </TouchableOpacity>
               <BottomSheet
-              ref={sheetRef}
-              snapPoints={[550, 300, 0]}
-              style={styles.bottomSheetContainer}
-              renderContent={renderContent}
-              renderHeader={renderHeader}
-              initialSnap={2}
-              callbackNode={fall}
-              enabledGestureInteraction={true}
-            ></BottomSheet>
+                ref={sheetRef}
+                snapPoints={[550, 300, 0]}
+                style={styles.bottomSheetContainer}
+                renderContent={renderContent}
+                renderHeader={renderHeader}
+                initialSnap={2}
+                callbackNode={fall}
+                enabledGestureInteraction={true}
+              ></BottomSheet>
             </Marker>
-
-            
-          </View>
-        ))}
+          ))}
 
         {/* // User's location Pin */}
         {group.enterGroup ? (
@@ -497,10 +501,85 @@ const Dashboard = ({ navigation }) => {
             groupID={group.groupId}
             setLocationList={setLocationList}
           />
-        ) : null}
+        ) : (
+          <Marker
+            coordinate={{
+              latitude: user.user.address.latitude,
+              longitude: user.user.address.longitude,
+            }}
+            title={"user"}
+          >
+            <View></View>
+            <View
+              style={{
+                flexDirection: "row",
+                backgroundColor: "#00bfff",
+                borderTopLeftRadius: 60,
+                borderTopRightRadius: 60,
+                borderBottomRightRadius: 0,
+                borderBottomLeftRadius: 60,
+                transform: [{ rotate: "45deg" }],
+                alignSelf: "flex-start",
+                height: 45,
+                width: 45,
+              }}
+            >
+              <Svg width={40} height={30}>
+                <Image
+                  source={{ uri: user.user.ava_url }}
+                  width={40}
+                  height={30}
+                  style={{
+                    height: 40,
+                    width: 40,
+                    transform: [{ rotate: "-45deg" }],
+                    borderRadius: 90,
+                    position: "absolute",
+                    left: 1.5, // 1.5
+                    bottom: -42, // -32
+                  }}
+                />
+              </Svg>
+            </View>
+            <Callout>
+              <View
+                style={{
+                  flexDirection: "column",
+                  width: 120,
+                  height: 30,
+                }}
+              >
+                <Text
+                  style={{
+                    marginLeft: 2,
+                    marginBottom: 1,
+                    color: "black",
+                    fontWeight: "bold",
+                    alignSelf: "center",
+                  }}
+                >
+                  {user.user.username}
+                </Text>
+              </View>
+            </Callout>
+          </Marker>
+        )}
       </MapView>
 
       {groupData ? (
+        <BottomSheet
+          ref={sheetRef}
+          snapPoints={[550, 300, 0]}
+          style={styles.bottomSheetContainer}
+          renderContent={renderContent}
+          renderHeader={renderHeader}
+          initialSnap={2}
+          callbackNode={fall}
+          enabledGestureInteraction={true}
+        />
+      ) : null}
+
+      {group.enterGroup && groupData ? (
         <View style={styles.topContainer}>
           <Text style={styles.topTitle}>{groupData.group_name}</Text>
         </View>
@@ -578,6 +657,7 @@ const Dashboard = ({ navigation }) => {
           </View>
         </View>
       </View>
+
       <View style={styles.sideContainer}>
         <View
           style={{
@@ -639,7 +719,7 @@ const Dashboard = ({ navigation }) => {
             onPress={() => navigation.navigate("Friends")}
           />
         </View>
-        {groupData ? (
+        {group.enterGroup && groupData ? (
           <View
             style={{
               ...styles.shadowBtn,

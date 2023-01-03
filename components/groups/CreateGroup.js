@@ -6,20 +6,31 @@ import styles from "./styles"
 import AIcon from "@expo/vector-icons/AntDesign";
 import FIcon from "@expo/vector-icons/Feather";
 import { db } from "../../firebaseConfig"
-import { collection, doc, getDocs, query, addDoc } from "firebase/firestore";
+import { collection, doc, getDocs, query, addDoc, documentId, where } from "firebase/firestore";
 import { useDispatch, useSelector } from 'react-redux';
 import { selectUser, USER_IDLE } from '../../redux/reducers/userSlice';
 import { createGroupAsync, selectGroup, GROUP_CREATE_SUCCESS, GROUP_CREATE_PENDING, GROUP_CREATE_FAILED, GROUP_IDLE, changeGroupStatus } from '../../redux/reducers/groupSlice';
 import Spinner from 'react-native-loading-spinner-overlay';
+import { InstantSearch, connectRefinementList, connectHits } from "react-instantsearch-native";
+import { searchClient } from "../../App";
+import SearchBox from "../search/SearchBox";
 
-const CreateGroup = ({navigation}) => {
+const CreateGroupFilter = connectRefinementList(({ items, refine, user_id }) => {
+	useEffect(() => {
+		refine(user_id);
+	}, [user_id]);
+
+	return <View></View>;
+});
+
+const CreateGroupHits = connectHits(({hits, navigation}) => {
     const { colors } = useTheme();
-    const [avatar, setAvatar] = useState(null);
+	const [searchString, setSearchString] = useState("")
     const [userList, setUserList] = useState([]);
     // const [iconBtn, setIconBtn]  = useState("plus");
     const [memberList, setMemberList] = useState([])
     const [groupName, setGroupName] = useState("")
-    
+
     const dispatch = useDispatch()
     const user = useSelector(selectUser)
     const group = useSelector(selectGroup)
@@ -29,7 +40,9 @@ const CreateGroup = ({navigation}) => {
 
     const fetchUserInfo = async () => {
         try {
-            const querySnapshot = await getDocs(collection(db, "user"));
+			const friendSnapshot = await getDocs(query(collection(db, "friend"), where("person1_id", "==", user.user.id)))
+			const friendIds = friendSnapshot.docs.map(doc => doc.data().person2_id)
+            const querySnapshot = await getDocs(query(collection(db, "user"), where(documentId(), "in", friendIds)));
             const result = []
             querySnapshot.forEach(doc => {
 				if (doc.id !== user.user.id) {
@@ -44,16 +57,35 @@ const CreateGroup = ({navigation}) => {
             const data = doc.data()
             // setName(data.name)
             // setUsername(data.username)
-            setAvatar(data.ava_url)
             setUserList(result)
         } catch (e) {
             console.log(e)
         }
     }
 
+    const fetchUserHits = (hits) => {
+		const result = []
+		hits.forEach(item => {
+			if (item.name && item.ava_url && item.username) {
+				result.push({
+					id: item.person1_id,
+					name: item.name,
+					username: item.username,
+					ava_url: item.ava_url,
+				})
+			}
+		})
+
+		setUserList(result)
+    }
+
     useEffect(() => {
-        fetchUserInfo();
-    }, []);
+		if (searchString.trim() === "" ) {
+			fetchUserInfo();
+		} else {
+			fetchUserHits(hits)
+		}
+    }, [hits, searchString]);
 
     useEffect(() => {
         if(group.status === GROUP_CREATE_FAILED ){
@@ -141,7 +173,7 @@ const CreateGroup = ({navigation}) => {
                 textContent={'Loading...'}
                 textStyle={{ color: "white" }}
                 cancelable={true}
-            /> 
+            />
             <Stack w="80%" items="start">
                 <TextInput
                     style={styles.textInput}
@@ -154,18 +186,8 @@ const CreateGroup = ({navigation}) => {
                 h="100%"
                 w="100%"
                 items="center"
-                spacing={25}
             >
-
-                <Flex direction='row' w='80%' style={styles.searchHolder}>
-                    <AIcon name="search1" style={styles.iconImg} color='B4BABC' />
-                    <TextInput
-                        style={styles.searchInput}
-                        placeholder='Search friend'
-                        color='#B4BABC'
-                    />
-                </Flex>
-
+				<SearchBox width="80%" searchBoxName="Search friends" setSearchString={setSearchString} />
                 <ScrollView style={styles.listContainer}>
                     <Stack w='100%' spacing={20}>
                         {userList.map((user, index) => {
@@ -235,6 +257,17 @@ const CreateGroup = ({navigation}) => {
             </Stack>
         </Stack>
     )
-}
+})
 
+const CreateGroup = ({ navigation }) => {
+	const user = useSelector(selectUser);
+
+	return (
+	<InstantSearch searchClient={searchClient} indexName="friends">
+
+			<CreateGroupFilter user_id={user.user.id} attribute="person2_id" />
+			<CreateGroupHits navigation={navigation} />
+	</InstantSearch>
+	);
+};
 export default CreateGroup
