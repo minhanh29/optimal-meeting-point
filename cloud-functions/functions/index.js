@@ -11,25 +11,27 @@ const db = admin.firestore();
 
 // Set up Algolia.
 const algoliaClient = algoliasearch(functions.config().algolia.appid, functions.config().algolia.apikey);
-const collectionIndex = algoliaClient.initIndex("friends");
+const collectionIndexGroup = algoliaClient.initIndex("group")
+const collectionIndexFriend = algoliaClient.initIndex("friends")
 
 
-async function saveDocumentInAlgolia(record) {
-	return await collectionIndex.saveObject(record);
+async function saveDocumentInAlgolia(record, indexName) {
+	if(indexName == "group"){
+		return await collectionIndexGroup.saveObject(record);
+	}
+	if(indexName == "friend"){
+		return await collectionIndexFriend.saveObject(record);
+	}
 }
 
-async function updateDocumentInAlgolia(change) {
-    const docBeforeChange = change.before.data()
-    const docAfterChange = change.after.data()
-    if (docBeforeChange && docAfterChange) {
-		await saveDocumentInAlgolia(change.after);
-    }
-}
-
-async function deleteDocumentFromAlgolia(snapshot) {
-    if (snapshot.exists) {
+async function deleteDocumentFromAlgolia(snapshot, indexName) {
+    if (indexName == "group" & snapshot.exists) {
         const objectID = snapshot.id;
-        await collectionIndex.deleteObject(objectID);
+        await collectionIndexGroup.deleteObject(objectID);
+    }
+	if (indexName == "friend" & snapshot.exists) {
+        const objectID = snapshot.id;
+        await collectionIndexFriend.deleteObject(objectID);
     }
 }
 
@@ -65,8 +67,6 @@ exports.sendCollectionToAlgolia = functions.region('asia-northeast1').https.onRe
 				algoliaRecords.push(record);
 			}
 		})
-
-
 		// After all records are created, we save them to
 		collectionIndex.saveObjects(algoliaRecords, (_error, content) => {
 			res.status(200).send("COLLECTION was indexed to Algolia successfully.");
@@ -79,77 +79,54 @@ exports.sendCollectionToAlgolia = functions.region('asia-northeast1').https.onRe
 
 exports.groupWriteListener = functions.region('asia-northeast1').firestore
 	.document("groupNuser/{docID}")
-	.onCreate((snap, context) => {
+	.onCreate(async (snap, context) => {
 		console.log(snap.data())
 		const group_id = snap.data().group_id.trim()
 		console.log(group_id)
-		db.collection("group").doc(group_id).get().then((group_data) => {
-			const record = {
-				objectID: snap.id,
-				group_id: snap.data().group_id,
-				user_id: snap.data().user_id,
-				group_name: group_data.data().group_name,
-			}
-			console.log(group_data.data())
-			saveDocumentInAlgolia(record)
-			.then(res => console.log("Group is added to algolia", res))
-			.catch(e => console.log("Algolia Add Error", e.message))
-		})
+		const group_data = await db.collection("group").doc(group_id).get()
+		const record = {
+			objectID: snap.id,
+			group_id: snap.data().group_id,
+			user_id: snap.data().user_id,
+			group_name: group_data.data().group_name,
+		}
+		console.log(group_data.data())
+		saveDocumentInAlgolia(record, "group")
+		.then(res => console.log("Group is added to algolia", res))
+		.catch(e => console.log("Algolia Add Error", e.message))
 	})
 
-exports.friendWriteListener = functions.region('asia-northeast1').firestore
-.document("friend/{docID}")
-.onCreate(async (snap, context) => {
-	console.log(snap.data())
-	const person1_id = snap.data().person1_id
-	const person2_id = snap.data().person2_id
 
-	const person1 = await db.collection('user').doc(person1_id).get()
-	console.log("person 1 data ", person1.data())
-	
-	const person1_info = {
-		person1_id: person1_id,
-		ava_url: person1.data().ava_url,
-		name: person1.data().name,
-		username: person1.data().username
-	};
-	const record = {
-		objectID: snap.id,
-		...person1_info,
-		person2_id: person2_id
-	};
-	console.log(record)
-		saveDocumentInAlgolia(record)
-		.then(res => console.log("Friend is added to algolia", res))
-		.catch(e => console.log("Algolia Add Error", e.message))
-})
 
 exports.groupUpdateFromGroupListener = functions.region('asia-northeast1').firestore
 	.document("group/{docID}")
-	.onUpdate((snap, context) =>{
+	.onUpdate(async (snap, context) =>{
 		console.log(snap.after.id)
 
-		db.collection("groupNuser").where("group_id", "==", snap.after.id).get().then((data) => {
-			data.docs.forEach((doc) => {
-				const record = {
-					objectID: doc.id,
-					group_id: doc.data().group_id,
-					user_id: doc.data().user_id,
-					group_name: snap.after.data().group_name,
-				}
-				console.log(record.group_name)
-				saveDocumentInAlgolia(record)
-				.then(res => console.log("Group info from group is updated to algolia", res))
-				.catch(e => console.log("Algolia Update Error", e.message))
-			})
+		const querySnapshot = await db.collection("groupNuser").where("group_id", "==", snap.after.id.trim()).get()
+		console.log(querySnapshot.docs[0].data())
+		for (let i = 0; i < querySnapshot.docs.length; i++){
+			let doc = querySnapshot.docs[i]
+			const data = doc.data()
+			console.log(data)
+			const record = {
+				objectID: doc.id,
+				group_id: data.group_id,
+				user_id: data.user_id,
+				group_name: snap.after.data().group_name,
+			}
+			console.log(record.group_name)
+			saveDocumentInAlgolia(record, "group")
+			.then(res => console.log("Group info from group is updated to algolia", res))
+			.catch(e => console.log("Algolia Update Error", e.message))
+		}
 		})
-	})
 
 
 exports.groupDeleteListener = functions.region('asia-northeast1').firestore
 	.document("groupNuser/{docID}")
 	.onDelete((change, context) => {
-		deleteDocumentFromAlgolia(change)
+		deleteDocumentFromAlgolia(change, "group")
 			.then(res => console.log("Group is deleted to algolia", res))
 			.catch(e => console.log("Algolia Delete Error", e.message))
 	})
@@ -196,6 +173,32 @@ exports.sendFriendsToAlgolia = functions.region('asia-northeast1').https.onReque
 	}
 })
 
+exports.friendWriteListener = functions.region('asia-northeast1').firestore
+.document("friend/{docID}")
+.onCreate(async (snap, context) => {
+	console.log(snap.data())
+	const person1_id = snap.data().person1_id.trim()
+	const person2_id = snap.data().person2_id.trim()
+
+	const person1 = await db.collection('user').doc(person1_id).get()
+	console.log("person 1 data ", person1.data())
+	
+	const person1_info = {
+		person1_id: person1_id,
+		ava_url: person1.data().ava_url === undefined ? null : person1.data().ava_url,
+		name: person1.data().name,
+		username: person1.data().username
+	};
+	const record = {
+		objectID: snap.id,
+		...person1_info,
+		person2_id: person2_id
+	};
+	console.log(record)
+		saveDocumentInAlgolia(record, "friend")
+		.then(res => console.log("Friend is added to algolia", res))
+		.catch(e => console.log("Algolia Add Error", e.message))
+})
 
 exports.friendUpdateListener = functions.region('asia-northeast1').firestore
 	.document("user/{docId}")
@@ -221,7 +224,7 @@ exports.friendUpdateListener = functions.region('asia-northeast1').firestore
 				person2_id: data.person2_id
 			}
 			console.log("record", record)
-			saveDocumentInAlgolia(record)
+			saveDocumentInAlgolia(record, "friend")
 			.then(res => console.log("Group info from group is updated to algolia", res))
 			.catch(e => console.log("Algolia Update Error", e.message))
 		}
@@ -230,7 +233,7 @@ exports.friendUpdateListener = functions.region('asia-northeast1').firestore
 exports.friendDeleteListenter = functions.region('asia-northeast1').firestore
 	.document("friend/{docID}")
 	.onDelete((change, context) => {
-		deleteDocumentFromAlgolia(change)
+		deleteDocumentFromAlgolia(change, "friend")
 			.then(res => console.log("Friend is deleted to algolia", res))
 			.catch(e => console.log("Algolia Delete Error", e.message))
 	})
