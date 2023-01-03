@@ -430,7 +430,9 @@ const Dashboard = ({ navigation }) => {
       console.log(e.message);
     }
   };
-  // console.log("User Info", user.user.address)
+
+  console.log("suggestionnnnn",suggestion);
+
   return (
     <View style={styles.container}>
       <Spinner
@@ -564,9 +566,10 @@ const Dashboard = ({ navigation }) => {
             </Callout>
           </Marker>
         )}
+        
       </MapView>
 
-      {groupData ? (
+      {/* {groupData ? (
         <BottomSheet
           ref={sheetRef}
           snapPoints={[550, 300, 0]}
@@ -577,7 +580,7 @@ const Dashboard = ({ navigation }) => {
           callbackNode={fall}
           enabledGestureInteraction={true}
         />
-      ) : null}
+      ) : null} */}
 
       {group.enterGroup && groupData ? (
         <View style={styles.topContainer}>
