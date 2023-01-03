@@ -145,12 +145,12 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 20,
   },
   panel: {
-    // position: "absolute",
-    bottom: 0,
+    position: "fixed",
+    bottom: -500,
     padding: 20,
-    height: 550,
+    width: '100%',
+    height: (Dimensions.get("window").height)/2,
     backgroundColor: "#FFFFFF",
-    // backgroundColor: 'pink',
     paddingTop: 20,
   },
   panelHeader: {
@@ -212,6 +212,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     textAlign: "center",
   },
+  
 });
 
 export default styles;

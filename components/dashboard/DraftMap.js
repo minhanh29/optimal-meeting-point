@@ -1,7 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-} from "react";
+import React, { useState, useEffect } from "react";
 import { View, Image, Alert } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import MapView, { Marker, Callout, PROVIDER_GOOGLE } from "react-native-maps";
@@ -16,10 +13,7 @@ import mapStyleJson from "./../../mapStyle.json";
 import styles from "./styles";
 import { useSelector, useDispatch } from "react-redux";
 import { selectUser } from "../../redux/reducers/userSlice";
-import {
-  selectGroup,
-	updateGroupInfo,
-} from "../../redux/reducers/groupSlice";
+import { selectGroup, updateGroupInfo } from "../../redux/reducers/groupSlice";
 // import { MAPBOX_PUBLIC_KEY } from '@env';
 import { MAPBOX_PUBLIC_KEY } from "../../key";
 import { geoToDict } from "../common/Utils";
@@ -28,9 +22,9 @@ import { getGroupName } from "../../firebaseConfig";
 import BottomSheet from "reanimated-bottom-sheet";
 import Animated from "react-native-reanimated";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import Spinner from 'react-native-loading-spinner-overlay';
-
+import Spinner from "react-native-loading-spinner-overlay";
 const mapStyle = mapStyleJson["mapStyle"];
+import { BottomSheetView } from "@gorhom/bottom-sheet";
 
 import { db, updateAddress } from "../../firebaseConfig";
 import {
@@ -201,7 +195,7 @@ const AvaMarker = ({ groupID, setLocationList }) => {
               longitude: user.user_group_address.longitude,
             }}
             title={"user"}
-			key={index}
+            key={index}
           >
             <View></View>
             <View
@@ -316,11 +310,13 @@ const Dashboard = ({ navigation }) => {
     try {
       const group_data = await getGroupName(group.groupId);
       setGroupData(group_data.data());
-		dispatch(updateGroupInfo({
-			group_id: group_data.id,
-			...group_data.data(),
-			address: geoToDict(group_data.data().address)
-		}))
+      dispatch(
+        updateGroupInfo({
+          group_id: group_data.id,
+          ...group_data.data(),
+          address: geoToDict(group_data.data().address),
+        })
+      );
     } catch (e) {
       console.log(e.message);
     }
@@ -331,7 +327,6 @@ const Dashboard = ({ navigation }) => {
       Math.pow(pt1.latitude - pt2.latitude, 2)
     );
   };
-
   const findMeetingPoints = async () => {
     if (locationList.length == 0) {
       Alert.alert(
@@ -343,7 +338,7 @@ const Dashboard = ({ navigation }) => {
       return;
     }
 
-	setLoading(true)
+    setLoading(true);
     let longitude = 0;
     let latitude = 0;
     for (let i = 0; i < locationList.length; i++) {
@@ -393,9 +388,9 @@ const Dashboard = ({ navigation }) => {
       );
 
       setSuggestion(places.slice(0, Math.min(places.length, NUM_SUGGESTION)));
-	setLoading(false)
+      setLoading(false);
     } catch (e) {
-		setLoading(false)
+      setLoading(false);
       console.log(e.message);
     }
   };
@@ -410,7 +405,7 @@ const Dashboard = ({ navigation }) => {
         query(
           collection(db, "groupNuser"),
           where("user_id", "==", user.user.id),
-			where("group_id", "==", group.groupId)
+          where("group_id", "==", group.groupId)
         )
       );
       console.log("GroupNuser", snapshot);
@@ -430,33 +425,19 @@ const Dashboard = ({ navigation }) => {
   // console.log("User Info", user.user.address)
   return (
     <View style={styles.container}>
-        <Spinner
-          visible={loading}
-          textContent={'Finding meeting point...'}
-          textStyle={{ color: "white" }}
-          cancelable={true}
-        />
+      <Spinner
+        visible={loading}
+        textContent={"Finding meeting point..."}
+        textStyle={{ color: "white" }}
+        cancelable={true}
+      />
       <StatusBar style="dark" backgroundColor="white" />
       <MapView
         style={styles.map}
         initialRegion={initRegion}
         customMapStyle={mapStyle}
-		  provider={PROVIDER_GOOGLE}
+        provider={PROVIDER_GOOGLE}
       >
-        {/* {middlePoint ? */}
-        {/* <Marker */}
-        {/* 	coordinate={middlePoint} */}
-        {/* 	// title={"RMIT"} */}
-        {/* 	// description={"RMIT University"} */}
-        {/* > */}
-        {/* 	<TouchableOpacity onPress={() => sheetRef.current.snapTo(0)}> */}
-        {/* 		<Image */}
-        {/* 			style={styles.marker_icon} */}
-        {/* 			source={require("../../assets/location-dot.png")} */}
-        {/* 		></Image> */}
-        {/* 	</TouchableOpacity> */}
-        {/* </Marker>: null} */}
-
         {/* {suggestion.map((place, i) => (
           <Marker
             key={i}
@@ -473,23 +454,10 @@ const Dashboard = ({ navigation }) => {
           </Marker>
         ))} */}
 
-        {/* {middlePoint ? */}
-        {/* <Marker */}
-        {/* 	coordinate={middlePoint} */}
-        {/* 	title={"RMIT"} */}
-        {/* 	description={"RMIT University"} */}
-        {/* > */}
-        {/* 	<TouchableOpacity onPress={() => sheetRef.current.snapTo(0)}> */}
-        {/* 		<Image */}
-        {/* 			style={styles.marker_icon} */}
-        {/* 			source={require("../../assets/location-dot.png")} */}
-        {/* 		></Image> */}
-        {/* 	</TouchableOpacity> */}
-        {/* </Marker>: null} */}
-
         {/* <PlaceMarker suggestion={suggestion}></PlaceMarker> */}
 
         {suggestion.map((place, i) => (
+          <View>
             <Marker
               key={i}
               coordinate={place.coordinate}
@@ -505,8 +473,22 @@ const Dashboard = ({ navigation }) => {
                   style={styles.marker_icon}
                   source={require("../../assets/location-dot.png")}
                 ></Image>
+
               </TouchableOpacity>
+              <BottomSheet
+              ref={sheetRef}
+              snapPoints={[550, 300, 0]}
+              style={styles.bottomSheetContainer}
+              renderContent={renderContent}
+              renderHeader={renderHeader}
+              initialSnap={2}
+              callbackNode={fall}
+              enabledGestureInteraction={true}
+            ></BottomSheet>
             </Marker>
+
+            
+          </View>
         ))}
 
         {/* // User's location Pin */}
@@ -517,17 +499,6 @@ const Dashboard = ({ navigation }) => {
           />
         ) : null}
       </MapView>
-
-      <BottomSheet
-        ref={sheetRef}
-        snapPoints={[550, 300, 0]}
-        style={styles.bottomSheetContainer}
-        renderContent={renderContent}
-        renderHeader={renderHeader}
-        initialSnap={2}
-        callbackNode={fall}
-        enabledGestureInteraction={true}
-      />
 
       {groupData ? (
         <View style={styles.topContainer}>
