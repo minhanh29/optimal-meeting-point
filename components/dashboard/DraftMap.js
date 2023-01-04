@@ -80,7 +80,7 @@ const myLocation = {
 };
 
 const renderContent = (placeInfo) => {
-  console.log("hello===============", placeInfo);
+  // console.log("hello===============", placeInfo);
 
   return (
     <View style={styles.panel}>
@@ -532,7 +532,7 @@ const Dashboard = ({ navigation }) => {
         ref={sheetRef}
         snapPoints={[450, 300, 0]}
         style={styles.bottomSheetContainer}
-        renderContent={() => renderContent(placeInfo)}
+		renderContent={() => renderContent(placeInfo)}
         renderHeader={renderHeader}
         initialSnap={2}
         callbackNode={fall}
