@@ -13,8 +13,22 @@ import { useDispatch, useSelector } from 'react-redux';
 import { selectUser } from '../../redux/reducers/userSlice';
 import { addNewMemberAsync, ADD_MEMBER_PENDING, ADD_MEMBER_REJECTED, ADD_MEMBER_SUCCESS, selectGroup, changeGroupStatus, GROUP_IDLE } from '../../redux/reducers/groupSlice';
 import Spinner from 'react-native-loading-spinner-overlay';
-const AddNewMember = () => {
+import { InstantSearch, connectRefinementList, connectHits } from "react-instantsearch-native";
+import { searchClient } from "../../App";
+import SearchBox from "../search/SearchBox";
+
+const AddMemberFilter = connectRefinementList(({ items, refine, user_id }) => {
+	useEffect(() => {
+		refine(user_id);
+	}, [user_id]);
+
+	return <View></View>;
+});
+
+
+const AddNewMemberHits = connectHits(({hits, navigation}) => {
     const { colors } = useTheme();
+	const [searchString, setSearchString] = useState("")
     const group = useSelector(selectGroup)
     const user = useSelector(selectUser)
     const [userList, setUserList] = useState([]);
@@ -98,9 +112,29 @@ const AddNewMember = () => {
         }
     }
 
+    const fetchUserHits = (hits) => {
+		const result = []
+		hits.forEach(item => {
+			if (item.name && item.ava_url && item.username) {
+				result.push({
+					id: item.person1_id,
+					name: item.name,
+					username: item.username,
+					ava_url: item.ava_url,
+				})
+			}
+		})
+
+		setUserList(result)
+    }
+
     useEffect(() => {
-        fetchUserInfo();
-    }, []);
+		if (searchString.trim() === "" ) {
+			fetchUserInfo();
+		} else {
+			fetchUserHits(hits)
+		}
+    }, [hits, searchString]);
 
     const handleAdd = (user, index) => {
         setSelectedIndex(prev => {
@@ -166,15 +200,7 @@ const AddNewMember = () => {
                     items="center"
                     spacing={25}
                 >
-
-                    <Flex direction='row' w='80%' style={styles.searchHolder}>
-                        <AIcon name="search1" style={styles.iconImg} color='B4BABC' />
-                        <TextInput
-                            style={styles.searchInput}
-                            placeholder='Search friend'
-                            color='#B4BABC'
-                        />
-                    </Flex>
+					<SearchBox width="80%" searchBoxName="Search friends" setSearchString={setSearchString} />
 
                     <ScrollView style={styles.listContainer}>
                         <Stack w='100%' spacing={20}>
@@ -246,6 +272,17 @@ const AddNewMember = () => {
             </Stack>
         </View>
     )
-}
+})
 
+const AddNewMember = ({ navigation }) => {
+	const user = useSelector(selectUser);
+
+	return (
+	<InstantSearch searchClient={searchClient} indexName="friends">
+
+			<AddMemberFilter user_id={user.user.id} attribute="person2_id" />
+			<AddNewMemberHits navigation={navigation} />
+	</InstantSearch>
+	);
+};
 export default AddNewMember

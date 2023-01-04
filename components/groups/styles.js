@@ -118,6 +118,11 @@ const styles = StyleSheet.create({
 		height: '50%',
 		marginTop: 25
 	},
+	statusText: {
+		fontFamily: "Montserrat",
+		fontSize: 10,
+		color: "white"
+	},
 })
 
 export default styles;

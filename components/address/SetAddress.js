@@ -68,25 +68,15 @@ const SetAddress = ({ route, navigation }) => {
       let url = "https://rsapi.goong.io/Place/Detail?place_id=" + content.place_id + "&api_key=" + GOONG_PUBLIC_KEY
       let res = await fetch(url)
       res = await res.json()
-      await setGeoLocation({
-		  location: {
-			  latitude: res.result.geometry.location.lat,
-			  longitude: res.result.geometry.location.lng,
-		  },
-        address_text: content.description
-      })
 		setLoading(false)
-		Alert.alert(
-			"Update Location",
-			"Your location has been updated successfully",
-			[
-				{
-					text: "OK",
-					onPress:() => navigation.navigate("Dashboard"),
-				}
-			],
-			{ cancelable: true }
-		);
+		navigation.navigate("MapPin", {
+			setGeoLocation,
+			defaultAddress: content.description,
+			defaultLocation: {
+				latitude: res.result.geometry.location.lat,
+				longitude: res.result.geometry.location.lng,
+			}
+		})
     } catch (e) {
 		setLoading(false)
       console.log(e.message)
@@ -107,7 +97,7 @@ const SetAddress = ({ route, navigation }) => {
         textStyle={{ color: "white" }}
         cancelable={true}
       />
-      <Stack w="90%" items="start">
+      <Stack w="80%" items="start">
         <HStack direction='row' w='100%' spacing={20} style={{ ...styles.searchHolder, marginTop: Platform.OS == "ios" ? 15 : 20 }}>
           <AIcon name="search1" size={24} style={styles.iconImg} color='B4BABC' />
           <TextInput
@@ -159,7 +149,7 @@ const SetAddress = ({ route, navigation }) => {
             padding: 17,
             backgroundColor: 'white'
           }}
-			onPress={() => navigation.navigate("MapPin", { setGeoLocation })}
+			onPress={() => navigation.navigate("MapPin", { setGeoLocation, defaultAddress: null, defaultLocation: null })}
         >
           <HStack display='flex' alignItems='center' spacing={20}>
             <FIcon name="map" size={24} style={styles.iconStyle} />

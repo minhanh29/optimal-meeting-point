@@ -49,13 +49,13 @@ const sheetRef = React.createRef();
 const fall = new Animated.Value(1);
 
 const PinOnMap = ({ route, navigation }) => {
-	const { setGeoLocation } = route.params;
+	const { setGeoLocation, defaultAddress, defaultLocation } = route.params;
 
 	const [loading, setLoading] = useState(false)
 	const user = useSelector(selectUser)
 	const { colors } = useTheme()
-	const [marker, setMarker] = useState(null)
-	const [addressText, setAddressText] = useState("Tap on your desired location on the map")
+	const [marker, setMarker] = useState(defaultLocation ? defaultLocation : null)
+	const [addressText, setAddressText] = useState(defaultAddress ? defaultAddress : "Tap on your desired location on the map")
 
 	const updateGroupAddress = async () => {
 		setLoading(true)
@@ -127,7 +127,11 @@ const PinOnMap = ({ route, navigation }) => {
       <StatusBar style="dark" backgroundColor="white" />
       <MapView
         style={styles.map}
-        initialRegion={initRegion}
+		  initialRegion={marker ? {
+		  	...marker,
+			latitudeDelta: 0.0922,
+			longitudeDelta: 0.0421,
+		  } :initRegion}
         customMapStyle={mapStyle}
         provider={PROVIDER_GOOGLE}
         onPress={(event) => {
