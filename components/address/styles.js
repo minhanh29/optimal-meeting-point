@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
   bottomContainer: {
     position: "absolute",
     bottom: 10,
-    width: '80%',
+    width: '90%',
     alignItems: 'center',
   },
   listContainer: {
