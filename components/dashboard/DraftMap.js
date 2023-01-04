@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { View, Image, Alert } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { Ionicons } from "@expo/vector-icons";
@@ -20,7 +20,7 @@ import { MAPBOX_PUBLIC_KEY } from "../../key";
 import { geoToDict } from "../common/Utils";
 
 import { getGroupName } from "../../firebaseConfig";
-// import BottomSheet from "reanimated-bottom-sheet";
+import BottomSheet from "reanimated-bottom-sheet";
 import Animated from "react-native-reanimated";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import Spinner from "react-native-loading-spinner-overlay";
@@ -41,10 +41,7 @@ import {
 } from "firebase/firestore";
 import { ref, onValue, push, update, remove } from "firebase/database";
 import { connectStorageEmulator } from "firebase/storage";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import BottomSheet, { BottomSheetRefProps } from "./BottomSheet";
-import { current } from "@reduxjs/toolkit";
-// import BottomSheet from "@gorhom/bottom-sheet/lib/typescript/components/bottomSheet/BottomSheet";
+// import BottomSheet from "./BottomSheet";
 const radius = 2 * 1000; // 2km
 const placeType = "cafe";
 const placeTypes = ["coffee", "food"];
@@ -82,17 +79,20 @@ const myLocation = {
   longitude: 106.72191374093879,
 };
 
-const renderContent = () => (
+const renderContent = (placeInfo) => {
+  console.log("hello===============", placeInfo)
+
+  return(
   <View style={styles.panel}>
     <View>
-      <Text style={styles.panelTitle}>Location's Name</Text>
-      <Text style={styles.panelSubtitle}>Location's Address</Text>
+      <Text style={styles.panelTitle}>{placeInfo? placeInfo.placeName : "Name"}</Text>
+      <Text style={styles.panelSubtitle}>{placeInfo? placeInfo.address : "Address"}</Text>
     </View>
     <TouchableOpacity style={styles.panelButton}>
       <Text style={styles.panelButtonTitle}>Choose This Location</Text>
     </TouchableOpacity>
   </View>
-);
+)};
 
 const renderHeader = () => (
   <View style={styles.headerBottomSheet}>
@@ -102,7 +102,7 @@ const renderHeader = () => (
   </View>
 );
 
-const sheetRef = React.createRef();
+// const sheetRef = React.createRef();
 const fall = new Animated.Value(1);
 
 const AvaMarker = ({ groupID, setLocationList }) => {
@@ -262,39 +262,39 @@ const AvaMarker = ({ groupID, setLocationList }) => {
   );
 };
 
-const PlaceMarker = ({ suggestion }) => {
-  return (
-    <>
-      {suggestion.map((place, i) => (
-        <>
-          <Marker
-            key={i}
-            coordinate={place.coordinate}
-            title={place.placeName}
-            description={place.placeName}
-          >
-            <TouchableOpacity onPress={() => sheetRef.current.snapTo(0)}>
-              <Image
-                style={styles.marker_icon}
-                source={require("../../assets/location-dot.png")}
-              ></Image>
-            </TouchableOpacity>
-          </Marker>
-          <BottomSheet
-            ref={sheetRef}
-            snapPoints={[550, 300, 0]}
-            style={styles.bottomSheetContainer}
-            // renderContent={renderContent}
-            // renderHeader={renderHeader}
-            initialSnap={2}
-            callbackNode={fall}
-            enabledGestureInteraction={true}
-          />
-        </>
-      ))}
-    </>
-  );
-};
+// const PlaceMarker = ({ suggestion }) => {
+//   return (
+//     <>
+//       {suggestion.map((place, i) => (
+//         <>
+//           <Marker
+//             key={i}
+//             coordinate={place.coordinate}
+//             title={place.placeName}
+//             description={place.placeName}
+//           >
+//             <TouchableOpacity onPress={() => sheetRef.current.snapTo(0)}>
+//               <Image
+//                 style={styles.marker_icon}
+//                 source={require("../../assets/location-dot.png")}
+//               ></Image>
+//             </TouchableOpacity>
+//           </Marker>
+//           <BottomSheet
+//             ref={sheetRef}
+//             snapPoints={[550, 300, 0]}
+//             style={styles.bottomSheetContainer}
+//             renderContent={renderContent}
+//             renderHeader={renderHeader}
+//             initialSnap={2}
+//             callbackNode={fall}
+//             enabledGestureInteraction={true}
+//           />
+//         </>
+//       ))}
+//     </>
+//   );
+// };
 
 const Dashboard = ({ navigation }) => {
   const user = useSelector(selectUser);
@@ -305,6 +305,8 @@ const Dashboard = ({ navigation }) => {
   const [suggestion, setSuggestion] = useState([]);
   const [locationList, setLocationList] = useState([]);
   const dispatch = useDispatch();
+  const sheetRef = useRef()
+  const [placeInfo, setPlaceInfo] = useState(null);
 
   useEffect(() => {
     if (group.enterGroup) {
@@ -381,6 +383,7 @@ const Dashboard = ({ navigation }) => {
           MAPBOX_PUBLIC_KEY;
         let res = await fetch(url);
         res = await res.json();
+        console.log("=====", res)
 
         for (let i = 0; i < res.features.length; i++) {
           let myPlace = res.features[i];
@@ -391,6 +394,7 @@ const Dashboard = ({ navigation }) => {
           };
           place["coordinate"] = coordinate;
           place["placeName"] = myPlace.text;
+          place["address"] = myPlace.place_name;
           places.push(place);
         }
       }
@@ -436,49 +440,37 @@ const Dashboard = ({ navigation }) => {
     }
   };
   // console.log("User Info", user.user.address)
-
-  // BottomSheet
-  const ref = useRef < BottomSheetRefProps > null;
-  const onPress = useCallback(() => {
-    const isActive = ref?.current?.isActive();
-    if (isActive) {
-      ref?.current?.scrollTo(0);
-    } else {
-      ref?.current?.scrollTo(-200);
-    }
-  }, []);
-
+  console.log("suggestionnnnnnnnnnnn ", suggestion);
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <View style={styles.container}>
-        <Spinner
-          visible={loading}
-          textContent={"Finding meeting point..."}
-          textStyle={{ color: "white" }}
-          cancelable={true}
-        />
-        <StatusBar style="dark" backgroundColor="white" />
-        <MapView
-          style={styles.map}
-          initialRegion={initRegion}
-          customMapStyle={mapStyle}
-          provider={PROVIDER_GOOGLE}
-        >
-          {/* {middlePoint ? */}
-          {/* <Marker */}
-          {/* 	coordinate={middlePoint} */}
-          {/* 	// title={"RMIT"} */}
-          {/* 	// description={"RMIT University"} */}
-          {/* > */}
-          {/* 	<TouchableOpacity onPress={() => sheetRef.current.snapTo(0)}> */}
-          {/* 		<Image */}
-          {/* 			style={styles.marker_icon} */}
-          {/* 			source={require("../../assets/location-dot.png")} */}
-          {/* 		></Image> */}
-          {/* 	</TouchableOpacity> */}
-          {/* </Marker>: null} */}
+    <View style={styles.container}>
+      <Spinner
+        visible={loading}
+        textContent={"Finding meeting point..."}
+        textStyle={{ color: "white" }}
+        cancelable={true}
+      />
+      <StatusBar style="dark" backgroundColor="white" />
+      <MapView
+        style={styles.map}
+        initialRegion={initRegion}
+        customMapStyle={mapStyle}
+        provider={PROVIDER_GOOGLE}
+      >
+        {/* {middlePoint ? */}
+        {/* <Marker */}
+        {/* 	coordinate={middlePoint} */}
+        {/* 	// title={"RMIT"} */}
+        {/* 	// description={"RMIT University"} */}
+        {/* > */}
+        {/* 	<TouchableOpacity onPress={() => sheetRef.current.snapTo(0)}> */}
+        {/* 		<Image */}
+        {/* 			style={styles.marker_icon} */}
+        {/* 			source={require("../../assets/location-dot.png")} */}
+        {/* 		></Image> */}
+        {/* 	</TouchableOpacity> */}
+        {/* </Marker>: null} */}
 
-          {/* {suggestion.map((place, i) => (
+        {/* {suggestion.map((place, i) => (
           <Marker
             key={i}
             coordinate={place.coordinate}
@@ -494,286 +486,291 @@ const Dashboard = ({ navigation }) => {
           </Marker>
         ))} */}
 
-          {/* {middlePoint ? */}
-          {/* <Marker */}
-          {/* 	coordinate={middlePoint} */}
-          {/* 	title={"RMIT"} */}
-          {/* 	description={"RMIT University"} */}
-          {/* > */}
-          {/* 	<TouchableOpacity onPress={() => sheetRef.current.snapTo(0)}> */}
-          {/* 		<Image */}
-          {/* 			style={styles.marker_icon} */}
-          {/* 			source={require("../../assets/location-dot.png")} */}
-          {/* 		></Image> */}
-          {/* 	</TouchableOpacity> */}
-          {/* </Marker>: null} */}
+        {/* {middlePoint ? */}
+        {/* <Marker */}
+        {/* 	coordinate={middlePoint} */}
+        {/* 	title={"RMIT"} */}
+        {/* 	description={"RMIT University"} */}
+        {/* > */}
+        {/* 	<TouchableOpacity onPress={() => sheetRef.current.snapTo(0)}> */}
+        {/* 		<Image */}
+        {/* 			style={styles.marker_icon} */}
+        {/* 			source={require("../../assets/location-dot.png")} */}
+        {/* 		></Image> */}
+        {/* 	</TouchableOpacity> */}
+        {/* </Marker>: null} */}
 
-          {/* <PlaceMarker suggestion={suggestion}></PlaceMarker> */}
+        {/* <PlaceMarker suggestion={suggestion}></PlaceMarker> */}
 
-          {/* Places Marker */}
-          {group.enterGroup &&
-            suggestion.map((place, i) => (
-              <View>
-                <Marker
-                  key={i}
-                  coordinate={place.coordinate}
-                  title={place.placeName}
-                  description={place.placeName}
-                >
-                  <TouchableOpacity
-                    onPress={() => {
-                      sheetRef.current.snapTo(0);
-                    }}
-                  >
-                    <Image
-                      style={styles.marker_icon}
-                      source={require("../../assets/location-dot.png")}
-                    ></Image>
-                  </TouchableOpacity>
-                </Marker>
-              </View>
-            ))}
-
-          {/* // User's location Pin */}
-          {group.enterGroup ? (
-            <AvaMarker
-              groupID={group.groupId}
-              setLocationList={setLocationList}
-            />
-          ) : (
-            <Marker
-              coordinate={{
-                latitude: user.user.address.latitude,
-                longitude: user.user.address.longitude,
-              }}
-              title={"user"}
-            >
-              <View></View>
-              <View
-                style={{
-                  flexDirection: "row",
-                  backgroundColor: "#00bfff",
-                  borderTopLeftRadius: 60,
-                  borderTopRightRadius: 60,
-                  borderBottomRightRadius: 0,
-                  borderBottomLeftRadius: 60,
-                  transform: [{ rotate: "45deg" }],
-                  alignSelf: "flex-start",
-                  height: 45,
-                  width: 45,
+        {group.enterGroup &&
+          suggestion.map((place, i) => (
+            <View>
+              <Marker
+                key={i}
+                coordinate={place.coordinate}
+                title={place.placeName}
+                description={place.placeName}
+                onPress={() => {
+                  setPlaceInfo(place);
+                  sheetRef.current.snapTo(0);
                 }}
               >
-                <Svg width={40} height={30}>
                   <Image
-                    source={{ uri: user.user.ava_url }}
-                    width={40}
-                    height={30}
-                    style={{
-                      height: 40,
-                      width: 40,
-                      transform: [{ rotate: "-45deg" }],
-                      borderRadius: 90,
-                      position: "absolute",
-                      left: 1.5, // 1.5
-                      bottom: -42, // -32
-                    }}
-                  />
-                </Svg>
-              </View>
-              <Callout>
-                <View
+                    style={styles.marker_icon}
+                    source={require("../../assets/location-dot.png")}
+                  ></Image>
+              </Marker>
+            </View>
+          ))}
+
+        {/* // User's location Pin */}
+        {group.enterGroup ? (
+          <AvaMarker
+            groupID={group.groupId}
+            setLocationList={setLocationList}
+          />
+        ) : (
+          <Marker
+            coordinate={{
+              latitude: user.user.address.latitude,
+              longitude: user.user.address.longitude,
+            }}
+            title={"user"}
+          >
+            <View></View>
+            <View
+              style={{
+                flexDirection: "row",
+                backgroundColor: "#00bfff",
+                borderTopLeftRadius: 60,
+                borderTopRightRadius: 60,
+                borderBottomRightRadius: 0,
+                borderBottomLeftRadius: 60,
+                transform: [{ rotate: "45deg" }],
+                alignSelf: "flex-start",
+                height: 45,
+                width: 45,
+              }}
+            >
+              <Svg width={40} height={30}>
+                <Image
+                  source={{ uri: user.user.ava_url }}
+                  width={40}
+                  height={30}
                   style={{
-                    flexDirection: "column",
-                    width: 120,
-                    height: 30,
+                    height: 40,
+                    width: 40,
+                    transform: [{ rotate: "-45deg" }],
+                    borderRadius: 90,
+                    position: "absolute",
+                    left: 1.5, // 1.5
+                    bottom: -42, // -32
+                  }}
+                />
+              </Svg>
+            </View>
+            <Callout>
+              <View
+                style={{
+                  flexDirection: "column",
+                  width: 120,
+                  height: 30,
+                }}
+              >
+                <Text
+                  style={{
+                    marginLeft: 2,
+                    marginBottom: 1,
+                    color: "black",
+                    fontWeight: "bold",
+                    alignSelf: "center",
                   }}
                 >
-                  <Text
-                    style={{
-                      marginLeft: 2,
-                      marginBottom: 1,
-                      color: "black",
-                      fontWeight: "bold",
-                      alignSelf: "center",
-                    }}
-                  >
-                    {user.user.username}
-                  </Text>
-                </View>
-              </Callout>
-            </Marker>
-          )}
-        </MapView>
+                  {user.user.username}
+                </Text>
+              </View>
+            </Callout>
+          </Marker>
+        )}
+      </MapView>
 
+      {/* {group.enterGroup && groupData ? (
+        <View style={styles.topContainer}>
+          <Text style={styles.topTitle}>{groupData.group_name}</Text>
+        </View>
+      ) : null} */}
+      
+      <BottomSheet
+				ref={sheetRef}
+				snapPoints={[550, 300, 0]}
+				style={styles.bottomSheetContainer}
+				renderContent={() => renderContent(placeInfo)}
+				renderHeader={renderHeader}
+				initialSnap={2}
+				callbackNode={fall}
+				enabledGestureInteraction={true}
+			/>
+      {/* <BottomSheet>
+
+      </BottomSheet> */}
+      <View style={styles.bottomContainer}>
+        <View style={styles.bottomNav}>
+          <View
+            style={{
+              ...styles.shadowBtn,
+              shadowOpacity: Platform.OS == "ios" ? 0.25 : 0.5,
+            }}
+          >
+            <IconButton
+              icon={(props) => <Icon name="map-pin" {...props} />}
+              color={group.enterGroup ? "#EE6548" : "#C2C2C2"}
+              disabled={!group.enterGroup}
+              style={{
+                alignSelf: "center",
+                overflow: "hidden",
+                padding: 25,
+                backgroundColor: "white",
+                borderRadius: 10,
+                margin: 16,
+                ...styles.shadowBtn,
+              }}
+              onPress={() =>
+                navigation.navigate("Address", {
+                  setGeoLocation: setGroupLocation,
+                })
+              }
+            />
+          </View>
+          <View
+            style={{
+              ...styles.shadowBtn,
+              shadowOpacity: Platform.OS == "ios" ? 0.23 : 0.5,
+            }}
+          >
+            <IconButton
+              icon={(props) => <MIcon name="account-group" {...props} />}
+              color="#9CC7CA"
+              style={{
+                alignSelf: "center",
+                padding: 25,
+                backgroundColor: "white",
+                borderRadius: 10,
+                margin: 16,
+                ...styles.shadowBtn,
+              }}
+              onPress={() => navigation.navigate("Groups")}
+            />
+          </View>
+          <View
+            style={{
+              ...styles.shadowBtn,
+              shadowOpacity: Platform.OS == "ios" ? 0.23 : 0.5,
+            }}
+          >
+            <IconButton
+              icon={(props) => <AIcon name="search1" {...props} />}
+              // color="#C2C2C2"
+              color={group.enterGroup ? "#EE6548" : "#C2C2C2"}
+              disabled={!group.enterGroup}
+              style={{
+                alignSelf: "center",
+                padding: 25,
+                backgroundColor: "white",
+                borderRadius: 10,
+                margin: 16,
+                ...styles.shadowBtn,
+              }}
+              onPress={findMeetingPoints}
+            />
+          </View>
+        </View>
+      </View>
+      <View style={styles.sideContainer}>
+        <View
+          style={{
+            ...styles.shadowBtn,
+            shadowOpacity: Platform.OS == "ios" ? 0.23 : 0.5,
+          }}
+        >
+          <IconButton
+            icon={(props) => <FIcon name="bell" {...props} />}
+            color="#9CC7CA"
+            style={{
+              alignSelf: "center",
+              padding: 25,
+              backgroundColor: "white",
+              borderRadius: 10,
+              margin: 12,
+              ...styles.shadowBtn,
+            }}
+            onPress={() => navigation.navigate("Notifications")}
+          />
+        </View>
+        <View
+          style={{
+            ...styles.shadowBtn,
+            shadowOpacity: Platform.OS == "ios" ? 0.23 : 0.5,
+          }}
+        >
+          <IconButton
+            icon={(props) => <AIcon name="setting" {...props} />}
+            color="#9CC7CA"
+            style={{
+              alignSelf: "center",
+              padding: 25,
+              backgroundColor: "white",
+              borderRadius: 10,
+              margin: 12,
+              ...styles.shadowBtn,
+            }}
+            onPress={() => navigation.navigate("Settings")}
+          />
+        </View>
+        <View
+          style={{
+            ...styles.shadowBtn,
+            shadowOpacity: Platform.OS == "ios" ? 0.23 : 0.5,
+          }}
+        >
+          <IconButton
+            icon={(props) => <AIcon name="contacts" {...props} />}
+            color="#9CC7CA"
+            style={{
+              alignSelf: "center",
+              padding: 25,
+              backgroundColor: "white",
+              borderRadius: 10,
+              margin: 12,
+              ...styles.shadowBtn,
+            }}
+            onPress={() => navigation.navigate("Friends")}
+          />
+        </View>
         {group.enterGroup && groupData ? (
-          <View style={styles.topContainer}>
-            <Text style={styles.topTitle}>{groupData.group_name}</Text>
+          <View
+            style={{
+              ...styles.shadowBtn,
+              shadowOpacity: Platform.OS == "ios" ? 0.23 : 0.5,
+            }}
+          >
+            <IconButton
+              icon={(props) => <MaterialIcons name="info-outline" {...props} />}
+              color="#9CC7CA"
+              style={{
+                alignSelf: "center",
+                padding: 25,
+                backgroundColor: "white",
+                borderRadius: 10,
+                margin: 12,
+                ...styles.shadowBtn,
+              }}
+              onPress={() => navigation.navigate("GroupInfo")}
+            />
           </View>
         ) : null}
-
-        <View style={styles.bottomContainer}>
-          <View style={styles.bottomNav}>
-            <View
-              style={{
-                ...styles.shadowBtn,
-                shadowOpacity: Platform.OS == "ios" ? 0.25 : 0.5,
-              }}
-            >
-              <IconButton
-                icon={(props) => <Icon name="map-pin" {...props} />}
-                color={group.enterGroup ? "#EE6548" : "#C2C2C2"}
-                disabled={!group.enterGroup}
-                style={{
-                  alignSelf: "center",
-                  overflow: "hidden",
-                  padding: 25,
-                  backgroundColor: "white",
-                  borderRadius: 10,
-                  margin: 16,
-                  ...styles.shadowBtn,
-                }}
-                onPress={() =>
-                  navigation.navigate("Address", {
-                    setGeoLocation: setGroupLocation,
-                  })
-                }
-              />
-            </View>
-            <View
-              style={{
-                ...styles.shadowBtn,
-                shadowOpacity: Platform.OS == "ios" ? 0.23 : 0.5,
-              }}
-            >
-              <IconButton
-                icon={(props) => <MIcon name="account-group" {...props} />}
-                color="#9CC7CA"
-                style={{
-                  alignSelf: "center",
-                  padding: 25,
-                  backgroundColor: "white",
-                  borderRadius: 10,
-                  margin: 16,
-                  ...styles.shadowBtn,
-                }}
-                onPress={() => navigation.navigate("Groups")}
-              />
-            </View>
-            <View
-              style={{
-                ...styles.shadowBtn,
-                shadowOpacity: Platform.OS == "ios" ? 0.23 : 0.5,
-              }}
-            >
-              <IconButton
-                icon={(props) => <AIcon name="search1" {...props} />}
-                // color="#C2C2C2"
-                color={group.enterGroup ? "#EE6548" : "#C2C2C2"}
-                disabled={!group.enterGroup}
-                style={{
-                  alignSelf: "center",
-                  padding: 25,
-                  backgroundColor: "white",
-                  borderRadius: 10,
-                  margin: 16,
-                  ...styles.shadowBtn,
-                }}
-                onPress={findMeetingPoints}
-              />
-            </View>
-          </View>
-        </View>
-        <View style={styles.sideContainer}>
-          <View
-            style={{
-              ...styles.shadowBtn,
-              shadowOpacity: Platform.OS == "ios" ? 0.23 : 0.5,
-            }}
-          >
-            <IconButton
-              icon={(props) => <FIcon name="bell" {...props} />}
-              color="#9CC7CA"
-              style={{
-                alignSelf: "center",
-                padding: 25,
-                backgroundColor: "white",
-                borderRadius: 10,
-                margin: 12,
-                ...styles.shadowBtn,
-              }}
-              onPress={() => navigation.navigate("Notifications")}
-            />
-          </View>
-          <View
-            style={{
-              ...styles.shadowBtn,
-              shadowOpacity: Platform.OS == "ios" ? 0.23 : 0.5,
-            }}
-          >
-            <IconButton
-              icon={(props) => <AIcon name="setting" {...props} />}
-              color="#9CC7CA"
-              style={{
-                alignSelf: "center",
-                padding: 25,
-                backgroundColor: "white",
-                borderRadius: 10,
-                margin: 12,
-                ...styles.shadowBtn,
-              }}
-              onPress={() => navigation.navigate("Settings")}
-            />
-          </View>
-          <View
-            style={{
-              ...styles.shadowBtn,
-              shadowOpacity: Platform.OS == "ios" ? 0.23 : 0.5,
-            }}
-          >
-            <IconButton
-              icon={(props) => <AIcon name="contacts" {...props} />}
-              color="#9CC7CA"
-              style={{
-                alignSelf: "center",
-                padding: 25,
-                backgroundColor: "white",
-                borderRadius: 10,
-                margin: 12,
-                ...styles.shadowBtn,
-              }}
-              onPress={() => navigation.navigate("Friends")}
-            />
-          </View>
-          {group.enterGroup && groupData ? (
-            <View
-              style={{
-                ...styles.shadowBtn,
-                shadowOpacity: Platform.OS == "ios" ? 0.23 : 0.5,
-              }}
-            >
-              <IconButton
-                icon={(props) => (
-                  <MaterialIcons name="info-outline" {...props} />
-                )}
-                color="#9CC7CA"
-                style={{
-                  alignSelf: "center",
-                  padding: 25,
-                  backgroundColor: "white",
-                  borderRadius: 10,
-                  margin: 12,
-                  ...styles.shadowBtn,
-                }}
-                onPress={() => navigation.navigate("GroupInfo")}
-              />
-            </View>
-          ) : null}
-        </View>
-        <BottomSheet ref={ref}>
-          <View style={{ flex: 1, backgroundColor: "blue" }}></View>
-        </BottomSheet>
       </View>
-    </GestureHandlerRootView>
+
+    </View>
   );
 };
 

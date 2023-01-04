@@ -130,9 +130,10 @@ const styles = StyleSheet.create({
     width: 120,
     height: 80,
   },
+
   bottomSheetContainer: {
-    backgroundColor: 'blue',
-    flex: 0,
+    flex: 1,
+    // backgroundColor: "#fff",
   },
   headerBottomSheet: {
     backgroundColor: "#ffffff",
@@ -145,11 +146,16 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 20,
   },
   panel: {
+<<<<<<< HEAD
     position: "fixed",
     bottom: -500,
     padding: 20,
     width: '100%',
     height: (Dimensions.get("window").height)/2,
+=======
+    padding: 20,
+    height: 300,
+>>>>>>> main
     backgroundColor: "#FFFFFF",
     paddingTop: 20,
   },
@@ -164,13 +170,14 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   panelTitle: {
-    fontSize: 27,
+    fontSize: 24,
     height: 35,
   },
   panelSubtitle: {
     fontSize: 14,
     color: "gray",
-    height: 30,
+    paddingTop: 10,
+    height: 70,
     marginBottom: 10,
   },
   panelButton: {
