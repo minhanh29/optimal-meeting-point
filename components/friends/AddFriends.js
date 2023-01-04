@@ -176,6 +176,7 @@ const AddFriendHits = connectHits(({hits, navigation }) => {
 					})}
 				</Stack>
 			</ScrollView>
+			<Spacer style={{height: 0}}/>
 			</Stack>
 		</Stack>
     )

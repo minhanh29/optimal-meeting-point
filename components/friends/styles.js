@@ -91,7 +91,8 @@ const styles = StyleSheet.create({
         borderRadius: 15,
 	},
 	listContainer:{
-		width: '80%'
+		width: '80%',
+		height: '50%',
 	},
 })
 
