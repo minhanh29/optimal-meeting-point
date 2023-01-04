@@ -42,7 +42,7 @@ import {
 import { ref, onValue, push, update, remove } from "firebase/database";
 import { connectStorageEmulator } from "firebase/storage";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import BottomSheet, {BottomSheetRefProps} from "./BottomSheet";
+import BottomSheet, { BottomSheetRefProps } from "./BottomSheet";
 import { current } from "@reduxjs/toolkit";
 // import BottomSheet from "@gorhom/bottom-sheet/lib/typescript/components/bottomSheet/BottomSheet";
 const radius = 2 * 1000; // 2km
@@ -436,9 +436,9 @@ const Dashboard = ({ navigation }) => {
     }
   };
   // console.log("User Info", user.user.address)
-  
+
   // BottomSheet
-  const ref = useRef<BottomSheetRefProps>(null);
+  const ref = useRef < BottomSheetRefProps > null;
   const onPress = useCallback(() => {
     const isActive = ref?.current?.isActive();
     if (isActive) {
@@ -770,14 +770,9 @@ const Dashboard = ({ navigation }) => {
           ) : null}
         </View>
         <BottomSheet ref={ref}>
-          <View
-          style={{flex: 1, backgroundColor: 'blue'}}
-          >
-
-          </View>
+          <View style={{ flex: 1, backgroundColor: "blue" }}></View>
         </BottomSheet>
       </View>
-      
     </GestureHandlerRootView>
   );
 };

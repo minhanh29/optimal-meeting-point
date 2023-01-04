@@ -13,16 +13,16 @@ import Animated, {
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 const MAX_TRANSLATE_Y = -SCREEN_HEIGHT + 50;
 
-type BottomSheetProps = {
-    children?: React.ReactNode;
-};
+// type PropsBottomSheet = {
+//     children?: React.ReactNode;
+// };
 
 export type BottomSheetRefProps = {
     scrollTo: (destination: number) => void;
     isActive: () => Boolean;
 };
 
-const BottomSheet = React.forwardRef<BottomSheetRefProps, BottomSheetProps>( ({children}, ref) => {
+const BottomSheet = React.forwardRef<BottomSheetRefProps, PropsBottomSheet>( ({children}, ref) {
   const translateY = useSharedValue(0);
   const active = useSharedValue(false);
 
