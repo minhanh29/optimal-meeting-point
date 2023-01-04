@@ -13,11 +13,10 @@ import Animated, {
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 const MAX_TRANSLATE_Y = -SCREEN_HEIGHT + 50;
 
-// type PropsBottomSheet = {
-//     children?: React.ReactNode;
-// };
+type PropsBottomSheet = {
+    children?: React.ReactNode;
+};
 
-<<<<<<< HEAD
 export type BottomSheetRefProps = {
     scrollTo: (destination: number) => void;
     isActive: () => Boolean;
@@ -28,18 +27,6 @@ const BottomSheet = React.forwardRef<BottomSheetRefProps, PropsBottomSheet>( ({c
   const active = useSharedValue(false);
 
   const scrollTo = useCallback((destination: number) => {
-=======
-// export type BottomSheetRefProps = {
-//     scrollTo: (destination: number) => void;
-//     isActive: () => Boolean;
-// };
-
-const BottomSheet = ({children}, ref) => {
-  const translateY = useSharedValue(0);
-  const active = useSharedValue(false);
-
-  const scrollTo = useCallback((destination) => {
->>>>>>> main
     "worklet";
     active.destination !== 0;
     translateY.value = withSpring(destination, { damping: 50 });
@@ -95,11 +82,7 @@ const BottomSheet = ({children}, ref) => {
       </Animated.View>
     </GestureDetector>
   );
-<<<<<<< HEAD
 })
-=======
-}
->>>>>>> main
 
 const styles = StyleSheet.create({
   bottomSheetContainer: {
