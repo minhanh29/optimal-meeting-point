@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, Image, Alert } from "react-native";
+import { View, Image, Alert, Dimensions } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { Ionicons } from "@expo/vector-icons";
 import MapView, { Marker, Callout, PROVIDER_GOOGLE } from "react-native-maps";
@@ -80,7 +80,11 @@ const myLocation = {
 };
 
 const RenderContent = ({placeInfo, handlePickLocation}) => {
-  // console.log("hello===============", placeInfo);
+  console.log("hello===============", placeInfo);
+	const handlePick = () => {
+		console.log("Picking", placeInfo)
+		handlePickLocation(placeInfo)
+	}
 
   return (
     <View style={styles.panel}>
@@ -92,7 +96,7 @@ const RenderContent = ({placeInfo, handlePickLocation}) => {
           {placeInfo ? placeInfo.address : "Address"}
         </Text>
       </View>
-		<TouchableOpacity style={styles.panelButton} onPress={() => handlePickLocation(placeInfo)}>
+		<TouchableOpacity style={styles.panelButton} onPress={handlePick}>
         <Text style={styles.panelButtonTitle}>Choose This Location</Text>
       </TouchableOpacity>
     </View>
@@ -279,14 +283,20 @@ const Dashboard = ({ navigation }) => {
   const [placeInfo, setPlaceInfo] = useState(null);
 
   useEffect(() => {
+	  setPlaceInfo(null)
+	  setLocationList([])
+	  setSuggestion([])
     if (group.enterGroup) {
-      fetchGroupData();
+		const unsub = onSnapshot(doc(db, "group", group.groupId), snap => {
+			fetchGroupData(snap)
+		})
+		return () => unsub()
     }
   }, [group.enterGroup, group.groupId]);
 
-  const fetchGroupData = async () => {
+  const fetchGroupData = (snapshot) => {
     try {
-      const snapshot = await getGroupName(group.groupId);
+      // const snapshot = await getGroupName(group.groupId);
       const group_data = snapshot.data();
 		setGroupData({
 			...group_data,
@@ -365,6 +375,14 @@ const Dashboard = ({ navigation }) => {
             latitude: myPlace.center[1],
             longitude: myPlace.center[0],
           };
+
+			if (groupData && groupData.location) {
+				console.log("Dis", distance(coordinate, groupData.location))
+			}
+			if (groupData && groupData.location && distance(coordinate, groupData.location) < 0.000015) {
+				continue
+			}
+          place["id"] = myPlace.id;
           place["coordinate"] = coordinate;
           place["placeName"] = myPlace.text;
           place["address"] = myPlace.place_name;
@@ -414,13 +432,16 @@ const Dashboard = ({ navigation }) => {
   };
 
 	const handlePickLocation = async (locationInfo) => {
+			console.log("Choosing", group.groupId)
 		if (group.enterGroup && group.groupId !== "") {
+			console.log("Got Choosing", group.groupId)
 			try {
 				await updateGroup(group.groupId, {
 					location: new GeoPoint(locationInfo.coordinate.latitude, locationInfo.coordinate.longitude),
 					placeName: locationInfo.placeName,
 					address: locationInfo.address,
 				})
+				setSuggestion(suggestion.filter(item => item.id !== locationInfo.id))
 				  Alert.alert(
 					"Update Meeting Point",
 					"Your meeting point is updated successfully",
@@ -439,7 +460,8 @@ const Dashboard = ({ navigation }) => {
 		}
 	}
 
-  // console.log("User Info", user.user.address)
+  console.log("Die", Dimensions.get("screen").height * 0.55)
+  console.log("Diei wi", Dimensions.get("window").height)
   return (
     <View style={styles.container}>
       <Spinner
@@ -492,8 +514,8 @@ const Dashboard = ({ navigation }) => {
 				}}
 			>
 				<Image
-					style={styles.marker_icon}
-					source={require("../../assets/location-dot.png")}
+					style={styles.marker_icon_chosen}
+					source={require("../../assets/location-dot-omp.png")}
 				></Image>
 			</Marker>
 		) : null}
@@ -578,7 +600,7 @@ const Dashboard = ({ navigation }) => {
 
       <BottomSheet
         ref={sheetRef}
-        snapPoints={[450, 300, 0]}
+        snapPoints={[parseInt(Dimensions.get("screen").height * 0.55), 300, 0]}
         style={styles.bottomSheetContainer}
 		  renderContent={() => <RenderContent placeInfo={placeInfo} handlePickLocation={handlePickLocation}/>}
         renderHeader={renderHeader}

@@ -83,12 +83,15 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.5,
     shadowRadius: 13.97,
-
     elevation: 20,
   },
   marker_icon: {
     height: 35,
     width: 35,
+  },
+  marker_icon_chosen: {
+    height: 60,
+    width: 60,
   },
   bubble: {
     flexDirection: "column",
