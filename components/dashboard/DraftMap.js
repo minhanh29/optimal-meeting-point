@@ -80,19 +80,24 @@ const myLocation = {
 };
 
 const renderContent = (placeInfo) => {
-  console.log("hello===============", placeInfo)
+  console.log("hello===============", placeInfo);
 
-  return(
-  <View style={styles.panel}>
-    <View>
-      <Text style={styles.panelTitle}>{placeInfo? placeInfo.placeName : "Name"}</Text>
-      <Text style={styles.panelSubtitle}>{placeInfo? placeInfo.address : "Address"}</Text>
+  return (
+    <View style={styles.panel}>
+      <View>
+        <Text style={styles.panelTitle}>
+          {placeInfo ? placeInfo.placeName : "Name"}
+        </Text>
+        <Text style={styles.panelSubtitle}>
+          {placeInfo ? placeInfo.address : "Address"}
+        </Text>
+      </View>
+      <TouchableOpacity style={styles.panelButton}>
+        <Text style={styles.panelButtonTitle}>Choose This Location</Text>
+      </TouchableOpacity>
     </View>
-    <TouchableOpacity style={styles.panelButton}>
-      <Text style={styles.panelButtonTitle}>Choose This Location</Text>
-    </TouchableOpacity>
-  </View>
-)};
+  );
+};
 
 const renderHeader = () => (
   <View style={styles.headerBottomSheet}>
@@ -102,7 +107,6 @@ const renderHeader = () => (
   </View>
 );
 
-// const sheetRef = React.createRef();
 const fall = new Animated.Value(1);
 
 const AvaMarker = ({ groupID, setLocationList }) => {
@@ -262,40 +266,6 @@ const AvaMarker = ({ groupID, setLocationList }) => {
   );
 };
 
-// const PlaceMarker = ({ suggestion }) => {
-//   return (
-//     <>
-//       {suggestion.map((place, i) => (
-//         <>
-//           <Marker
-//             key={i}
-//             coordinate={place.coordinate}
-//             title={place.placeName}
-//             description={place.placeName}
-//           >
-//             <TouchableOpacity onPress={() => sheetRef.current.snapTo(0)}>
-//               <Image
-//                 style={styles.marker_icon}
-//                 source={require("../../assets/location-dot.png")}
-//               ></Image>
-//             </TouchableOpacity>
-//           </Marker>
-//           <BottomSheet
-//             ref={sheetRef}
-//             snapPoints={[550, 300, 0]}
-//             style={styles.bottomSheetContainer}
-//             renderContent={renderContent}
-//             renderHeader={renderHeader}
-//             initialSnap={2}
-//             callbackNode={fall}
-//             enabledGestureInteraction={true}
-//           />
-//         </>
-//       ))}
-//     </>
-//   );
-// };
-
 const Dashboard = ({ navigation }) => {
   const user = useSelector(selectUser);
   const group = useSelector(selectGroup);
@@ -305,7 +275,7 @@ const Dashboard = ({ navigation }) => {
   const [suggestion, setSuggestion] = useState([]);
   const [locationList, setLocationList] = useState([]);
   const dispatch = useDispatch();
-  const sheetRef = useRef()
+  const sheetRef = useRef();
   const [placeInfo, setPlaceInfo] = useState(null);
 
   useEffect(() => {
@@ -383,7 +353,7 @@ const Dashboard = ({ navigation }) => {
           MAPBOX_PUBLIC_KEY;
         let res = await fetch(url);
         res = await res.json();
-        console.log("=====", res)
+        console.log("=====", res);
 
         for (let i = 0; i < res.features.length; i++) {
           let myPlace = res.features[i];
@@ -456,52 +426,6 @@ const Dashboard = ({ navigation }) => {
         customMapStyle={mapStyle}
         provider={PROVIDER_GOOGLE}
       >
-        {/* {middlePoint ? */}
-        {/* <Marker */}
-        {/* 	coordinate={middlePoint} */}
-        {/* 	// title={"RMIT"} */}
-        {/* 	// description={"RMIT University"} */}
-        {/* > */}
-        {/* 	<TouchableOpacity onPress={() => sheetRef.current.snapTo(0)}> */}
-        {/* 		<Image */}
-        {/* 			style={styles.marker_icon} */}
-        {/* 			source={require("../../assets/location-dot.png")} */}
-        {/* 		></Image> */}
-        {/* 	</TouchableOpacity> */}
-        {/* </Marker>: null} */}
-
-        {/* {suggestion.map((place, i) => (
-          <Marker
-            key={i}
-            coordinate={place.coordinate}
-            // title={"RMIT"}
-            // description={"RMIT University"}
-          >
-            <TouchableOpacity onPress={() => sheetRef.current.snapTo(0)}>
-              <Image
-                style={styles.marker_icon}
-                source={require("../../assets/location-dot.png")}
-              ></Image>
-            </TouchableOpacity>
-          </Marker>
-        ))} */}
-
-        {/* {middlePoint ? */}
-        {/* <Marker */}
-        {/* 	coordinate={middlePoint} */}
-        {/* 	title={"RMIT"} */}
-        {/* 	description={"RMIT University"} */}
-        {/* > */}
-        {/* 	<TouchableOpacity onPress={() => sheetRef.current.snapTo(0)}> */}
-        {/* 		<Image */}
-        {/* 			style={styles.marker_icon} */}
-        {/* 			source={require("../../assets/location-dot.png")} */}
-        {/* 		></Image> */}
-        {/* 	</TouchableOpacity> */}
-        {/* </Marker>: null} */}
-
-        {/* <PlaceMarker suggestion={suggestion}></PlaceMarker> */}
-
         {group.enterGroup &&
           suggestion.map((place, i) => (
             <View>
@@ -509,16 +433,15 @@ const Dashboard = ({ navigation }) => {
                 key={i}
                 coordinate={place.coordinate}
                 title={place.placeName}
-                description={place.placeName}
                 onPress={() => {
                   setPlaceInfo(place);
                   sheetRef.current.snapTo(0);
                 }}
               >
-                  <Image
-                    style={styles.marker_icon}
-                    source={require("../../assets/location-dot.png")}
-                  ></Image>
+                <Image
+                  style={styles.marker_icon}
+                  source={require("../../assets/location-dot.png")}
+                ></Image>
               </Marker>
             </View>
           ))}
@@ -594,25 +517,22 @@ const Dashboard = ({ navigation }) => {
         )}
       </MapView>
 
-      {/* {group.enterGroup && groupData ? (
+      {group.enterGroup && groupData ? (
         <View style={styles.topContainer}>
           <Text style={styles.topTitle}>{groupData.group_name}</Text>
         </View>
-      ) : null} */}
-      
-      <BottomSheet
-				ref={sheetRef}
-				snapPoints={[550, 300, 0]}
-				style={styles.bottomSheetContainer}
-				renderContent={() => renderContent(placeInfo)}
-				renderHeader={renderHeader}
-				initialSnap={2}
-				callbackNode={fall}
-				enabledGestureInteraction={true}
-			/>
-      {/* <BottomSheet>
+      ) : null}
 
-      </BottomSheet> */}
+      <BottomSheet
+        ref={sheetRef}
+        snapPoints={[450, 300, 0]}
+        style={styles.bottomSheetContainer}
+        renderContent={() => renderContent(placeInfo)}
+        renderHeader={renderHeader}
+        initialSnap={2}
+        callbackNode={fall}
+        enabledGestureInteraction={true}
+      />
       <View style={styles.bottomContainer}>
         <View style={styles.bottomNav}>
           <View
@@ -669,7 +589,6 @@ const Dashboard = ({ navigation }) => {
           >
             <IconButton
               icon={(props) => <AIcon name="search1" {...props} />}
-              // color="#C2C2C2"
               color={group.enterGroup ? "#EE6548" : "#C2C2C2"}
               disabled={!group.enterGroup}
               style={{
@@ -769,7 +688,6 @@ const Dashboard = ({ navigation }) => {
           </View>
         ) : null}
       </View>
-
     </View>
   );
 };

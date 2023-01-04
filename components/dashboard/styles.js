@@ -146,16 +146,8 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 20,
   },
   panel: {
-<<<<<<< HEAD
-    position: "fixed",
-    bottom: -500,
-    padding: 20,
-    width: '100%',
-    height: (Dimensions.get("window").height)/2,
-=======
     padding: 20,
     height: 300,
->>>>>>> main
     backgroundColor: "#FFFFFF",
     paddingTop: 20,
   },
@@ -219,7 +211,6 @@ const styles = StyleSheet.create({
     fontSize: 15,
     textAlign: "center",
   },
-  
 });
 
 export default styles;
