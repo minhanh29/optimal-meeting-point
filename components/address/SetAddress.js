@@ -97,7 +97,7 @@ const SetAddress = ({ route, navigation }) => {
         textStyle={{ color: "white" }}
         cancelable={true}
       />
-      <Stack w="80%" items="start">
+      <Stack w="90%" items="start">
         <HStack direction='row' w='100%' spacing={20} style={{ ...styles.searchHolder, marginTop: Platform.OS == "ios" ? 15 : 20 }}>
           <AIcon name="search1" size={24} style={styles.iconImg} color='B4BABC' />
           <TextInput
