@@ -216,10 +216,19 @@ const updateAddress = (id, data) => {
 	});
 };
 
+const updateGroup = (id, data) => {
+    return setDoc(doc(db, "group", id), {
+		...data
+	}, {
+		merge: true
+	});
+};
+
 // ============
 export {
 	createUserWithEmailAndPassword,
 	updateProfile,
+	updateGroup,
 	onAuthStateChanged,
 	signInWithEmailAndPassword,
 	signOut,

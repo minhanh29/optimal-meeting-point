@@ -19,7 +19,7 @@ import { selectGroup, updateGroupInfo } from "../../redux/reducers/groupSlice";
 import { MAPBOX_PUBLIC_KEY } from "../../key";
 import { geoToDict } from "../common/Utils";
 
-import { getGroupName } from "../../firebaseConfig";
+import { getGroupName, updateGroup } from "../../firebaseConfig";
 import BottomSheet from "reanimated-bottom-sheet";
 import Animated from "react-native-reanimated";
 import { TouchableOpacity } from "react-native-gesture-handler";
@@ -79,7 +79,7 @@ const myLocation = {
   longitude: 106.72191374093879,
 };
 
-const renderContent = (placeInfo) => {
+const RenderContent = ({placeInfo, handlePickLocation}) => {
   // console.log("hello===============", placeInfo);
 
   return (
@@ -92,7 +92,7 @@ const renderContent = (placeInfo) => {
           {placeInfo ? placeInfo.address : "Address"}
         </Text>
       </View>
-      <TouchableOpacity style={styles.panelButton}>
+		<TouchableOpacity style={styles.panelButton} onPress={() => handlePickLocation(placeInfo)}>
         <Text style={styles.panelButtonTitle}>Choose This Location</Text>
       </TouchableOpacity>
     </View>
@@ -133,8 +133,8 @@ const AvaMarker = ({ groupID, setLocationList }) => {
         let data = usersFromSnap[i];
         if (data.id === userGroup[j].user_id) {
           users.push({
-            user_id: data.user_id,
-            user_group_address: userGroup[j].user_group_address,
+            user_id: data.id,
+            user_group_address: geoToDict(userGroup[j].user_group_address),
             username: data.username,
             name: data.name,
             ava_url: data.ava_url,
@@ -160,11 +160,11 @@ const AvaMarker = ({ groupID, setLocationList }) => {
         users.push({
           user_id: data.user_id,
           user_group_address:
-            typeof data.group_address !== "string" ? data.group_address : rmit,
+            typeof data.group_address !== "string" && data.group_address ? data.group_address : rmit,
         });
 
         userIDs.push(data.user_id);
-        if (typeof data.group_address !== "string") {
+        if (typeof data.group_address !== "string" && data.group_address) {
           locations.push(data.group_address);
         }
       }
@@ -288,7 +288,10 @@ const Dashboard = ({ navigation }) => {
     try {
       const snapshot = await getGroupName(group.groupId);
       const group_data = snapshot.data();
-      setGroupData(group_data);
+		setGroupData({
+			...group_data,
+			location: group_data.location !== "" ? geoToDict(group_data.location): null
+		});
       dispatch(
         updateGroupInfo({
           group_id: snapshot.id,
@@ -409,8 +412,34 @@ const Dashboard = ({ navigation }) => {
       console.log(e.message);
     }
   };
+
+	const handlePickLocation = async (locationInfo) => {
+		if (group.enterGroup && group.groupId !== "") {
+			try {
+				await updateGroup(group.groupId, {
+					location: new GeoPoint(locationInfo.coordinate.latitude, locationInfo.coordinate.longitude),
+					placeName: locationInfo.placeName,
+					address: locationInfo.address,
+				})
+				  Alert.alert(
+					"Update Meeting Point",
+					"Your meeting point is updated successfully",
+					[{ text: "OK" }],
+					{ cancelable: true }
+				  );
+			} catch (e) {
+				console.log(e.message)
+			  Alert.alert(
+				"Error",
+				  e.message,
+				[{ text: "OK" }],
+				{ cancelable: true }
+			  );
+			}
+		}
+	}
+
   // console.log("User Info", user.user.address)
-  console.log("suggestionnnnnnnnnnnn ", suggestion);
   return (
     <View style={styles.container}>
       <Spinner
@@ -433,7 +462,6 @@ const Dashboard = ({ navigation }) => {
       >
         {group.enterGroup &&
           suggestion.map((place, i) => (
-            <View>
               <Marker
                 key={i}
                 coordinate={place.coordinate}
@@ -448,8 +476,28 @@ const Dashboard = ({ navigation }) => {
                   source={require("../../assets/location-dot.png")}
                 ></Image>
               </Marker>
-            </View>
           ))}
+
+		{group.enterGroup && groupData && groupData.location ? (
+			<Marker
+				coordinate={groupData.location}
+				title={groupData.placeName}
+				onPress={() => {
+					setPlaceInfo({
+						coordinate: groupData.location,
+						placeName: groupData.placeName,
+						address: groupData.address,
+					});
+					sheetRef.current.snapTo(0);
+				}}
+			>
+				<Image
+					style={styles.marker_icon}
+					source={require("../../assets/location-dot.png")}
+				></Image>
+			</Marker>
+		) : null}
+
 
         {/* // User's location Pin */}
         {group.enterGroup ? (
@@ -532,7 +580,7 @@ const Dashboard = ({ navigation }) => {
         ref={sheetRef}
         snapPoints={[450, 300, 0]}
         style={styles.bottomSheetContainer}
-		renderContent={() => renderContent(placeInfo)}
+		  renderContent={() => <RenderContent placeInfo={placeInfo} handlePickLocation={handlePickLocation}/>}
         renderHeader={renderHeader}
         initialSnap={2}
         callbackNode={fall}
