@@ -4,7 +4,7 @@ import { StatusBar } from "expo-status-bar";
 import { Ionicons } from "@expo/vector-icons";
 import MapView, { Marker, Callout, PROVIDER_GOOGLE } from "react-native-maps";
 import Svg from "react-native-svg";
-import { IconButton, Text } from "@react-native-material/core";
+import { IconButton, Text, Flex } from "@react-native-material/core";
 import Icon from "@expo/vector-icons/Feather";
 import MIcon from "@expo/vector-icons/MaterialCommunityIcons";
 import AIcon from "@expo/vector-icons/AntDesign";
@@ -14,7 +14,7 @@ import mapStyleJson from "./../../mapStyle.json";
 import styles from "./styles";
 import { useSelector, useDispatch } from "react-redux";
 import { selectUser } from "../../redux/reducers/userSlice";
-import { selectGroup, updateGroupInfo } from "../../redux/reducers/groupSlice";
+import { selectGroup, updateGroupInfo, changeEnterGroup } from "../../redux/reducers/groupSlice";
 // import { MAPBOX_PUBLIC_KEY } from '@env';
 import { MAPBOX_PUBLIC_KEY } from "../../key";
 import { geoToDict } from "../common/Utils";
@@ -460,6 +460,13 @@ const Dashboard = ({ navigation }) => {
 		}
 	}
 
+	const quitGroup = () => {
+		dispatch(changeEnterGroup({
+			enterGroup: false,
+			groupId: "",
+		}))
+	}
+
   console.log("Die", Dimensions.get("screen").height * 0.55)
   console.log("Diei wi", Dimensions.get("window").height)
   return (
@@ -593,9 +600,19 @@ const Dashboard = ({ navigation }) => {
       </MapView>
 
       {group.enterGroup && groupData ? (
-        <View style={styles.topContainer}>
+        <Flex style={styles.topContainer} flexDirection="row">
+            <IconButton
+              icon={(props) => <Ionicons name="arrow-back-outline" size={35} color="black" {...props} />}
+              color="black"
+              style={{
+                alignSelf: "center",
+                padding: 0,
+                margin: 0,
+              }}
+              onPress={quitGroup}
+            />
           <Text style={styles.topTitle}>{groupData.group_name}</Text>
-        </View>
+        </Flex>
       ) : null}
 
       <BottomSheet

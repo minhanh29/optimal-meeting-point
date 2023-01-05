@@ -95,10 +95,16 @@ const AddNewMemberHits = connectHits(({hits, navigation}) => {
 			console.log("Set ====", memberIdSet)
             const friendSnapshot = await getDocs(query(collection(db, "friend"), where("person1_id", "==", user.user.id)));
 			const friendIdList = friendSnapshot.docs.map(doc => doc.data().person2_id)
-            const querySnapshot = await getDocs(query(collection(db, "user"), where(documentId(), "in", friendIdList)));
+
+			let myDocs = []
+			for (let i = 0; i < friendIdList.length / 10.0; i++) {
+				let snapshot = await getDocs(query(collection(db, "user"), where(documentId(), "in", friendIdList.slice(i, Math.min(i+10, friendIdList.length)))));
+
+				myDocs = myDocs.concat(snapshot.docs)
+			}
 
             const result = []
-            querySnapshot.forEach(doc => {
+            myDocs.forEach(doc => {
 				if (!memberIdSet.has(doc.id)) {
 					result.push({
 						id: doc.id,
@@ -106,6 +112,7 @@ const AddNewMemberHits = connectHits(({hits, navigation}) => {
 					})
 				}
             })
+			result.sort((a, b) => a.name.localeCompare(b.name));
             setUserList(result)
         } catch (e) {
             console.log(e)
@@ -252,7 +259,7 @@ const AddNewMemberHits = connectHits(({hits, navigation}) => {
 
                     <Spacer />
                     <Stack w='100%' items="center">
-                        <Text style={styles.subContent}>Number of members:2</Text>
+                        <Text style={styles.subContent}>Number of members: {selectedIndex.length}</Text>
                         <TouchableOpacity
                             style={{
                                 ...styles.buttonContainer,

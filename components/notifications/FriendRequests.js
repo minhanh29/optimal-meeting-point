@@ -3,7 +3,7 @@ import { FlatList, View, TouchableOpacity, Animated, Alert } from 'react-native'
 import { Avatar, Box, Stack, Text, Switch, Flex, Spacer } from "@react-native-material/core";
 import { useTheme } from '@react-navigation/native';
 import { db } from "../../firebaseConfig"
-import { doc, setDoc, addDoc, onSnapshot, query, collection, where, getDoc, GeoPoint, deleteDoc } from "firebase/firestore";
+import { doc, documentId, getDocs, setDoc, addDoc, onSnapshot, query, collection, where, getDoc, GeoPoint, deleteDoc } from "firebase/firestore";
 import { useDispatch, useSelector } from "react-redux"
 import {
     selectUser,
@@ -52,7 +52,7 @@ const FriendRequests = () => {
 	const fetchData = async (refList) => {
 		const result = []
 		try {
-			const userData = await fetchUserData(refList)
+			const userData = await fetchUsersData(refList)
 			for (let i = 0; i < refList.length; i++) {
 				let sData = userData[refList[i].sender_id]
 
@@ -71,25 +71,34 @@ const FriendRequests = () => {
 		setLoaded(true)
 	}
 
-	const fetchUserData = async (refList) => {
-		const userData = {...userDict}
+	const fetchUsersData = async (refList) => {
+		const resultDict = { ...userDict };
+		try {
+			// get group data
+			const userIdList = refList.map(item => item.sender_id);
+			let myDocs = []
+			for (let i = 0; i < userIdList.length / 10.0; i++) {
+				let snapshot = await getDocs(
+					query(
+						collection(db, "user"),
+						where(documentId(), "in", userIdList.slice(i, Math.min(i+10, userIdList.length)))
+					)
+				);
 
-		for (let i=0; i<refList.length; i++) {
-			try {
-				let id = refList[i].sender_id
-				if (id in userData) {
-					continue
-				}
-
-				const data = await getDoc(doc(db, "user", id))
-				userData[id] = data.data()
-			} catch(e) {
-				console.log(e.message)
+				myDocs = myDocs.concat(snapshot.docs)
 			}
-		}
-		setUserDict(userData)
 
-		return userData
+			myDocs.forEach(doc => {
+				resultDict[doc.id] = {
+					...doc.data()
+				};
+			});
+		} catch (e) {
+			console.log(e.message);
+		}
+		setUserDict(resultDict)
+		return resultDict
+
 	}
 
 	const handleCheckbox = (id) => {
@@ -166,7 +175,7 @@ const FriendRequests = () => {
 			)
 		}
 	}
-	
+
 	const handleDeleteRequest = (request_id) => {
 		console.log("ID", request_id)
 		dispatch(deleteRequestAsync(request_id))

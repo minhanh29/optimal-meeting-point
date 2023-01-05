@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
 	},
 	listContainer:{
 		width: '80%',
-		height: '50%',
+		height: '55%',
 		marginTop: 25
 	},
 	statusText: {

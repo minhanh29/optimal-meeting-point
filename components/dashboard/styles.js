@@ -15,7 +15,7 @@ const styles = StyleSheet.create({
     width: "100%",
     position: "absolute",
     top: "8%",
-    left: "8%",
+    left: "2%",
     backgroundColor: "transparent",
   },
   topTitle: {

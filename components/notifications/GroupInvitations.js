@@ -75,14 +75,19 @@ const GroupInvitations = () => {
 		try {
 			// get group data
 			const groupIdList = refList.map(item => item.group_id);
-			const groupData = await getDocs(
-				query(
-					collection(db, "group"),
-					where(documentId(), "in", groupIdList)
-				)
-			);
+			let myDocs = []
+			for (let i = 0; i < groupIdList.length / 10.0; i++) {
+				let groupData = await getDocs(
+					query(
+						collection(db, "group"),
+						where(documentId(), "in", groupIdList.slice(i, Math.min(i+10, groupIdList.length)))
+					)
+				);
 
-			groupData.docs.forEach(doc => {
+				myDocs = myDocs.concat(groupData.docs)
+			}
+
+			myDocs.forEach(doc => {
 				resultDict[doc.id] = {
 					...doc.data()
 				};
@@ -99,14 +104,19 @@ const GroupInvitations = () => {
 		try {
 			// get group data
 			const userIdList = refList.map(item => item.sender_id);
-			const userData = await getDocs(
-				query(
-					collection(db, "user"),
-					where(documentId(), "in", userIdList)
-				)
-			);
+			let myDocs = []
+			for (let i = 0; i < userIdList.length / 10.0; i++) {
+				let snapshot = await getDocs(
+					query(
+						collection(db, "user"),
+						where(documentId(), "in", userIdList.slice(i, Math.min(i+10, userIdList.length)))
+					)
+				);
 
-			userData.docs.forEach(doc => {
+				myDocs = myDocs.concat(snapshot.docs)
+			}
+
+			myDocs.forEach(doc => {
 				resultDict[doc.id] = {
 					...doc.data()
 				};

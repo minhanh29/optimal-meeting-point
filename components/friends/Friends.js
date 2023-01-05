@@ -31,11 +31,19 @@ const FriendHits = connectHits(({hits, navigation }) => {
 	const fetchUserData = async (idList) => {
 		console.log("IDlist", idList)
 		try {
-			const snapshot = await getDocs(query(collection(db, "user"), where(documentId(), "in", idList)))
-			setUserList(snapshot.docs.map(doc => ({
+			let myDocs = []
+			for (let i = 0; i < idList.length / 10.0; i++) {
+				let snapshot = await getDocs(query(collection(db, "user"), where(documentId(), "in", idList.slice(i, Math.min(i+10, idList.length)))))
+
+				myDocs = myDocs.concat(snapshot.docs)
+			}
+
+			const result = myDocs.map(doc => ({
 				id: doc.id,
 				...doc.data()
-			})))
+			}))
+			result.sort((a, b) => a.name.localeCompare(b.name));
+			setUserList(result)
 		} catch (e) {
 			console.log(e.message)
 		}
@@ -55,9 +63,11 @@ const FriendHits = connectHits(({hits, navigation }) => {
 
 	useEffect(() => {
 		if (searchString.trim() === "" ) {
-			onSnapshot(query(collection(db, "friend"), where("person1_id", "==", user.id)), (snapshot) => {
+			const unsub = onSnapshot(query(collection(db, "friend"), where("person1_id", "==", user.id)), (snapshot) => {
 				fetchUserData(snapshot.docs.map(doc => doc.data().person2_id))
 			})
+
+			return () => unsub()
 		} else {
 			fetchUserHits(hits)
 		}

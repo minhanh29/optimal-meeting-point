@@ -33,7 +33,7 @@ const GroupHits = connectHits(({hits, navigation}) => {
 	const user = useSelector(selectUser);
 	const [dataList, setDataList] = useState([]);
 	const [groupNameMap, setGroupNameMap] = useState({});
-	const [loading, setLoading] = useState(false);
+	const [loading, setLoading] = useState(true);
 	const dispatch = useDispatch();
 	const group = useSelector(selectGroup);
 
@@ -80,14 +80,19 @@ const GroupHits = connectHits(({hits, navigation}) => {
 				return map;
 			}, {});
 
-			const groupData = await getDocs(
-				query(
-					collection(db, "group"),
-					where(documentId(), "in", groupIdList)
-				)
-			);
+			let myDocs = []
+			for (let i = 0; i < groupIdList.length / 10.0; i++) {
+				let groupData = await getDocs(
+					query(
+						collection(db, "group"),
+						where(documentId(), "in", groupIdList.slice(i, Math.min(i+10, groupIdList.length)))
+					)
+				);
 
-			groupData.docs.forEach(doc => {
+				myDocs = myDocs.concat(groupData.docs)
+			}
+
+			myDocs.forEach(doc => {
 				groupDict[doc.id] = {
 					id: groupIdToRef[doc.id],
 					group_id: doc.id,
@@ -133,11 +138,12 @@ const GroupHits = connectHits(({hits, navigation}) => {
 
 	useEffect(() => {
 		if (searchString.trim() === "") {
-			onSnapshot(query(collection(db, "groupNuser"), where("user_id", "==", user.user.id)), (snapshot) => {
+			const unsub = onSnapshot(query(collection(db, "groupNuser"), where("user_id", "==", user.user.id)), (snapshot) => {
 			  // Update to Redux
 			  const refList = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
 			  fetchGroupData(refList)
 			})
+			return () => unsub()
 		} else {
 			fetchGroupHits(hits)
 		}
@@ -197,16 +203,16 @@ const GroupHits = connectHits(({hits, navigation}) => {
 		items="center"
 		paddingTop={35}
 	>
+		<Spinner
+		  visible={group.status === GROUP_DELETE_PENDING || loading}
+		  textContent={'Loading...'}
+		  textStyle={{ color: "white" }}
+		  cancelable={true}
+		/>
 		<Stack mt={15} w="100%" items="center">
 			<SearchBox width="80%" searchBoxName="Search group" setSearchString={setSearchString} />
 		</Stack>
         <ScrollView style={{ ...styles.listContainer, marginTop: 20 }}>
-			<Spinner
-			  visible={group.status === GROUP_DELETE_PENDING || loading}
-			  textContent={'Loading...'}
-			  textStyle={{ color: "white" }}
-			  cancelable={true}
-			/>
           <Stack w='100%' spacing={20}>
             {dataList.map((data, index) => {
               return (
