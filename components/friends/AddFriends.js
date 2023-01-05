@@ -85,13 +85,13 @@ const AddFriendHits = connectHits(({hits, navigation }) => {
 		fetchUserInfo(searchString.trim() === "" ? null : hits);
     }, [hits, searchString]);
 
-    const handleAdd = (receiver, index) => {
+    const handleAdd = (receiver,index) => {
 
 
         setSelectedIndex(prev => {
             const isInclude = selectedIndex.includes(index)
             if (isInclude) {
-                return selectedIndex.filter(item => item !== index)
+                return selectedIndex.filter(item => item !== id)
             } else {
                 return [...prev, index]
             }
@@ -165,10 +165,10 @@ const AddFriendHits = connectHits(({hits, navigation }) => {
 									</Text>
 									</Stack>
 									<IconButton
-										icon={props => <FIcon name={selectedIndex.includes(index) ? 'check' : 'plus'} {...props} />}
+										icon={props => <FIcon name={selectedIndex.includes(item.id) ? 'check' : 'plus'} {...props} />}
 										color = "black"
 										style={{alignSelf: "center", padding: 20, backgroundColor: 'transparent', borderRadius:10, color: '#9ACDD0', marginRight: 20}}
-										onPress={() => handleAdd(item, index)}
+										onPress={() => handleAdd(item,item.id)}
 										/>
 								</Flex>
 							</Box>

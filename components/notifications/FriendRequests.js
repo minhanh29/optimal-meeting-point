@@ -146,7 +146,7 @@ const FriendRequests = () => {
 						break
 					}
 				} else if (status === STATUS_REJECTED) {
-					console.log("test================")
+					console.log("test================", checkedBoxes[i])
 					handleDeleteRequest(checkedBoxes[i])
 				}
 			} catch (e) {
@@ -160,13 +160,13 @@ const FriendRequests = () => {
 		if (status == STATUS_ACCEPTED) {
 			Alert.alert(
 				"Accept Success",
-				"You have became friend",
+				"You have become friends.",
 				[{ text: "OK"}],
 				{cancelable:true}
 			)
 		}
 	}
-
+	
 	const handleDeleteRequest = (request_id) => {
 		console.log("ID", request_id)
 		dispatch(deleteRequestAsync(request_id))
@@ -174,13 +174,13 @@ const FriendRequests = () => {
 
 	return (
 		<Stack h="100%" overflow="visible">
-			<Spinner
-				visible={!loaded || processing}
-				textContent={processing ? 'Processing...':'Loading...'}
-				textStyle={{color: "white"}}
-				cancelable={true}
-			/>
 			<Stack w="100%" spacing={10} marginTop={20} justify="between">
+				<Spinner
+					visible={!loaded || processing}
+					textContent={processing ? 'Processing...':'Loading...'}
+					textStyle={{color: "white"}}
+					cancelable={true}
+				/>
 				<Flex direction="row">
 					<CheckBox
 						disabled={false}
